@@ -491,25 +491,10 @@ $('#openf').onclick=()=>$('#fileIn').click();$('#fileIn').onchange=e=>{handleFil
 $('#rst').onclick=resetF;$('#ftog').onclick=()=>{const p=$('#fbar');innerWidth<900?p.classList.toggle('show'):p.classList.toggle('off');setTimeout(()=>CH.forEach(c=>c.resize()),50)};
 </script><script>/* v5: persisted state + filter close button + mobile filter drawer */
 Object.assign(I18N.en,{close:'Close'});Object.assign(I18N.ar,{close:'إغلاق'});
-/* --- restore saved state (page, tab controls, search, filters, pane state) --- */
-try{const p=JSON.parse(localStorage.si4||'{}');
- if(PAGES.some(x=>x[0]===p.page))S.page=p.page;
- if(p.tc&&typeof p.tc==='object')Object.keys(S.tc).forEach(k=>{if(p.tc[k]!=null)S.tc[k]=String(p.tc[k])});
- if(typeof p.q==='string')S.q=p.q;
- if(p.f&&typeof p.f==='object')S._rf=p.f;
- S._off=!!p.off;
- if(S._off&&innerWidth>=900)$('#fbar').classList.add('off');
-}catch(e){}
-function persist(){try{localStorage.si4=JSON.stringify({page:S.page,tc:S.tc,q:S.q,f:S._rf||S.f,off:!!S._off})}catch(e){}}
-/* --- save after every render (page change, tab buttons, filters, search…) --- */
-const _rd5=render;render=function(){_rd5();persist()};
-/* --- re-apply saved filters once the dataset is loaded (ingest resets them) --- */
-const _ing5=ingest;ingest=async function(a,b,c){const r=await _ing5(a,b,c);
- if(r&&S._rf){const rf=S._rf;S._rf=null;
-  Object.keys(FL).forEach(k=>{if(rf[k]!=null&&rf[k]!=='')S.f[k]=String(rf[k])});
-  if(!filt().length)Object.keys(FL).forEach(k=>S.f[k]='');
-  buildFbar();render()}
- return r};
+/* --- only appearance settings are persisted (S.set via localStorage.si3: theme, dark mode, language, sound, volume, currency) --- */
+try{localStorage.removeItem('si4')}catch(e){}
+function persist(){}
+S._off=false;
 /* --- filters pane open/close (desktop: side pane, mobile: drawer with backdrop) --- */
 function fIsOpen(){const p=$('#fbar');return innerWidth<900?p.classList.contains('show'):!p.classList.contains('off')}
 function fpane(open){const p=$('#fbar');if(open&&!S.data.length)return;
