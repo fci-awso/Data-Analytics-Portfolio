@@ -104,6 +104,70 @@ select.pill{appearance:none;padding-inline-end:30px;background-image:url("data:i
 *::-webkit-scrollbar{width:8px;height:8px}*::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--text) 22%,transparent);border-radius:9px}
 @media(max-width:900px){.ribbon,#nav{margin:6px 8px}.body{padding:0 8px}}
 </style>
+<style id="v5">
+/* ===== v5: mobile fixes + filter close button + small utilities ===== */
+html,body{height:100%}
+#app{height:100vh;height:100dvh;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+.title{min-width:0}.title b{white-space:nowrap}.title h1{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.grid>*{min-width:0}
+#view{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+/* utility classes used by the markup (bootstrap is not loaded) */
+.d-flex{display:flex}.flex-wrap{flex-wrap:wrap}.align-items-center{align-items:center}.gap-2{gap:8px}.mb-2{margin-bottom:8px}.mt-2{margin-top:8px}.mt-3{margin-top:12px}.mb-3{margin-bottom:14px}
+.form-label{display:block;margin-bottom:4px;font-weight:600}
+.form-select{width:100%;height:36px;border-radius:999px;border:1px solid var(--line);background:var(--surf);color:var(--text);padding:0 12px;font:inherit}
+.form-check{display:flex;align-items:center;gap:8px}.form-range{width:100%}
+#fclose{flex:none}
+#fback{display:none;position:fixed;inset:0;z-index:39;background:rgba(0,0,0,.42)}
+
+@media(max-width:900px){
+ /* header */
+ .title{padding:8px 12px 0}
+ /* ribbon: icons only, everything visible, no clipping */
+ .ribbon{flex-wrap:wrap;justify-content:center;overflow:visible;gap:2px;padding:4px}
+ .rb{flex:1 1 0;min-width:38px;padding:6px 2px}
+ .rb span,.rsep{display:none}
+ .rb i{font-size:18px}
+ .rb .pill{height:30px;font-size:12px;padding:0 8px;padding-inline-end:22px;width:auto;max-width:96px;background-position:right 8px center}
+ [dir=rtl] .rb .pill{background-position:left 8px center}
+ /* bottom tabs: all pages visible in a 3-column grid */
+ #nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;overflow:visible;padding:4px;border-radius:16px;margin-bottom:6px}
+ #nav a{flex:none;display:flex;align-items:center;justify-content:center;text-align:center;white-space:normal;line-height:1.25;font-size:11.5px;min-height:34px;padding:5px 4px;border-radius:12px}
+ .status{padding:0 12px 2px}
+ /* content */
+ .body{padding:0 8px}
+ #view{padding:6px 0 10px}
+ .hl h2{font-size:16px;overflow-wrap:anywhere}
+ .kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+ .kpi{padding:9px 10px;min-width:0}
+ .kpi .l{font-size:11.5px}
+ .kpi .v{font-size:clamp(18px,5.6vw,26px);overflow-wrap:anywhere}
+ .kpi .sub,.chg{overflow-wrap:anywhere}
+ .chg span{display:block}
+ .pan{padding:8px 10px;overflow-x:auto}
+ .ch{height:250px}.ch.lg{height:300px}
+ .tbl th,.tbl td{white-space:nowrap}
+ .tabbar{gap:8px 10px}
+ .fld{max-width:100%;min-width:0}
+ .seg{max-width:100%;overflow-x:auto;scrollbar-width:none}
+ .seg button{flex:none;white-space:nowrap;padding:6px 12px}
+ .hero{margin:2vh auto;padding:1.6rem 1rem;border-radius:22px}
+ .hlogo{width:56px;height:56px}
+ .cta{padding:.85rem 1.5rem;font-size:1rem}
+ /* filters drawer */
+ #fbar{position:fixed;top:0;bottom:0;inset-inline-end:0;margin:0;width:88%;max-width:340px;border-radius:0;border-width:0;border-inline-start:1px solid var(--line);z-index:40;box-shadow:none;visibility:hidden;overscroll-behavior:contain;padding-bottom:env(safe-area-inset-bottom,0px);transition:transform .25s var(--ease),visibility 0s .25s}
+ #fbar.show{visibility:visible;box-shadow:0 0 40px rgba(0,0,0,.35);transition:transform .25s var(--ease),visibility 0s}
+ #fbar.off{display:block}
+ #fbar:empty{display:none!important}
+ #fbar .ph{border-radius:0;padding-top:calc(8px + env(safe-area-inset-top,0px))}
+ #fbar .fc{margin:4px 6px}
+ #fbar .pill,#q{font-size:16px}
+ body.fopen #fback{display:block;animation:fi .2s}
+}
+@media(max-width:900px) and (max-height:520px){
+ #nav{display:flex;overflow-x:auto}
+ #nav a{flex:none;white-space:nowrap}
+}
+</style>
 </head>
 <body>
 <div id="boot"><div><b>Sales Intelligence</b><div class="bar"><i></i></div><small id="bootMsg">Loading…</small></div></div>
@@ -427,6 +491,42 @@ function chips(){if(!$('#fcount'))buildFbar();const n=Object.keys(FL).filter(k=>
 function uploadUI(){V(`<div class="drop" id="dz"><i class="bi bi-file-earmark-spreadsheet" style="font-size:3rem;color:#F2C811"></i><h2 style="font-size:1.3rem">${esc(t('drop'))}</h2><p class="muted">${esc(t('dropsub'))}</p><label class="pill" style="display:inline-flex;align-items:center;cursor:pointer">${esc(t('browse'))}<input type="file" id="fi" accept=".csv" hidden></label>${window.showOpenFilePicker?` <button class="pill" id="pk"><i class="bi bi-file-earmark-spreadsheet"></i> ${esc(t('pick'))}</button>`:''}<p class="muted mt-3" style="font-size:.8rem">${esc(t('autohint'))}</p></div>`);bindDrop('#dz');if(window.showOpenFilePicker)$('#pk').onclick=pickCsv}
 $('#openf').onclick=()=>$('#fileIn').click();$('#fileIn').onchange=e=>{handleFile(e.target.files[0]);e.target.value=''};
 $('#rst').onclick=resetF;$('#ftog').onclick=()=>{const p=$('#fbar');innerWidth<900?p.classList.toggle('show'):p.classList.toggle('off');setTimeout(()=>CH.forEach(c=>c.resize()),50)};
+</script><script>/* v5: persisted state + filter close button + mobile filter drawer */
+Object.assign(I18N.en,{close:'Close'});Object.assign(I18N.ar,{close:'إغلاق'});
+/* --- restore saved state (page, tab controls, search, filters, pane state) --- */
+try{const p=JSON.parse(localStorage.si4||'{}');
+ if(PAGES.some(x=>x[0]===p.page))S.page=p.page;
+ if(p.tc&&typeof p.tc==='object')Object.keys(S.tc).forEach(k=>{if(p.tc[k]!=null)S.tc[k]=String(p.tc[k])});
+ if(typeof p.q==='string')S.q=p.q;
+ if(p.f&&typeof p.f==='object')S._rf=p.f;
+ S._off=!!p.off;
+ if(S._off&&innerWidth>=900)$('#fbar').classList.add('off');
+}catch(e){}
+function persist(){try{localStorage.si4=JSON.stringify({page:S.page,tc:S.tc,q:S.q,f:S._rf||S.f,off:!!S._off})}catch(e){}}
+/* --- save after every render (page change, tab buttons, filters, search…) --- */
+const _rd5=render;render=function(){_rd5();persist()};
+/* --- re-apply saved filters once the dataset is loaded (ingest resets them) --- */
+const _ing5=ingest;ingest=async function(a,b,c){const r=await _ing5(a,b,c);
+ if(r&&S._rf){const rf=S._rf;S._rf=null;
+  Object.keys(FL).forEach(k=>{if(rf[k]!=null&&rf[k]!=='')S.f[k]=String(rf[k])});
+  if(!filt().length)Object.keys(FL).forEach(k=>S.f[k]='');
+  buildFbar();render()}
+ return r};
+/* --- filters pane open/close (desktop: side pane, mobile: drawer with backdrop) --- */
+function fIsOpen(){const p=$('#fbar');return innerWidth<900?p.classList.contains('show'):!p.classList.contains('off')}
+function fpane(open){const p=$('#fbar');if(open&&!S.data.length)return;
+ if(innerWidth<900){p.classList.toggle('show',open);document.body.classList.toggle('fopen',open)}
+ else{p.classList.toggle('off',!open);S._off=!open}
+ setTimeout(()=>CH.forEach(c=>c.resize()),80);persist()}
+const _bf5=buildFbar;buildFbar=function(){_bf5();const h=document.querySelector('#fbar .ph');
+ if(h&&!$('#fclose')){h.insertAdjacentHTML('beforeend',`<button id="fclose" class="ibtn" type="button" aria-label="${esc(t('close'))}" title="${esc(t('close'))}"><i class="bi bi-x-lg"></i></button>`);$('#fclose').onclick=()=>fpane(false)}};
+document.body.insertAdjacentHTML('beforeend','<div id="fback"></div>');
+$('#fback').onclick=()=>fpane(false);
+$('#ftog').onclick=()=>fpane(!fIsOpen());
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&fIsOpen()&&innerWidth<900)fpane(false)});
+addEventListener('resize',()=>{if(innerWidth>=900){$('#fbar').classList.remove('show');document.body.classList.remove('fopen')}});
+/* --- tooltips for icon-only ribbon buttons on mobile --- */
+const _rib5=ribbon;ribbon=function(){_rib5();document.querySelectorAll('.ribbon button.rb').forEach(b=>{const s=b.querySelector('span');if(s)b.title=s.textContent})};
 </script><script>Object.assign(I18N.en,{"loaddata": "Load data", "wel_t": "Your sales, made simple", "wel_s": "Load your sales file to see how the business is doing, what changed, and what needs attention.", "or": "or", "st_dl": "Downloading the file…", "st_parse": "Reading rows…", "st_an": "Building your dashboard…", "nofile": "Could not find sale.csv next to this page. Choose the file manually instead."});Object.assign(I18N.ar,{"loaddata": "تحميل البيانات", "wel_t": "مبيعاتك بشكل بسيط وواضح", "wel_s": "حمّل ملف المبيعات لتعرف كيف يسير العمل، وما الذي تغيّر، وما يحتاج انتباهك.", "or": "أو", "st_dl": "جارٍ تنزيل الملف…", "st_parse": "جارٍ قراءة الصفوف…", "st_an": "جارٍ بناء لوحتك…", "nofile": "لم يتم العثور على sale.csv بجانب الصفحة. اختر الملف يدويًا."});
 /* v4: sound everywhere, remote "Load data", welcome screen */
 function beep(f=660,d=.12,g=1){if(!S.set.sound)return;try{ac=ac||new AudioContext();ac.resume();const o=ac.createOscillator(),n=ac.createGain();o.frequency.value=f;n.gain.value=Math.max(.002,.12*g*S.set.vol);o.connect(n);n.connect(ac.destination);o.start();n.gain.exponentialRampToValueAtTime(.0005,ac.currentTime+d);o.stop(ac.currentTime+d)}catch(e){}}
