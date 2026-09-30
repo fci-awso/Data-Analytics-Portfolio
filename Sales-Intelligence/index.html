@@ -122,16 +122,14 @@ html,body{height:100%}
 @media(max-width:900px){
  /* header */
  .title{padding:8px 12px 0}
- /* ribbon: icons only, everything visible, no clipping */
- .ribbon{flex-wrap:wrap;justify-content:center;overflow:visible;gap:2px;padding:4px}
- .rb{flex:1 1 0;min-width:38px;padding:6px 2px}
- .rb span,.rsep{display:none}
- .rb i{font-size:18px}
- .rb .pill{height:30px;font-size:12px;padding:0 8px;padding-inline-end:22px;width:auto;max-width:96px;background-position:right 8px center}
- [dir=rtl] .rb .pill{background-position:left 8px center}
- /* bottom tabs: all pages visible in a 3-column grid */
- #nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;overflow:visible;padding:4px;border-radius:16px;margin-bottom:6px}
- #nav a{flex:none;display:flex;align-items:center;justify-content:center;text-align:center;white-space:normal;line-height:1.25;font-size:11.5px;min-height:34px;padding:5px 4px;border-radius:12px}
+ /* ribbon: same as desktop (icon + label), horizontally scrollable */
+ .ribbon{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+ .ribbon::-webkit-scrollbar{display:none}
+ .rb{flex:none}
+ /* bottom tabs: single row, horizontal scroll */
+ #nav{display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-bottom:6px}
+ #nav::-webkit-scrollbar{display:none}
+ #nav a{flex:none;white-space:nowrap}
  .status{padding:0 12px 2px}
  /* content */
  .body{padding:0 8px}
@@ -525,7 +523,9 @@ $('#fback').onclick=()=>fpane(false);
 $('#ftog').onclick=()=>fpane(!fIsOpen());
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&fIsOpen()&&innerWidth<900)fpane(false)});
 addEventListener('resize',()=>{if(innerWidth>=900){$('#fbar').classList.remove('show');document.body.classList.remove('fopen')}});
-/* --- tooltips for icon-only ribbon buttons on mobile --- */
+/* --- keep the active tab visible in the scrollable tab bar (nav is rebuilt on every click) --- */
+const _bn5=buildNav;buildNav=function(){_bn5();const a=document.querySelector('#nav a.on');if(a)a.scrollIntoView({inline:'center',block:'nearest'})};
+/* --- tooltips for ribbon buttons --- */
 const _rib5=ribbon;ribbon=function(){_rib5();document.querySelectorAll('.ribbon button.rb').forEach(b=>{const s=b.querySelector('span');if(s)b.title=s.textContent})};
 </script><script>Object.assign(I18N.en,{"loaddata": "Load data", "wel_t": "Your sales, made simple", "wel_s": "Load your sales file to see how the business is doing, what changed, and what needs attention.", "or": "or", "st_dl": "Downloading the file…", "st_parse": "Reading rows…", "st_an": "Building your dashboard…", "nofile": "Could not find sale.csv next to this page. Choose the file manually instead."});Object.assign(I18N.ar,{"loaddata": "تحميل البيانات", "wel_t": "مبيعاتك بشكل بسيط وواضح", "wel_s": "حمّل ملف المبيعات لتعرف كيف يسير العمل، وما الذي تغيّر، وما يحتاج انتباهك.", "or": "أو", "st_dl": "جارٍ تنزيل الملف…", "st_parse": "جارٍ قراءة الصفوف…", "st_an": "جارٍ بناء لوحتك…", "nofile": "لم يتم العثور على sale.csv بجانب الصفحة. اختر الملف يدويًا."});
 /* v4: sound everywhere, remote "Load data", welcome screen */
