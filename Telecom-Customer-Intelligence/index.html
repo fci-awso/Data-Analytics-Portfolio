@@ -1,0 +1,2296 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="telecom-red" data-mode="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#e11d2e">
+<title>Telecom Churn Intelligence</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23e11d2e'/%3E%3Cpath d='M20 20h24v6H20zm0 12h24v6H20zm0 12h16v6H20z' fill='%23fff'/%3E%3C/svg%3E">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+ --primary:#e11d2e; --primary-dark:#a50f1e; --primary-light:#fee2e2; --primary-soft:#fff1f2;
+ --accent:#ff4757;
+ --bg:#f4f5f7; --bg-alt:#eaecf0;
+ --surface:#ffffff; --surface-2:#f9fafb; --surface-3:#f1f5f9;
+ --text:#0f172a; --text-2:#334155; --text-muted:#64748b; --text-faint:#94a3b8;
+ --border:#e2e8f0; --border-strong:#cbd5e1;
+ --success:#16a34a; --success-light:#dcfce7;
+ --warning:#f59e0b; --warning-light:#fef3c7;
+ --danger:#dc2626; --danger-light:#fee2e2;
+ --info:#3b82f6; --info-light:#dbeafe;
+ --chart-1:#e11d2e; --chart-2:#3b82f6; --chart-3:#f59e0b; --chart-4:#8b5cf6;
+ --chart-5:#10b981; --chart-6:#06b6d4; --chart-7:#ec4899; --chart-8:#84cc16;
+ --radius:14px; --radius-sm:8px; --radius-lg:20px;
+ --shadow-xs:0 1px 2px rgba(15,23,42,.04);
+ --shadow-sm:0 1px 3px rgba(15,23,42,.06),0 1px 2px rgba(15,23,42,.04);
+ --shadow:0 4px 12px -2px rgba(15,23,42,.08),0 2px 4px -1px rgba(15,23,42,.04);
+ --shadow-lg:0 12px 32px -8px rgba(15,23,42,.15),0 4px 8px -4px rgba(15,23,42,.08);
+ --sidebar-w:264px; --sidebar-w-collapsed:76px; --topbar-h:64px;
+ --font:'Inter','Noto Sans Arabic',system-ui,-apple-system,'Segoe UI',sans-serif;
+ --ease:cubic-bezier(.2,.8,.2,1);
+ --ease-out:cubic-bezier(.16,1,.3,1);
+}
+html[data-mode=dark]{
+ --bg:#0a0c10; --bg-alt:#0f1218;
+ --surface:#14171e; --surface-2:#1a1e27; --surface-3:#20252e;
+ --text:#f1f5f9; --text-2:#cbd5e1; --text-muted:#94a3b8; --text-faint:#64748b;
+ --border:#232831; --border-strong:#38404d;
+ --primary-light:#3b0f16; --primary-soft:#1f0a0e;
+ --success-light:#052e16; --warning-light:#3d2e05; --danger-light:#3b0f16; --info-light:#0c1e3d;
+ color-scheme:dark;
+}
+[data-theme=dark-executive]{--primary:#f43f5e; --primary-dark:#be123c; --primary-light:#3b0f16; --primary-soft:#1f0a0e}
+[data-theme=light-corporate]{--primary:#1e3a8a; --primary-dark:#172554; --primary-light:#dbeafe; --primary-soft:#eff6ff; --chart-1:#1e3a8a; --accent:#3b82f6}
+[data-theme=midnight-cyber]{
+ --primary:#06b6d4; --primary-dark:#0e7490; --primary-light:#083344; --primary-soft:#052028;
+ --accent:#22d3ee;
+ --bg:#050a14; --bg-alt:#0a1220;
+ --surface:#0c1726; --surface-2:#122035; --surface-3:#1a2d47;
+ --text:#e0f2fe; --text-2:#bae6fd; --text-muted:#7dd3fc; --text-faint:#38bdf8;
+ --border:#1e3a5f; --border-strong:#2d4a75;
+ --chart-1:#06b6d4; --chart-2:#a855f7; --chart-3:#22d3ee; --chart-4:#ec4899;
+ --chart-5:#10b981; --chart-6:#3b82f6; --chart-7:#f59e0b; --chart-8:#84cc16;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font:14px/1.5 var(--font);background:var(--bg);color:var(--text);overflow:hidden;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer}
+input,select{font:inherit}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--text) 18%,transparent);border-radius:9px}
+::-webkit-scrollbar-thumb:hover{background:color-mix(in srgb,var(--text) 30%,transparent)}
+
+/* ============================================================
+   LAYOUT
+   Grid naturally follows writing direction. In RTL, the FIRST
+   column starts at the RIGHT edge, so the sidebar (column 1)
+   automatically appears on the RIGHT without any override.
+   ============================================================ */
+.app{display:grid;grid-template-columns:var(--sidebar-w) 1fr;height:100vh;height:100dvh;transition:grid-template-columns .3s var(--ease)}
+.app.collapsed{grid-template-columns:var(--sidebar-w-collapsed) 1fr}
+
+/* ============================================================
+   SIDEBAR
+   Column 1 = inline-start. In LTR that is left, in RTL that is right.
+   ============================================================ */
+.sidebar{
+ grid-column:1;grid-row:1;
+ background:linear-gradient(180deg,var(--surface) 0%,var(--surface-2) 100%);
+ border-inline-end:1px solid var(--border);
+ display:flex;flex-direction:column;overflow:hidden;z-index:20;
+}
+.sb-head{padding:20px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+.sb-logo{width:40px;height:40px;flex:none;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:12px;display:grid;place-items:center;color:#fff;font-size:22px;box-shadow:0 6px 16px -4px color-mix(in srgb,var(--primary) 60%,transparent)}
+.sb-brand{min-width:0;flex:1}
+.sb-brand b{display:block;font-size:14px;font-weight:700;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-brand small{display:block;font-size:10.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+.sb-toggle{width:32px;height:32px;flex:none;border:0;background:var(--surface-3);border-radius:8px;color:var(--text-muted);display:grid;place-items:center;transition:all .2s}
+.sb-toggle:hover{color:var(--primary);transform:rotate(180deg)}
+.app.collapsed .sb-head{padding:20px 12px;justify-content:center}
+.app.collapsed .sb-brand{display:none}
+.app.collapsed .sb-toggle{display:none}
+
+.sb-nav{flex:1;overflow-y:auto;overflow-x:hidden;padding:14px 10px;display:flex;flex-direction:column;gap:2px}
+.sb-sec{font-size:10px;font-weight:700;color:var(--text-faint);text-transform:uppercase;letter-spacing:.1em;padding:12px 12px 6px}
+.app.collapsed .sb-sec{text-align:center;padding:12px 4px 6px;font-size:9px;letter-spacing:0}
+.sb-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;color:var(--text-2);cursor:pointer;font-size:13.5px;font-weight:500;border:0;background:none;text-align:start;width:100%;transition:all .18s var(--ease);position:relative;white-space:nowrap}
+.sb-item i:first-child{font-size:17px;flex:none;width:20px;text-align:center;transition:transform .25s var(--ease)}
+.sb-item span{flex:1;overflow:hidden;text-overflow:ellipsis}
+.sb-item:hover{background:var(--surface-3);color:var(--text)}
+.sb-item:hover i:first-child{transform:scale(1.15);color:var(--primary)}
+.sb-item.on{background:linear-gradient(90deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 70%,transparent) 100%);color:#fff;box-shadow:0 6px 16px -6px color-mix(in srgb,var(--primary) 60%,transparent)}
+[dir=rtl] .sb-item.on{background:linear-gradient(-90deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 70%,transparent) 100%)}
+.sb-item.on i:first-child{color:#fff}
+.app.collapsed .sb-item{justify-content:center;padding:12px 8px}
+.app.collapsed .sb-item span{display:none}
+.sb-foot{padding:14px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
+.sb-upload{display:flex;align-items:center;gap:10px;padding:11px 14px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:0;border-radius:12px;font-weight:600;font-size:13px;box-shadow:0 6px 18px -6px color-mix(in srgb,var(--primary) 65%,transparent);transition:all .2s var(--ease)}
+.sb-upload:hover{transform:translateY(-2px);box-shadow:0 10px 24px -6px color-mix(in srgb,var(--primary) 70%,transparent)}
+.app.collapsed .sb-upload{justify-content:center;padding:11px}
+.app.collapsed .sb-upload span{display:none}
+.sb-status{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--surface-3);border-radius:10px;font-size:11px;color:var(--text-muted)}
+.app.collapsed .sb-status{justify-content:center;padding:10px}
+.app.collapsed .sb-status span:not(.sb-dot){display:none}
+.sb-dot{width:8px;height:8px;border-radius:50%;background:var(--text-faint);flex:none}
+.sb-dot.live{background:var(--success);box-shadow:0 0 0 3px color-mix(in srgb,var(--success) 25%,transparent);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 3px color-mix(in srgb,var(--success) 25%,transparent)}50%{box-shadow:0 0 0 8px color-mix(in srgb,var(--success) 0%,transparent)}}
+
+/* ============================================================
+   MAIN
+   ============================================================ */
+.main{grid-column:2;grid-row:1;display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.topbar{height:var(--topbar-h);background:color-mix(in srgb,var(--surface) 85%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;padding:0 20px;position:relative;z-index:10;flex:none}
+.tb-hamburger{display:none;width:44px;height:44px;border:0;background:var(--surface-3);border-radius:11px;color:var(--text);font-size:22px;place-items:center;transition:all .18s;flex:none}
+.tb-hamburger:hover{background:var(--primary-soft);color:var(--primary)}
+.app.collapsed .tb-hamburger{display:grid}
+.tb-crumb{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.tb-crumb .path{font-size:11px;color:var(--text-muted);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-crumb h1{margin:0;font-size:17px;font-weight:700;letter-spacing:-.015em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:8px}
+.tb-crumb h1 i{color:var(--primary);font-size:19px;flex:none}
+.tb-actions{display:flex;align-items:center;gap:6px}
+.tb-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:44px;height:44px;padding:0 8px;border:0;background:none;color:var(--text-2);font:inherit;font-size:10px;border-radius:10px;transition:all .18s var(--ease);position:relative;white-space:nowrap}
+.tb-btn i{font-size:18px}
+.tb-btn:hover{background:var(--surface-3);color:var(--primary);transform:translateY(-1px)}
+.tb-btn:active{transform:scale(.94)}
+.tb-btn.on{color:var(--primary);background:var(--primary-soft)}
+.theme-trigger{min-width:60px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;background:none;color:var(--text-2);font:inherit;font-size:10px;border-radius:10px;transition:all .18s var(--ease);cursor:pointer}
+.theme-trigger:hover{background:var(--surface-3)}
+.theme-trigger .sw{display:inline-flex;gap:2px}
+.theme-trigger .sw i{width:12px;height:12px;border-radius:4px;display:block;border:1px solid rgba(0,0,0,.08)}
+.theme-trigger .cn{font-size:9px;color:var(--text-muted);margin-top:-2px}
+#themeMenu{position:fixed;top:0;left:0;min-width:250px;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-lg);padding:8px;z-index:500;opacity:0;visibility:hidden;transform:translateY(-8px) scale(.96);transform-origin:top left;transition:opacity .2s var(--ease),transform .2s var(--ease),visibility 0s .2s;pointer-events:none;display:none}
+#themeMenu.open{opacity:1;visibility:visible;transform:none;pointer-events:auto;display:block;transition:opacity .2s var(--ease),transform .2s var(--ease),visibility 0s}
+.tm-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);padding:8px 10px 4px}
+.tm-opt{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border:0;background:none;color:var(--text);font:inherit;font-size:13px;border-radius:10px;text-align:start;transition:background .15s}
+.tm-opt:hover{background:var(--surface-3)}
+.tm-opt.on{background:var(--primary-soft);font-weight:600;color:var(--primary)}
+.tm-opt .sw{display:inline-flex;gap:3px;flex:none}
+.tm-opt .sw i{width:16px;height:16px;border-radius:5px;display:block;border:1px solid rgba(0,0,0,.1)}
+.tm-opt .ck{margin-inline-start:auto;color:var(--primary);opacity:0;transition:opacity .2s}
+.tm-opt.on .ck{opacity:1}
+#view{flex:1;overflow:auto;overflow-x:hidden;padding:18px 20px 40px}
+#view>*{animation:viewIn .35s var(--ease-out) both}
+@keyframes viewIn{from{opacity:0;transform:translateY(8px)}}
+
+/* HERO */
+.hero-brief{background:radial-gradient(900px 300px at 10% -20%,color-mix(in srgb,var(--primary) 18%,transparent),transparent 60%),radial-gradient(600px 260px at 90% 120%,color-mix(in srgb,var(--chart-4) 12%,transparent),transparent 60%),var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px 26px;margin-bottom:16px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden}
+.hero-brief::before{content:'';position:absolute;inset-inline-start:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--primary),var(--chart-4))}
+.hb-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.hb-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:var(--primary-soft);color:var(--primary);font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.hb-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 2s infinite}
+.hb-title{font-size:20px;font-weight:700;letter-spacing:-.02em;margin:0}
+.hb-sub{font-size:12.5px;color:var(--text-muted);margin:2px 0 0}
+.hb-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:4px}
+.hb-item{display:flex;gap:11px;padding:12px 14px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;transition:all .2s var(--ease)}
+.hb-item:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.hb-num{width:26px;height:26px;flex:none;display:grid;place-items:center;border-radius:8px;background:var(--surface-3);font-size:12px;font-weight:800;color:var(--text-muted)}
+.hb-item.crit .hb-num{background:var(--danger-light);color:var(--danger)}
+.hb-item.warn .hb-num{background:var(--warning-light);color:var(--warning)}
+.hb-item.good .hb-num{background:var(--success-light);color:var(--success)}
+.hb-item p{margin:0;font-size:12.5px;line-height:1.5;color:var(--text-2)}
+.hb-item b{color:var(--text);font-weight:600}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:16px}
+.kpi-card{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px 14px 18px;display:flex;flex-direction:column;gap:2px;box-shadow:var(--shadow-xs);transition:all .25s var(--ease);overflow:hidden;animation:kpiIn .5s var(--ease-out) both}
+[dir=rtl] .kpi-card{padding:14px 18px 14px 16px}
+@keyframes kpiIn{from{opacity:0;transform:translateY(10px) scale(.98)}}
+.kpi-card::before{content:'';position:absolute;inset-inline-start:0;top:0;bottom:0;width:4px;background:var(--primary);transform:scaleY(.3);transform-origin:top;transition:transform .5s var(--ease)}
+.kpi-card:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:color-mix(in srgb,var(--primary) 25%,var(--border))}
+.kpi-card:hover::before{transform:scaleY(1)}
+.kpi-card.alt::before{background:var(--chart-2)}
+.kpi-card.ok::before{background:var(--success)}
+.kpi-card.warn::before{background:var(--warning)}
+.kpi-card.dngr::before{background:var(--danger)}
+.kpi-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.kpi-lbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted)}
+.kpi-ic{width:30px;height:30px;flex:none;display:grid;place-items:center;border-radius:8px;background:var(--primary-soft);color:var(--primary);font-size:15px}
+.kpi-card.alt .kpi-ic{background:var(--info-light);color:var(--chart-2)}
+.kpi-card.ok .kpi-ic{background:var(--success-light);color:var(--success)}
+.kpi-card.warn .kpi-ic{background:var(--warning-light);color:var(--warning)}
+.kpi-card.dngr .kpi-ic{background:var(--danger-light);color:var(--danger)}
+.kpi-val{font-size:26px;font-weight:700;letter-spacing:-.025em;line-height:1.15;color:var(--text);font-variant-numeric:tabular-nums}
+.kpi-sub{font-size:11.5px;color:var(--text-muted);display:flex;align-items:center;gap:6px}
+.kpi-tag{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:999px;font-size:10.5px;font-weight:600}
+.kpi-tag.up{background:var(--danger-light);color:var(--danger)}
+.kpi-tag.dn{background:var(--success-light);color:var(--success)}
+.kpi-tag.n{background:var(--surface-3);color:var(--text-muted)}
+
+/* SECTIONS */
+.sec{margin:22px 0 12px;font-size:15px;font-weight:700;letter-spacing:-.015em;color:var(--text);display:flex;align-items:center;gap:10px}
+.sec::after{content:'';flex:1;height:1px;background:var(--border)}
+.sec .badge{font-size:10px;padding:3px 8px;border-radius:999px;background:var(--surface-3);color:var(--text-muted);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
+.grid>*{min-width:0}
+.s12{grid-column:span 12}.s8{grid-column:span 8}.s6{grid-column:span 6}.s4{grid-column:span 4}
+.pan{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow-xs);transition:all .25s var(--ease);animation:viewIn .5s var(--ease-out) both;min-width:0}
+.pan:hover{border-color:color-mix(in srgb,var(--primary) 20%,var(--border))}
+.pan-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px}
+.pan-title{font-size:13px;font-weight:700;letter-spacing:-.01em;color:var(--text);margin:0}
+.pan-hint{font-size:11.5px;color:var(--text-muted);margin:2px 0 0;line-height:1.45}
+.ch{height:300px;width:100%}
+.ch.lg{height:360px}
+
+/* FILTERS DRAWER */
+#filterDrawer{position:fixed;top:0;bottom:0;inset-inline-end:0;width:min(380px,92vw);background:var(--surface);border-inline-start:1px solid var(--border);box-shadow:-12px 0 40px -12px rgba(0,0,0,.25);z-index:60;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s var(--ease);visibility:hidden}
+[dir=rtl] #filterDrawer{transform:translateX(-100%);box-shadow:12px 0 40px -12px rgba(0,0,0,.25)}
+#filterDrawer.open{transform:none;visibility:visible}
+#fback{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:55;opacity:0;visibility:hidden;transition:all .25s}
+#fback.open{opacity:1;visibility:visible}
+.fd-head{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--border);flex:none}
+.fd-head b{flex:1;font-size:14px;font-weight:700}
+.fd-count{background:var(--primary);color:#fff;border-radius:999px;padding:2px 8px;font-size:11px;font-weight:700;min-width:20px;text-align:center}
+.fd-close{width:34px;height:34px;border:0;background:var(--surface-3);border-radius:9px;color:var(--text-muted);display:grid;place-items:center;font-size:15px}
+.fd-close:hover{color:var(--primary)}
+.fd-body{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.fd-group{border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface-2)}
+.fd-group summary{list-style:none;padding:11px 14px;cursor:pointer;font-size:12.5px;font-weight:600;display:flex;justify-content:space-between;align-items:center;color:var(--text-2);transition:background .15s}
+.fd-group summary:hover{background:var(--surface-3)}
+.fd-group summary::-webkit-details-marker{display:none}
+.fd-group summary i{transition:transform .3s var(--ease);color:var(--text-muted)}
+.fd-group[open] summary i{transform:rotate(180deg);color:var(--primary)}
+.fd-body-inner{padding:4px 12px 12px;display:flex;flex-direction:column;gap:6px}
+.fd-opt{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:8px;cursor:pointer;font-size:12.5px;color:var(--text-2);transition:background .15s}
+.fd-opt:hover{background:var(--surface-3)}
+.fd-opt.on{background:var(--primary-soft);color:var(--primary);font-weight:600}
+.fd-opt input{margin:0;accent-color:var(--primary)}
+.fd-range{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:4px 0}
+.fd-input{height:36px;padding:0 10px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12.5px;min-width:0;width:100%}
+.fd-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
+.fd-foot{padding:12px 14px;border-top:1px solid var(--border);display:flex;gap:8px;flex:none;background:var(--surface-2)}
+.fd-foot button{flex:1;height:40px;border-radius:10px;border:0;font-weight:600;font-size:13px;transition:all .18s}
+.btn-ghost{background:var(--surface);border:1px solid var(--border)!important;color:var(--text-2)}
+.btn-ghost:hover{border-color:var(--primary)!important;color:var(--primary)}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;box-shadow:0 6px 16px -6px color-mix(in srgb,var(--primary) 60%,transparent)}
+.btn-primary:hover{transform:translateY(-1px)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border)}
+.chips:empty{display:none}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:var(--primary-soft);color:var(--primary);font-size:11.5px;font-weight:600;cursor:pointer;border:1px solid color-mix(in srgb,var(--primary) 30%,transparent);transition:all .18s}
+.chip:hover{background:color-mix(in srgb,var(--primary) 20%,transparent)}
+.chip i{font-size:11px}
+
+/* TABLES */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid var(--border);background:var(--surface)}
+.tbl{width:100%;font-size:12.5px;border-collapse:collapse;min-width:640px}
+.tbl th{background:var(--surface-2);color:var(--text-muted);font-weight:700;text-align:start;padding:11px 12px;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap;position:sticky;top:0;z-index:1}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-2);white-space:nowrap}
+.tbl tr:last-child td{border-bottom:0}
+.tbl tr.cl{cursor:pointer;transition:background .12s}
+.tbl tr.cl:hover{background:var(--surface-2)}
+.tbl td.num{text-align:end;font-variant-numeric:tabular-nums;font-weight:600;color:var(--text)}
+
+/* BADGES */
+.bdg{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.02em}
+.bdg::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+.bdg.red{background:var(--danger-light);color:var(--danger)}
+.bdg.orange{background:var(--warning-light);color:var(--warning)}
+.bdg.green{background:var(--success-light);color:var(--success)}
+.bdg.blue{background:var(--info-light);color:var(--info)}
+.bdg.gray{background:var(--surface-3);color:var(--text-muted)}
+
+/* INSIGHTS */
+.ins-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.ins-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow-xs);border-inline-start:4px solid var(--info);transition:all .22s var(--ease);animation:viewIn .45s var(--ease-out) both}
+.ins-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.ins-card.crit{border-inline-start-color:var(--danger)}
+.ins-card.high{border-inline-start-color:var(--warning)}
+.ins-card.med{border-inline-start-color:var(--info)}
+.ins-card.pos{border-inline-start-color:var(--success)}
+.ins-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.ins-head i:first-child{font-size:18px;color:var(--text-muted)}
+.ins-card.crit .ins-head i:first-child{color:var(--danger)}
+.ins-card.high .ins-head i:first-child{color:var(--warning)}
+.ins-card.med .ins-head i:first-child{color:var(--info)}
+.ins-card.pos .ins-head i:first-child{color:var(--success)}
+.ins-head span{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted)}
+.ins-title{font-size:13px;font-weight:700;margin:0 0 6px;color:var(--text);letter-spacing:-.01em}
+.ins-body{font-size:12.5px;color:var(--text-2);line-height:1.55}
+.ins-body b{color:var(--text);font-weight:700}
+.ins-rec{margin-top:10px;padding:8px 11px;background:var(--surface-2);border-radius:9px;font-size:12px;color:var(--text-2);border-inline-start:2px solid var(--primary)}
+.ins-rec b{color:var(--primary);font-weight:700}
+
+/* SEGMENTS */
+.seg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.seg-card{padding:16px;border-radius:14px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-xs);transition:all .25s var(--ease);position:relative;overflow:hidden}
+.seg-card::before{content:'';position:absolute;inset:0;opacity:.06;background:radial-gradient(circle at 90% 10%,currentColor,transparent 60%);pointer-events:none}
+.seg-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.seg-card.green{color:var(--success)}
+.seg-card.red{color:var(--danger)}
+.seg-card.orange{color:var(--warning)}
+.seg-card.blue{color:var(--info)}
+.seg-card.purple{color:var(--chart-4)}
+.seg-ic{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-size:18px;background:color-mix(in srgb,currentColor 12%,transparent);margin-bottom:10px}
+.seg-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:currentColor;margin:0}
+.seg-val{font-size:26px;font-weight:800;color:var(--text);letter-spacing:-.025em;margin:4px 0 2px;font-variant-numeric:tabular-nums}
+.seg-sub{font-size:12px;color:var(--text-muted)}
+.seg-action{font-size:11.5px;color:var(--text-2);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.seg-action b{color:currentColor;font-weight:700}
+
+/* CUSTOMER MODAL */
+.cust-modal{text-align:start;font-size:13px}
+.cust-modal .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
+.cust-modal .field{padding:9px 12px;background:var(--surface-2);border-radius:9px;border:1px solid var(--border)}
+.cust-modal .field span{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);font-weight:700;margin-bottom:2px}
+.cust-modal .field b{font-size:13px;color:var(--text);font-weight:600;word-break:break-word}
+.cust-modal .full{grid-column:span 2}
+.cust-scores{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.score-card{padding:12px;border-radius:11px;text-align:center;border:1px solid var(--border);background:linear-gradient(135deg,var(--surface-2),var(--surface))}
+.score-val{font-size:26px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.score-lbl{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted)}
+
+/* EXPLORER */
+.exp-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.exp-search{flex:1;min-width:200px;height:40px;display:flex;align-items:center;gap:8px;padding:0 14px;background:var(--surface);border:1px solid var(--border);border-radius:999px;transition:border-color .2s}
+.exp-search:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
+.exp-search i{color:var(--text-muted);font-size:15px}
+.exp-search input{flex:1;border:0;background:transparent;color:var(--text);font-size:13px;outline:none;min-width:0}
+.pgn{display:flex;align-items:center;gap:12px;justify-content:space-between;margin-top:12px;font-size:12.5px;color:var(--text-muted);flex-wrap:wrap}
+.pgn-btns{display:flex;gap:6px}
+.pgn-btn{width:36px;height:36px;border-radius:9px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);font-size:15px;display:grid;place-items:center;transition:all .18s}
+.pgn-btn:hover:not(:disabled){border-color:var(--primary);color:var(--primary)}
+.pgn-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* EMPTY */
+.empty{padding:48px 20px;text-align:center;border:1px dashed var(--border-strong);border-radius:14px;background:var(--surface-2)}
+.empty i{font-size:44px;color:var(--text-faint);display:block;margin-bottom:12px}
+.empty h4{margin:0 0 6px;font-size:15px;color:var(--text)}
+.empty p{margin:0 0 14px;font-size:13px;color:var(--text-muted);max-width:400px;margin-inline:auto}
+.empty button{padding:10px 20px;border-radius:10px;border:0;background:var(--primary);color:#fff;font-weight:600;font-size:13px}
+
+/* UPLOAD HERO */
+.upload-hero{max-width:640px;margin:40px auto;padding:40px 28px;text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:24px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.upload-hero::before{content:'';position:absolute;inset:-40% -20% auto auto;width:340px;height:340px;background:radial-gradient(circle,color-mix(in srgb,var(--primary) 25%,transparent),transparent 65%);filter:blur(40px);pointer-events:none}
+.upload-hero::after{content:'';position:absolute;inset:auto auto -40% -20%;width:340px;height:340px;background:radial-gradient(circle,color-mix(in srgb,var(--chart-4) 20%,transparent),transparent 65%);filter:blur(40px);pointer-events:none}
+.upload-hero>*{position:relative}
+.uh-logo{width:72px;height:72px;margin:0 auto 16px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:20px;display:grid;place-items:center;color:#fff;font-size:38px;box-shadow:0 16px 40px -12px color-mix(in srgb,var(--primary) 70%,transparent);animation:float 4s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-8px)}}
+.upload-hero h2{font-size:24px;font-weight:700;margin:0 0 8px;letter-spacing:-.025em}
+.upload-hero p{color:var(--text-muted);font-size:14px;margin:0 auto 22px;max-width:44ch;line-height:1.55}
+.uh-cta{display:inline-flex;align-items:center;gap:10px;padding:14px 28px;border:0;border-radius:999px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;font-weight:700;font-size:14px;box-shadow:0 12px 32px -10px color-mix(in srgb,var(--primary) 70%,transparent);transition:all .25s var(--ease)}
+.uh-cta:hover{transform:translateY(-3px)}
+.uh-cta:disabled{opacity:.7;cursor:wait}
+.uh-cta i{font-size:18px}
+.uh-or{color:var(--text-muted);margin:20px 0 14px;font-size:12px}
+.uh-drop{padding:20px;border:2px dashed var(--border-strong);border-radius:16px;background:var(--surface-2);transition:all .2s;cursor:pointer}
+.uh-drop:hover,.uh-drop.over{border-color:var(--primary);background:var(--primary-soft)}
+.uh-drop i{font-size:28px;color:var(--text-muted);display:block;margin-bottom:6px}
+.uh-drop b{display:block;font-size:13px;color:var(--text)}
+.uh-drop small{display:block;font-size:11.5px;color:var(--text-muted);margin-top:2px}
+
+/* BOOT */
+#boot{position:fixed;inset:0;z-index:999;background:var(--bg);display:grid;place-items:center;text-align:center;transition:opacity .4s}
+.boot-box{display:flex;flex-direction:column;align-items:center;gap:14px}
+.boot-logo{width:60px;height:60px;border-radius:16px;background:linear-gradient(135deg,var(--primary),var(--accent));display:grid;place-items:center;color:#fff;font-size:32px;animation:bootSpin 1.4s ease-in-out infinite}
+@keyframes bootSpin{0%,100%{transform:rotate(0) scale(1)}50%{transform:rotate(8deg) scale(1.06)}}
+.boot-title{font-size:18px;font-weight:700;letter-spacing:-.015em}
+.boot-bar{width:220px;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.boot-bar i{display:block;height:100%;width:35%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:2px;animation:bootSlide 1.2s infinite ease-in-out}
+@keyframes bootSlide{0%{margin-inline-start:-35%}100%{margin-inline-start:100%}}
+.boot-msg{font-size:12px;color:var(--text-muted)}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}.s8{grid-column:span 12}}
+@media(max-width:900px){
+ .app{grid-template-columns:1fr}
+ /* Mobile: sidebar becomes fixed off-canvas drawer.
+    inset-inline-start:0 auto-flips to right:0 in RTL.
+    translateX auto-flips: -100% in LTR (slide from left),
+    +100% in RTL (slide from right). */
+ .sidebar{
+  position:fixed;inset-inline-start:0;top:0;bottom:0;width:280px;
+  transform:translateX(-100%);
+  transition:transform .3s var(--ease);z-index:100;
+  box-shadow:12px 0 40px -12px rgba(0,0,0,.25);
+ }
+ [dir=rtl] .sidebar{transform:translateX(100%);box-shadow:-12px 0 40px -12px rgba(0,0,0,.25)}
+ .sidebar.open{transform:none!important}
+ .tb-hamburger{display:grid!important}
+ .topbar{padding:0 12px;gap:8px}
+ .tb-crumb h1{font-size:15px}
+ .tb-crumb h1 i{font-size:17px}
+ .tb-crumb .path{display:none}
+ .tb-btn{min-width:40px;height:40px;padding:0 6px;font-size:9px}
+ .tb-btn i{font-size:17px}
+ .tb-btn span{display:none}
+ .theme-trigger .cn{display:none}
+ #view{padding:12px 12px 32px}
+ .hero-brief{padding:16px 18px;border-radius:16px}
+ .hb-title{font-size:17px}
+ .kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .kpi-card{padding:11px 13px 11px 15px}
+ [dir=rtl] .kpi-card{padding:11px 15px 11px 13px}
+ .kpi-val{font-size:20px}
+ .kpi-ic{width:26px;height:26px;font-size:13px}
+ .grid{gap:10px}
+ .s6,.s4{grid-column:span 12}
+ .ch{height:250px}
+ .ch.lg{height:290px}
+ .pan{padding:12px 14px;border-radius:12px}
+ .pan-title{font-size:12px}
+ .ins-grid{grid-template-columns:1fr}
+ .seg-grid{grid-template-columns:1fr}
+ .cust-modal .row{grid-template-columns:1fr}
+ .cust-modal .full{grid-column:span 1}
+ .cust-scores{grid-template-columns:1fr}
+ #filterDrawer{width:100%;max-width:100%}
+}
+@media(max-width:520px){
+ .kpi-grid{grid-template-columns:1fr}
+ .kpi-val{font-size:22px}
+ .hero-brief{padding:14px}
+ .hb-grid{grid-template-columns:1fr}
+ .upload-hero{margin:20px auto;padding:28px 18px}
+ .upload-hero h2{font-size:20px}
+ .uh-logo{width:56px;height:56px;font-size:28px}
+ .uh-cta{padding:12px 22px;font-size:13px}
+ .tbl{font-size:11.5px}
+ .tbl th,.tbl td{padding:8px 10px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media print{.sidebar,.topbar,.fd-head,.fd-foot,#filterDrawer,#fback,.chips{display:none!important}.app{grid-template-columns:1fr!important}body{overflow:visible}#view{overflow:visible;padding:0}}
+</style>
+</head>
+<body>
+<div id="boot">
+ <div class="boot-box">
+  <div class="boot-logo"><i class="bi bi-broadcast-pin"></i></div>
+  <div class="boot-title">Telecom Intelligence</div>
+  <div class="boot-bar"><i></i></div>
+  <div class="boot-msg" id="bootMsg">Initializing…</div>
+ </div>
+</div>
+
+<div class="app" id="app">
+ <aside class="sidebar" id="sidebar">
+  <div class="sb-head">
+   <div class="sb-logo"><i class="bi bi-broadcast-pin"></i></div>
+   <div class="sb-brand"><b>Telecom Intel</b><small>Churn Analytics</small></div>
+   <button class="sb-toggle" id="sbToggle" aria-label="Collapse"><i class="bi bi-chevron-left"></i></button>
+  </div>
+  <nav class="sb-nav" id="sbNav"></nav>
+  <div class="sb-foot">
+   <button class="sb-upload" id="sbUpload"><i class="bi bi-cloud-arrow-up"></i><span>Upload Dataset</span></button>
+   <div class="sb-status" id="sbStatus">
+    <span class="sb-dot" id="sbDot"></span>
+    <span id="sbStatusText">No dataset</span>
+   </div>
+  </div>
+ </aside>
+ <main class="main">
+  <header class="topbar">
+   <button class="tb-hamburger" id="tbBurger" aria-label="Open menu"><i class="bi bi-list"></i></button>
+   <div class="tb-crumb">
+    <div class="path" id="tbPath">Dashboard</div>
+    <h1 id="tbTitle"></h1>
+   </div>
+   <div class="tb-actions">
+    <button class="tb-btn" id="tbFilter" title="Filters">
+     <i class="bi bi-funnel"></i><span id="tbFilterLbl">Filters</span>
+     <span class="fd-count" id="tbFilterCount" style="position:absolute;top:2px;inset-inline-end:2px;display:none">0</span>
+    </button>
+    <div class="theme-trigger" id="themeTrigger" role="button" tabindex="0" aria-haspopup="listbox">
+     <span class="sw"><i data-sw></i><i data-sw></i></span>
+     <span class="cn" id="themeName">Red</span>
+    </div>
+    <button class="tb-btn" id="tbLang" title="Language"><i class="bi bi-translate"></i><span id="tbLangLbl">عربي</span></button>
+    <button class="tb-btn on" id="tbSound" title="Sound"><i class="bi bi-volume-up"></i><span>Sound</span></button>
+    <button class="tb-btn" id="tbFull" title="Fullscreen"><i class="bi bi-arrows-fullscreen"></i><span>Full</span></button>
+   </div>
+  </header>
+  <section id="view" aria-live="polite"></section>
+ </main>
+</div>
+
+<div id="themeMenu" role="listbox"></div>
+<div id="fback"></div>
+<aside id="filterDrawer" aria-label="Filters">
+ <div class="fd-head">
+  <b id="fdTitle">Filters</b>
+  <span class="fd-count" id="fdCount" style="display:none">0</span>
+  <button class="fd-close" id="fdClose" aria-label="Close"><i class="bi bi-x-lg"></i></button>
+ </div>
+ <div class="chips" id="fdChips"></div>
+ <div class="fd-body" id="fdBody"></div>
+ <div class="fd-foot">
+  <button class="btn-ghost" id="fdClear">Clear all</button>
+  <button class="btn-primary" id="fdApply">Apply</button>
+ </div>
+</aside>
+<input type="file" id="fileIn" accept=".csv" hidden>
+
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+/* ============================================================
+   CONFIG + STATE
+   ============================================================ */
+const CONFIG = {
+ csvFile:'telcom_customer_churn.csv',
+ currency:'USD', currencySymbol:'$',
+ valueWeights:{ monthly:0.4, total:0.4, tenure:0.2 },
+ riskThresholds:{ medium:35, high:50, critical:70 },
+ valueThresholds:{ high:60 }
+};
+const REQ_COLS = ['customerID','gender','SeniorCitizen','Partner','Dependents','tenure','PhoneService','MultipleLines','InternetService','OnlineSecurity','OnlineBackup','DeviceProtection','TechSupport','StreamingTV','StreamingMovies','Contract','PaperlessBilling','PaymentMethod','MonthlyCharges','TotalCharges','Churn'];
+
+const PAGES_META = {
+ overview:  { icon:'bi-speedometer2',     label:'navOverview' },
+ churn:     { icon:'bi-graph-down-arrow', label:'navChurn' },
+ segments:  { icon:'bi-diagram-3',        label:'navSegments' },
+ retention: { icon:'bi-shield-check',     label:'navRetention' },
+ explorer:  { icon:'bi-table',            label:'navExplorer' },
+ data:      { icon:'bi-database',         label:'navData' }
+};
+
+const S = {
+ raw:[], data:[], filtered:[],
+ fileName:'', fileSize:0, loadedAt:null, cols:[],
+ page:'overview', q:'', pg:0, pgSize:25, sortKey:'customerID', sortDir:'asc',
+ filters:{},
+ meta:{ totalRows:0, validRows:0, dupIds:0, missing:0, invalidNum:0 },
+ set:Object.assign({ lang:'en', theme:'telecom-red', sound:true, vol:0.5, sidebarCollapsed:false }, JSON.parse(localStorage.tel1 || '{}'))
+};
+const save = () => localStorage.tel1 = JSON.stringify(S.set);
+const $  = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+const fmt = {
+ nf:(v,o) => isFinite(v) ? new Intl.NumberFormat(S.set.lang==='ar'?'ar-EG':'en-US', o).format(v) : '—',
+ int:v => fmt.nf(v, {maximumFractionDigits:0}),
+ dec:(v,d=1) => isFinite(v) ? fmt.nf(v, {maximumFractionDigits:d, minimumFractionDigits:d}) : '—',
+ pct:(v,d=1) => isFinite(v) ? fmt.nf(v/100, {style:'percent', maximumFractionDigits:d}) : '—',
+ money:(v, compact=false) => {
+  if(!isFinite(v)) return '—';
+  const opts = { style:'currency', currency:CONFIG.currency, maximumFractionDigits:0 };
+  if(compact && Math.abs(v) >= 10000) { opts.notation = 'compact'; opts.maximumFractionDigits = 2; }
+  return fmt.nf(v, opts);
+ }
+};
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rtl = () => S.set.lang === 'ar';
+const t = (k, params) => {
+ const trans = I18N[S.set.lang] || I18N.en;
+ let s = trans[k] ?? I18N.en[k] ?? k;
+ if(params) for(const p in params) s = s.replace('{'+p+'}', params[p]);
+ return s;
+};
+const debounce = (fn, ms=200) => { let h; return (...a) => { clearTimeout(h); h = setTimeout(()=>fn(...a), ms); }; };
+
+/* ============================================================
+   I18N
+   ============================================================ */
+const I18N = {
+ en:{
+  navOverview:'Executive Overview', navChurn:'Churn Intelligence', navSegments:'Customer Segmentation',
+  navRetention:'Retention Strategy', navExplorer:'Customer Explorer', navData:'Data Center',
+  sectionAnalysis:'Analysis', sectionActions:'Actions', sectionData:'Data',
+  uploadDataset:'Upload Dataset', noDataset:'No dataset',
+  filters:'Filters', language:'Language', sound:'Sound',
+  pgOverview:'Executive Overview', pgChurn:'Churn Intelligence', pgSegments:'Customer Segmentation',
+  pgRetention:'Retention Strategy', pgExplorer:'Customer Explorer', pgData:'Data Center',
+  heroBadge:'Live Executive Briefing', heroTitle:'What Management Needs to Know',
+  heroSub:'Auto-generated from your current dataset — no fabricated values.',
+  kTotalCustomers:'Total Customers', kChurned:'Churned Customers', kActive:'Active Customers',
+  kChurnRate:'Churn Rate', kRetention:'Retention Rate',
+  kMRR:'Monthly Recurring Revenue', kRevenueRisk:'Monthly Revenue at Risk',
+  kAvgMonthly:'Avg Monthly Charge', kAvgTenure:'Avg Tenure', kAvgTotal:'Avg Total Charges',
+  kHighValue:'High-Value Customers', kHighRisk:'High-Risk Customers', kHVHR:'High-Value High-Risk',
+  basedCurrent:'Based on current customer base',
+  months:'months', customers:'customers', ofTotal:'of total',
+  execTitle:'Executive Intelligence',
+  chChurnDonut:'Churn Distribution', chChurnDonutH:'Active vs churned customers.',
+  chByContract:'Churn by Contract', chByContractH:'Churn rate per contract type.',
+  chByInternet:'Churn by Internet Service', chByInternetH:'Fiber optic vs DSL vs no internet.',
+  chByPayment:'Churn by Payment Method', chByPaymentH:'Payment behavior and churn.',
+  chTenure:'Churn by Tenure Bucket', chTenureH:'Customer lifecycle analysis.',
+  chCharges:'Churn by Monthly Charges', chChargesH:'Price sensitivity bands.',
+  chRevenueRisk:'Revenue at Risk by Contract', chRevenueRiskH:'Monthly charges exposed to churn.',
+  chValueDist:'Monthly Charges Distribution', chValueDistH:'How customer spend is distributed.',
+  chServices:'Service Impact on Churn', chServicesH:'Churn rate with vs without each service.',
+  chHeatmap:'Contract × Internet Service Churn Rate', chHeatmapH:'Combined risk matrix.',
+  chDemog:'Demographic Churn Drivers', chDemogH:'Senior, partner, dependents, gender.',
+  chValueRisk:'Value vs Risk Matrix', chValueRiskH:'Every dot is a customer. Bubble size = Monthly Charges.',
+  chSegmentDist:'Segment Distribution', chSegmentDistH:'Where customers fall in the strategy matrix.',
+  chValueScore:'Value Score Distribution', chValueScoreH:'Analytical 0–100 score.',
+  chRiskScore:'Risk Score Distribution', chRiskScoreH:'Rule-based 0–100 score.',
+  chRevBySegment:'Revenue Exposure by Segment', chRevBySegmentH:'Where the money is at risk.',
+  chartSenior:'Senior', chartPartner:'Partner', chartDependents:'Dependents', chartPaperless:'Paperless', chartGender:'Gender',
+  chartYes:'Yes', chartNoOther:'No / Other',
+  chartWithService:'With service', chartWithoutService:'Without service',
+  axisValueScore:'Value Score', axisRiskScore:'Risk Score',
+  segHVLR:'High Value / Low Risk', segHVHR:'High Value / High Risk',
+  segLVHR:'Low Value / High Risk', segLVLR:'Low Value / Low Risk',
+  segNewHR:'New Customer / High Risk',
+  actLoyalty:'Loyalty Program', actPriority:'Priority Retention Offer',
+  actCostEff:'Cost-Efficient Campaign', actStandard:'Standard Experience',
+  actOnboarding:'Onboarding Campaign',
+  tSegSegment:'Segment', tSegCount:'Customers', tSegChurn:'Churn Rate',
+  tSegRevenue:'Monthly Revenue', tSegRisk:'Revenue at Risk',
+  tSegTenure:'Avg Tenure', tSegAction:'Action', tSegPriority:'Priority',
+  expSearch:'Search by customer ID or any field…',
+  expExport:'Export CSV', expVisible:'rows', expPage:'Page', expOf:'of',
+  tColId:'Customer ID', tColGender:'Gender', tColSenior:'Senior', tColPartner:'Partner',
+  tColDependents:'Dependents', tColTenure:'Tenure', tColInternet:'Internet', tColContract:'Contract',
+  tColPayment:'Payment', tColMonthly:'Monthly', tColTotal:'Total', tColChurn:'Churn',
+  tColValue:'Value', tColRisk:'Risk', tColSegment:'Segment',
+  cmProfile:'Customer Profile', cmServices:'Subscribed Services', cmScores:'Analytical Scores',
+  cmRecommendation:'Recommended Action', cmChurnStatus:'Churn Status',
+  dcOverview:'Dataset Overview', dcQuality:'Data Quality',
+  dcFileName:'File Name', dcFileSize:'File Size', dcRows:'Rows', dcCols:'Columns',
+  dcLoadedAt:'Loaded', dcStatus:'Status', dcStatusOk:'Validated',
+  dcMissing:'Missing Values', dcDupIds:'Duplicate IDs', dcInvalidNum:'Invalid Numeric', dcScore:'Quality Score',
+  bClearAll:'Clear all', bApply:'Apply', bReset:'Reset Dashboard', bClose:'Close',
+  bLoadData:'Load Data', bBrowse:'Browse CSV',
+  swLoadedTtl:'Dataset Loaded', swLoadedBody:'{n} customers processed.',
+  swBadTtl:'Invalid Dataset', swBadBody:'Missing columns: {c}',
+  swReplTtl:'Replace current dataset?', swReplBody:'Current: {a} rows · New: {b} rows.',
+  swReplOk:'Replace & Analyze', swReplCancel:'Cancel',
+  swResetTtl:'Reset Dashboard?', swResetBody:'This clears all filters. Your dataset stays loaded.',
+  swResetOk:'Yes, reset', swResetCancel:'Cancel',
+  swExported:'Export completed',
+  yes:'Yes', no:'No', all:'All',
+  emptyT:'No data matches the selected filters.', emptyP:'Try adjusting or clearing some filters.',
+  of:'of', themeMenu:'Choose theme', from:'From', to:'To',
+  insContractT:'{k} contracts drive the highest churn',
+  insContractB:'Customers on <b>{k}</b> contracts churn at <b>{rate}</b> — {diff} pts above the overall rate. This segment holds <b>{n}</b> customers and <b>{rev}</b> in monthly revenue at risk.',
+  insContractR:'Introduce a 12-month contract upgrade offer for high-value {k} customers before their next billing cycle.',
+  insPayT:'{k} shows elevated churn',
+  insPayB:'Churn rate for <b>{k}</b> users is <b>{rate}</b> vs <b>{avg}</b> average.',
+  insPayR:'Nudge these customers toward auto-pay (credit card / bank transfer) with a small monthly incentive.',
+  insInetT:'{k} customers churn fastest',
+  insInetB:'<b>{n}</b> customers use {k} with <b>{rate}</b> churn rate. Monthly revenue exposed: <b>{rev}</b>.',
+  insInetR:'Pair {k} with a retention bundle (support + security) at no extra cost for the first 6 months.',
+  insHVHRT:'{n} high-value customers are at high risk',
+  insHVHRB:'These customers represent <b>{rev}</b> monthly recurring revenue ({pct} of total MRR). Losing them would materially impact the top line.',
+  insHVHRR:'Launch a priority retention program — personal outreach from account managers within 7 days.',
+  insTenureT:'Churn concentrates in the first year',
+  insTenureB:'New customers (0–12 months) churn at <b>{short}</b> vs <b>{long}</b> for those with 3+ years tenure.',
+  insTenureR:'Strengthen the 90-day onboarding journey — early value delivery is the highest-leverage retention investment.',
+  insSeniorT:'Senior customers churn at higher rate',
+  insSeniorB:'Senior churn is <b>{sc}</b> vs <b>{nc}</b> for non-seniors — a {diff} pt gap.',
+  insSeniorR:'Design simplified plans and dedicated senior support for this segment.',
+  insStableT:'{n} high-value customers are stable',
+  insStableB:'These represent <b>{rev}</b> monthly recurring revenue protected by current relationships.',
+  insStableR:'Enroll them in a loyalty tier with annual perks to further lock in retention.',
+  catContract:'Contract Risk', catPayment:'Payment Behavior', catService:'Service Risk',
+  catRevenue:'Revenue Exposure', catLifecycle:'Customer Lifecycle', catDemog:'Demographics', catStable:'Retained Value'
+ },
+ ar:{
+  navOverview:'النظرة التنفيذية', navChurn:'ذكاء التسرب', navSegments:'تقسيم العملاء',
+  navRetention:'استراتيجية الاحتفاظ', navExplorer:'مستكشف العملاء', navData:'مركز البيانات',
+  sectionAnalysis:'التحليل', sectionActions:'الإجراءات', sectionData:'البيانات',
+  uploadDataset:'رفع ملف البيانات', noDataset:'لا توجد بيانات',
+  filters:'الفلاتر', language:'اللغة', sound:'الصوت',
+  pgOverview:'النظرة التنفيذية', pgChurn:'ذكاء التسرب', pgSegments:'تقسيم العملاء',
+  pgRetention:'استراتيجية الاحتفاظ', pgExplorer:'مستكشف العملاء', pgData:'مركز البيانات',
+  heroBadge:'الملخص التنفيذي المباشر', heroTitle:'ما يحتاج الإدارة معرفته',
+  heroSub:'مولّد تلقائيًا من بياناتك الحالية — بدون أي قيم افتراضية.',
+  kTotalCustomers:'إجمالي العملاء', kChurned:'العملاء المتسربون', kActive:'العملاء النشطون',
+  kChurnRate:'معدل التسرب', kRetention:'معدل الاحتفاظ',
+  kMRR:'الإيراد الشهري المتكرر', kRevenueRisk:'الإيراد الشهري المعرض للخطر',
+  kAvgMonthly:'متوسط الفاتورة الشهرية', kAvgTenure:'متوسط مدة الاشتراك', kAvgTotal:'متوسط إجمالي الفواتير',
+  kHighValue:'العملاء ذوو القيمة العالية', kHighRisk:'العملاء ذوو الخطورة العالية', kHVHR:'قيمة عالية / خطورة عالية',
+  basedCurrent:'محسوب من قاعدة العملاء الحالية',
+  months:'شهر', customers:'عميل', ofTotal:'من الإجمالي',
+  execTitle:'الذكاء التنفيذي',
+  chChurnDonut:'توزيع التسرب', chChurnDonutH:'العملاء النشطون مقابل المتسربين.',
+  chByContract:'التسرب حسب نوع العقد', chByContractH:'معدل التسرب لكل نوع عقد.',
+  chByInternet:'التسرب حسب خدمة الإنترنت', chByInternetH:'الألياف البصرية مقابل DSL وبدون إنترنت.',
+  chByPayment:'التسرب حسب طريقة الدفع', chByPaymentH:'سلوك الدفع والتسرب.',
+  chTenure:'التسرب حسب مدة الاشتراك', chTenureH:'تحليل دورة حياة العميل.',
+  chCharges:'التسرب حسب الفاتورة الشهرية', chChargesH:'نطاقات الحساسية السعرية.',
+  chRevenueRisk:'الإيراد المعرض للخطر حسب العقد', chRevenueRiskH:'الفواتير الشهرية المعرضة للتسرب.',
+  chValueDist:'توزيع الفواتير الشهرية', chValueDistH:'كيف يتوزع إنفاق العملاء.',
+  chServices:'تأثير الخدمات على التسرب', chServicesH:'معدل التسرب مع وبدون كل خدمة.',
+  chHeatmap:'التسرب: العقد × خدمة الإنترنت', chHeatmapH:'مصفوفة الخطورة المجمّعة.',
+  chDemog:'المحركات الديموغرافية للتسرب', chDemogH:'كبار السن، الشريك، المعالون، الجنس.',
+  chValueRisk:'مصفوفة القيمة والخطورة', chValueRiskH:'كل نقطة عميل. حجم الفقاعة = الفاتورة الشهرية.',
+  chSegmentDist:'توزيع الشرائح', chSegmentDistH:'أين يقع العملاء في مصفوفة الاستراتيجية.',
+  chValueScore:'توزيع درجة القيمة', chValueScoreH:'درجة تحليلية من 0 إلى 100.',
+  chRiskScore:'توزيع درجة الخطورة', chRiskScoreH:'درجة مبنية على قواعد من 0 إلى 100.',
+  chRevBySegment:'الإيراد المعرض للخطر حسب الشريحة', chRevBySegmentH:'أين الأموال المعرضة للخطر.',
+  chartSenior:'كبار السن', chartPartner:'شريك', chartDependents:'معالون', chartPaperless:'بدون ورق', chartGender:'الجنس',
+  chartYes:'نعم', chartNoOther:'لا / أخرى',
+  chartWithService:'مع الخدمة', chartWithoutService:'بدون خدمة',
+  axisValueScore:'درجة القيمة', axisRiskScore:'درجة الخطورة',
+  segHVLR:'قيمة عالية / خطورة منخفضة', segHVHR:'قيمة عالية / خطورة عالية',
+  segLVHR:'قيمة منخفضة / خطورة عالية', segLVLR:'قيمة منخفضة / خطورة منخفضة',
+  segNewHR:'عميل جديد / خطورة عالية',
+  actLoyalty:'برنامج ولاء', actPriority:'عرض احتفاظ بأولوية',
+  actCostEff:'حملة احتفاظ اقتصادية', actStandard:'تجربة معيارية',
+  actOnboarding:'حملة تعريفية',
+  tSegSegment:'الشريحة', tSegCount:'العملاء', tSegChurn:'معدل التسرب',
+  tSegRevenue:'الإيراد الشهري', tSegRisk:'الإيراد المعرض للخطر',
+  tSegTenure:'متوسط المدة', tSegAction:'الإجراء', tSegPriority:'الأولوية',
+  expSearch:'ابحث برقم العميل أو أي حقل…',
+  expExport:'تصدير CSV', expVisible:'صف', expPage:'صفحة', expOf:'من',
+  tColId:'رقم العميل', tColGender:'الجنس', tColSenior:'كبير سن', tColPartner:'شريك',
+  tColDependents:'معالون', tColTenure:'المدة', tColInternet:'الإنترنت', tColContract:'العقد',
+  tColPayment:'الدفع', tColMonthly:'شهري', tColTotal:'الإجمالي', tColChurn:'التسرب',
+  tColValue:'القيمة', tColRisk:'الخطورة', tColSegment:'الشريحة',
+  cmProfile:'ملف العميل', cmServices:'الخدمات المشترك بها', cmScores:'الدرجات التحليلية',
+  cmRecommendation:'الإجراء الموصى به', cmChurnStatus:'حالة التسرب',
+  dcOverview:'نظرة عامة على البيانات', dcQuality:'جودة البيانات',
+  dcFileName:'اسم الملف', dcFileSize:'حجم الملف', dcRows:'الصفوف', dcCols:'الأعمدة',
+  dcLoadedAt:'تم التحميل', dcStatus:'الحالة', dcStatusOk:'تم التحقق',
+  dcMissing:'قيم مفقودة', dcDupIds:'معرّفات مكررة', dcInvalidNum:'أرقام غير صالحة', dcScore:'درجة الجودة',
+  bClearAll:'مسح الكل', bApply:'تطبيق', bReset:'إعادة تعيين اللوحة', bClose:'إغلاق',
+  bLoadData:'تحميل البيانات', bBrowse:'تصفح CSV',
+  swLoadedTtl:'تم تحميل البيانات', swLoadedBody:'{n} عميل تمت معالجته.',
+  swBadTtl:'ملف غير صالح', swBadBody:'أعمدة مفقودة: {c}',
+  swReplTtl:'استبدال البيانات الحالية؟', swReplBody:'الحالية: {a} صف · الجديدة: {b} صف.',
+  swReplOk:'استبدل وحلّل', swReplCancel:'إلغاء',
+  swResetTtl:'إعادة تعيين اللوحة؟', swResetBody:'يمسح جميع الفلاتر. البيانات تبقى محمّلة.',
+  swResetOk:'نعم، أعد', swResetCancel:'إلغاء',
+  swExported:'تم التصدير',
+  yes:'نعم', no:'لا', all:'الكل',
+  emptyT:'لا توجد بيانات مطابقة للفلاتر.', emptyP:'جرّب تعديل الفلاتر أو مسحها.',
+  of:'من', themeMenu:'اختر المظهر', from:'من', to:'إلى',
+  insContractT:'عقود {k} تسجل أعلى معدل تسرب',
+  insContractB:'عملاء العقود من نوع <b>{k}</b> يتسربون بمعدل <b>{rate}</b> — أعلى بـ {diff} نقطة من المتوسط العام. هذه الشريحة تضم <b>{n}</b> عميل و<b>{rev}</b> إيراد شهري معرض للخطر.',
+  insContractR:'اقترح ترقية إلى عقد 12 شهرًا للعملاء ذوي القيمة العالية من نوع {k} قبل دورة الفاتورة القادمة.',
+  insPayT:'{k} يسجل تسربًا مرتفعًا',
+  insPayB:'معدل التسرب لمستخدمي <b>{k}</b> هو <b>{rate}</b> مقابل <b>{avg}</b> كمتوسط عام.',
+  insPayR:'شجع هؤلاء العملاء على التحويل للدفع التلقائي (بطاقة ائتمان / تحويل بنكي) بحافز شهري صغير.',
+  insInetT:'عملاء {k} يتسربون بأسرع وتيرة',
+  insInetB:'<b>{n}</b> عميل يستخدمون {k} بمعدل تسرب <b>{rate}</b>. الإيراد الشهري المعرض للخطر: <b>{rev}</b>.',
+  insInetR:'اربط {k} بحزمة احتفاظ (دعم + حماية) بدون تكلفة إضافية لأول 6 أشهر.',
+  insHVHRT:'{n} عميل ذو قيمة عالية في خطورة مرتفعة',
+  insHVHRB:'يمثل هؤلاء <b>{rev}</b> إيراد شهري متكرر ({pct} من الإجمالي). فقدانهم سيؤثر ماديًا على الإيراد.',
+  insHVHRR:'أطلق برنامج احتفاظ بأولوية — تواصل شخصي من مديري الحسابات خلال 7 أيام.',
+  insTenureT:'التسرب يتركز في السنة الأولى',
+  insTenureB:'العملاء الجدد (0–12 شهرًا) يتسربون بمعدل <b>{short}</b> مقابل <b>{long}</b> لمن أمضوا 3 سنوات أو أكثر.',
+  insTenureR:'قوِّ رحلة الـ 90 يومًا الأولى — تقديم القيمة مبكرًا هو أعلى استثمار احتفاظ فعالية.',
+  insSeniorT:'كبار السن يتسربون بمعدل أعلى',
+  insSeniorB:'تسرب كبار السن <b>{sc}</b> مقابل <b>{nc}</b> لغير كبار السن — فارق {diff} نقطة.',
+  insSeniorR:'صمم خططًا مبسطة ودعمًا مخصصًا لكبار السن.',
+  insStableT:'{n} عميل ذو قيمة عالية مستقر',
+  insStableB:'يمثلون <b>{rev}</b> إيراد شهري متكرر محمي بالعلاقات الحالية.',
+  insStableR:'سجّلهم في فئة ولاء بمزايا سنوية لتثبيت الاحتفاظ.',
+  catContract:'مخاطر العقود', catPayment:'سلوك الدفع', catService:'مخاطر الخدمة',
+  catRevenue:'تعرض الإيراد', catLifecycle:'دورة حياة العميل', catDemog:'الديموغرافيا', catStable:'قيمة محتفظ بها'
+ }
+};
+
+const THEMES = [
+ { id:'telecom-red',    name:'Telecom Red',     ar:'أحمر تيليكوم', colors:['#e11d2e','#a50f1e'] },
+ { id:'dark-executive', name:'Dark Executive',  ar:'تنفيذي داكن',  colors:['#f43f5e','#14171e'], mode:'dark' },
+ { id:'light-corporate',name:'Light Corporate', ar:'مؤسسي فاتح',   colors:['#1e3a8a','#3b82f6'] },
+ { id:'midnight-cyber', name:'Midnight Cyber',  ar:'سايبر ليلي',   colors:['#06b6d4','#0a1220'], mode:'dark' }
+];
+
+/* ============================================================
+   SOUND
+   ============================================================ */
+const Sound = (() => {
+ let ctx, unlocked = false;
+ const tryInit = () => { try { ctx = ctx || new (window.AudioContext||window.webkitAudioContext)(); if(ctx.state==='suspended') ctx.resume(); unlocked = true; } catch(e){} };
+ const play = (f=660, d=.1, g=1) => {
+  if(!S.set.sound) return;
+  if(!unlocked) tryInit();
+  if(!ctx) return;
+  try {
+   const o = ctx.createOscillator(), gn = ctx.createGain();
+   o.frequency.value = f; gn.gain.value = Math.max(.002, .1*g*S.set.vol);
+   o.connect(gn); gn.connect(ctx.destination); o.start();
+   gn.gain.exponentialRampToValueAtTime(.0005, ctx.currentTime + d);
+   o.stop(ctx.currentTime + d);
+  } catch(e){}
+ };
+ return {
+  init:() => { if(!unlocked) tryInit(); },
+  tap:() => play(880,.04,.5),
+  nav:() => { play(720,.06,.8); setTimeout(()=>play(1080,.09,.7),70); },
+  success:() => [523,659,784,1047].forEach((f,i)=>setTimeout(()=>play(f,.28),i*110)),
+  warn:() => play(500,.15,.8),
+  error:() => play(220,.25,1),
+  upload:() => { play(523,.1); setTimeout(()=>play(784,.1),100); setTimeout(()=>play(1047,.2),200); }
+ };
+})();
+document.addEventListener('click', Sound.init, { once:true });
+
+/* ============================================================
+   DATA
+   ============================================================ */
+const Data = {
+ load: (text, name, size) => new Promise(resolve => {
+  Papa.parse(text, { header:true, skipEmptyLines:true, complete: res => {
+   try {
+    const fields = res.meta.fields || [];
+    const missing = REQ_COLS.filter(c => !fields.includes(c));
+    if(missing.length){ resolve({ ok:false, missing, fields }); return; }
+    const { rows, meta } = Data.normalize(res.data, fields);
+    if(!rows.length){ resolve({ ok:false, empty:true, missing:[], fields }); return; }
+    S.data = rows; S.raw = res.data; S.cols = fields;
+    S.fileName = name; S.fileSize = size || 0; S.loadedAt = new Date();
+    S.meta = meta; S.filters = {}; S.filtered = rows.slice();
+    resolve({ ok:true, rows, meta });
+   } catch(e){ console.error(e); resolve({ ok:false, error:e.message }); }
+  }, error: e => resolve({ ok:false, error:e.message }) });
+ }),
+ normalize: (raw) => {
+  const rows = []; let missing=0, invalidNum=0, dup=0;
+  const seen = new Set();
+  raw.forEach(r => {
+   const customerID = String(r.customerID ?? '').trim();
+   if(!customerID){ missing++; return; }
+   if(seen.has(customerID)){ dup++; return; }
+   seen.add(customerID);
+   const monthly = parseFloat(String(r.MonthlyCharges ?? '').replace(/[^0-9.\-]/g,''));
+   const total   = parseFloat(String(r.TotalCharges ?? '').replace(/[^0-9.\-]/g,''));
+   const tenure  = parseFloat(String(r.tenure ?? '').replace(/[^0-9.\-]/g,''));
+   if(!isFinite(monthly) || !isFinite(total) || !isFinite(tenure)) invalidNum++;
+   const senior = String(r.SeniorCitizen ?? '').trim();
+   const seniorLabel = (senior === '1' || /^yes$/i.test(senior)) ? 'Yes' : 'No';
+   const churn = /^yes$/i.test(String(r.Churn ?? '').trim()) ? 'Yes' : 'No';
+   const o = {
+    customerID,
+    gender: String(r.gender ?? '').trim() || 'Unknown',
+    senior: seniorLabel,
+    partner: cleanYN(r.Partner),
+    dependents: cleanYN(r.Dependents),
+    tenure: isFinite(tenure) ? tenure : 0,
+    phone: cleanYN(r.PhoneService),
+    multipleLines: cleanCat(r.MultipleLines),
+    internet: cleanCat(r.InternetService),
+    onlineSecurity: cleanCat(r.OnlineSecurity),
+    onlineBackup: cleanCat(r.OnlineBackup),
+    deviceProtection: cleanCat(r.DeviceProtection),
+    techSupport: cleanCat(r.TechSupport),
+    streamingTV: cleanCat(r.StreamingTV),
+    streamingMovies: cleanCat(r.StreamingMovies),
+    contract: String(r.Contract ?? '').trim() || 'Unknown',
+    paperless: cleanYN(r.PaperlessBilling),
+    payment: String(r.PaymentMethod ?? '').trim() || 'Unknown',
+    monthly: isFinite(monthly) ? monthly : 0,
+    total: isFinite(total) ? total : 0,
+    churn, churned: churn === 'Yes'
+   };
+   const sc = Analytics.scoreCustomer(o);
+   o._rawValue = sc.value; o._rawRisk = sc.risk;
+   rows.push(o);
+  });
+  const vRank = percentileRank(rows.map(x => x._rawValue));
+  const rRank = percentileRank(rows.map(x => x._rawRisk));
+  rows.forEach((r, i) => {
+   r.valueScore = Math.round(vRank[i] * 100);
+   r.riskScore  = Math.round(rRank[i] * 100);
+   r.valueLabel = Analytics.valueLabel(r.valueScore);
+   r.riskLabel  = Analytics.riskLabel(r.riskScore);
+   r.segment    = Analytics.segment(r);
+  });
+  return { rows, meta: { totalRows: raw.length, validRows: rows.length, dupIds: dup, missing, invalidNum } };
+ }
+};
+function cleanYN(v){ const s = String(v ?? '').trim().toLowerCase(); return s === 'yes' ? 'Yes' : s === 'no' ? 'No' : (String(v ?? '').trim() || 'Unknown'); }
+function cleanCat(v){ return String(v ?? '').trim() || 'Unknown'; }
+function percentileRank(arr){
+ const sorted = arr.map((v,i)=>({v,i})).sort((a,b)=>a.v-b.v);
+ const n = sorted.length; const out = new Array(n);
+ sorted.forEach((x,i) => { out[x.i] = n > 1 ? i/(n-1) : 1; });
+ return out;
+}
+
+/* ============================================================
+   ANALYTICS
+   ============================================================ */
+const Analytics = {
+ scoreCustomer(c){
+  const m = Math.log1p(c.monthly), tot = Math.log1p(c.total), ten = Math.log1p(c.tenure);
+  const w = CONFIG.valueWeights;
+  const val = w.monthly*(m/6.5) + w.total*(tot/11) + w.tenure*(ten/4.2);
+  let risk = 0;
+  if(c.contract === 'Month-to-month') risk += 30;
+  if(c.tenure < 12) risk += 20;
+  if(c.monthly > 70) risk += 15;
+  if(/electronic check/i.test(c.payment)) risk += 15;
+  if(/^no$/i.test(c.techSupport)) risk += 10;
+  if(/^no$/i.test(c.onlineSecurity)) risk += 10;
+  return { value: val, risk };
+ },
+ riskLabel(s){ const th = CONFIG.riskThresholds; return s >= th.critical ? 'Critical' : s >= th.high ? 'High' : s >= th.medium ? 'Medium' : 'Low'; },
+ valueLabel(s){ return s >= CONFIG.valueThresholds.high ? 'High' : 'Low'; },
+ segment(c){
+  const vHigh = c.valueScore >= CONFIG.valueThresholds.high;
+  const rHigh = c.riskScore >= 50;
+  if(c.tenure < 6 && rHigh) return 'segNewHR';
+  if(vHigh && rHigh) return 'segHVHR';
+  if(vHigh && !rHigh) return 'segHVLR';
+  if(!vHigh && rHigh) return 'segLVHR';
+  return 'segLVLR';
+ },
+ kpi(rows){
+  const n = rows.length;
+  let churnN=0, activeN=0, mrr=0, revRisk=0, sumMonthly=0, sumTenure=0, sumTotal=0;
+  let hv=0, hr=0, hvhr=0, senior=0, seniorChurn=0, paperless=0, paperlessChurn=0, m2m=0, m2mChurn=0;
+  for(const r of rows){
+   sumMonthly += r.monthly; sumTenure += r.tenure; sumTotal += r.total;
+   if(r.churned){ churnN++; revRisk += r.monthly; } else activeN++;
+   if(r.valueLabel === 'High') hv++;
+   if(r.riskLabel === 'High' || r.riskLabel === 'Critical') hr++;
+   if(r.valueLabel === 'High' && (r.riskLabel === 'High' || r.riskLabel === 'Critical')) hvhr++;
+   if(r.senior === 'Yes'){ senior++; if(r.churned) seniorChurn++; }
+   if(r.paperless === 'Yes'){ paperless++; if(r.churned) paperlessChurn++; }
+   if(r.contract === 'Month-to-month'){ m2m++; if(r.churned) m2mChurn++; }
+  }
+  const churnRate = n ? churnN/n*100 : 0;
+  return {
+   n, churnN, activeN, churnRate, retentionRate: 100 - churnRate,
+   mrr: sumMonthly, revRisk,
+   avgMonthly: n ? sumMonthly/n : 0,
+   avgTenure: n ? sumTenure/n : 0,
+   avgTotal: n ? sumTotal/n : 0,
+   hv, hr, hvhr,
+   senior, seniorChurn, seniorChurnRate: senior ? seniorChurn/senior*100 : 0,
+   paperless, paperlessChurn, paperlessChurnRate: paperless ? paperlessChurn/paperless*100 : 0,
+   m2m, m2mChurn, m2mChurnRate: m2m ? m2mChurn/m2m*100 : 0
+  };
+ },
+ groupBy(rows, keyFn){
+  const m = new Map();
+  for(const r of rows){
+   const k = keyFn(r);
+   if(k == null || k === '') continue;
+   let g = m.get(k);
+   if(!g){ g = { k, n:0, churn:0, mrr:0, revRisk:0, tenure:0, total:0 }; m.set(k, g); }
+   g.n++; g.mrr += r.monthly; g.total += r.total; g.tenure += r.tenure;
+   if(r.churned){ g.churn++; g.revRisk += r.monthly; }
+  }
+  return Array.from(m.values()).map(g => ({ ...g, churnRate: g.n ? g.churn/g.n*100 : 0, avgTenure: g.n ? g.tenure/g.n : 0, avgMonthly: g.n ? g.mrr/g.n : 0, avgTotal: g.n ? g.total/g.n : 0 }));
+ },
+ crosstab(rows, xf, yf){
+  const xs = new Set(), ys = new Set();
+  for(const r of rows){ const x = xf(r), y = yf(r); if(!x||!y) continue; xs.add(x); ys.add(y); }
+  return { xs: Array.from(xs).sort(), ys: Array.from(ys).sort() };
+ },
+ applyFilters(rows){
+  const f = S.filters;
+  return rows.filter(r => {
+   for(const k in f){
+    const v = f[k];
+    if(v == null || v === '') continue;
+    if(k === 'tenureMin' && r.tenure < v) return false;
+    if(k === 'tenureMax' && r.tenure > v) return false;
+    if(k === 'monthlyMin' && r.monthly < v) return false;
+    if(k === 'monthlyMax' && r.monthly > v) return false;
+    if(Array.isArray(v)){ if(v.length && !v.includes(r[k])) return false; }
+    else if(r[k] !== v && !String(r[k]).includes(v)) return false;
+   }
+   return true;
+  });
+ }
+};
+
+/* ============================================================
+   INSIGHTS
+   ============================================================ */
+const Insights = {
+ generate(rows){
+  const out = [];
+  const K = Analytics.kpi(rows);
+  if(!K.n) return out;
+
+  const contracts = Analytics.groupBy(rows, r => r.contract).sort((a,b)=>b.churnRate - a.churnRate);
+  if(contracts.length){
+   const w = contracts[0];
+   if(w.churnRate > K.churnRate){
+    out.push({
+     pri:'crit', cat:t('catContract'),
+     title:t('insContractT', { k: w.k }),
+     body:t('insContractB', { k: esc(w.k), rate: fmt.pct(w.churnRate), diff: (w.churnRate-K.churnRate).toFixed(1), n: fmt.int(w.n), rev: fmt.money(w.revRisk,true) }),
+     rec:t('insContractR', { k: w.k })
+    });
+   }
+  }
+
+  const payments = Analytics.groupBy(rows, r => r.payment).sort((a,b)=>b.churnRate - a.churnRate);
+  if(payments.length > 1){
+   const w = payments[0];
+   if(w.churnRate > K.churnRate * 1.05){
+    out.push({
+     pri:'high', cat:t('catPayment'),
+     title:t('insPayT', { k: w.k }),
+     body:t('insPayB', { k: esc(w.k), rate: fmt.pct(w.churnRate), avg: fmt.pct(K.churnRate) }),
+     rec:t('insPayR')
+    });
+   }
+  }
+
+  const inet = Analytics.groupBy(rows, r => r.internet).sort((a,b)=>b.churnRate - a.churnRate);
+  if(inet.length){
+   const w = inet[0];
+   out.push({
+    pri: w.churnRate > K.churnRate*1.1 ? 'high' : 'med',
+    cat: t('catService'),
+    title: t('insInetT', { k: w.k }),
+    body: t('insInetB', { n: fmt.int(w.n), rate: fmt.pct(w.churnRate), rev: fmt.money(w.revRisk,true), k: esc(w.k) }),
+    rec: t('insInetR', { k: w.k })
+   });
+  }
+
+  const hvhr = rows.filter(r => r.valueLabel === 'High' && (r.riskLabel === 'High' || r.riskLabel === 'Critical'));
+  if(hvhr.length){
+   const hvhrRisk = hvhr.reduce((s,r)=>s+r.monthly, 0);
+   out.push({
+    pri:'crit', cat:t('catRevenue'),
+    title:t('insHVHRT', { n: fmt.int(hvhr.length) }),
+    body:t('insHVHRB', { rev: fmt.money(hvhrRisk,true), pct: fmt.pct(hvhrRisk/K.mrr*100) }),
+    rec:t('insHVHRR')
+   });
+  }
+
+  const tS = rows.filter(r => r.tenure < 12);
+  const tL = rows.filter(r => r.tenure >= 36);
+  if(tS.length && tL.length){
+   const sC = tS.filter(r=>r.churned).length / tS.length * 100;
+   const lC = tL.filter(r=>r.churned).length / tL.length * 100;
+   if(sC > lC * 1.3){
+    out.push({
+     pri:'high', cat:t('catLifecycle'),
+     title:t('insTenureT'),
+     body:t('insTenureB', { short: fmt.pct(sC), long: fmt.pct(lC) }),
+     rec:t('insTenureR')
+    });
+   }
+  }
+
+  const sr = rows.filter(r=>r.senior === 'Yes'), nsr = rows.filter(r=>r.senior === 'No');
+  if(sr.length && nsr.length){
+   const sc = sr.filter(r=>r.churned).length/sr.length*100;
+   const nsc = nsr.filter(r=>r.churned).length/nsr.length*100;
+   if(sc > nsc*1.15){
+    out.push({
+     pri:'med', cat:t('catDemog'),
+     title:t('insSeniorT'),
+     body:t('insSeniorB', { sc: fmt.pct(sc), nc: fmt.pct(nsc), diff: (sc-nsc).toFixed(1) }),
+     rec:t('insSeniorR')
+    });
+   }
+  }
+
+  const hvLow = rows.filter(r => r.valueLabel === 'High' && (r.riskLabel === 'Low' || r.riskLabel === 'Medium'));
+  if(hvLow.length){
+   const rev = hvLow.reduce((s,r)=>s+r.monthly,0);
+   out.push({
+    pri:'pos', cat:t('catStable'),
+    title:t('insStableT', { n: fmt.int(hvLow.length) }),
+    body:t('insStableB', { rev: fmt.money(rev,true) }),
+    rec:t('insStableR')
+   });
+  }
+
+  const rank = { crit:0, high:1, med:2, pos:3 };
+  out.sort((a,b) => rank[a.pri] - rank[b.pri]);
+  return out;
+ },
+ executiveSummary(rows){
+  const K = Analytics.kpi(rows);
+  const ins = Insights.generate(rows);
+  return { K, insights: ins, top: ins.slice(0,4) };
+ }
+};
+
+/* ============================================================
+   CHARTS
+   ============================================================ */
+const CH = [];
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const chartPal = () => [1,2,3,4,5,6,7,8].map(i => css('--chart-'+i));
+
+function baseChartOpts(opt){
+ const line = css('--border');
+ const yp = rtl() ? 'right' : 'left';
+ const o = Object.assign({
+  textStyle:{ fontFamily: css('--font'), color: css('--text-2') },
+  color: chartPal(),
+  animationDuration: 650,
+  grid:{ left:8, right:8, top:30, bottom:8, containLabel:true }
+ }, opt);
+
+ [].concat(o.xAxis || [], o.yAxis || []).forEach(a => {
+  if(!a) return;
+  a.axisLabel = Object.assign({ color: css('--text-muted'), fontSize: 11 }, a.axisLabel);
+  a.axisLine = Object.assign({ lineStyle:{ color: line } }, a.axisLine);
+  a.splitLine = Object.assign({ lineStyle:{ color: line, type:'dashed' } }, a.splitLine);
+ });
+
+ [].concat(o.yAxis || []).forEach(y => {
+  if(y && y.type === 'value' && !y.position) y.position = yp;
+ });
+
+ o.tooltip = Object.assign({
+  backgroundColor: css('--surface'),
+  borderColor: line,
+  textStyle:{ color: css('--text') },
+  confine:true,
+  extraCssText:'border-radius:10px;box-shadow:0 12px 32px -8px rgba(0,0,0,.2)'
+ }, o.tooltip || {});
+
+ if(o.legend) o.legend.textStyle = Object.assign({ color: css('--text-muted'), fontSize: 11 }, o.legend.textStyle || {});
+ return o;
+}
+function mkChart(id, opt){
+ const el = document.getElementById(id);
+ if(!el) return null;
+ const existing = echarts.getInstanceByDom(el);
+ if(existing) existing.dispose();
+ const c = echarts.init(el);
+ c.setOption(baseChartOpts(opt));
+ CH.push(c);
+ return c;
+}
+window.addEventListener('resize', () => CH.forEach(c => c.resize()));
+
+const Charts = {
+ donut(id, items, { centerLabel='', centerValue='', radius=['50%','72%'], onClick } = {}){
+  const c = mkChart(id, {
+   tooltip:{ trigger:'item', formatter: p => `${esc(p.name)}<br><b>${fmt.int(p.value)}</b> · <b>${p.percent.toFixed(1)}%</b>` },
+   legend:{ bottom:0, type:'scroll', icon:'circle', itemWidth:10, itemHeight:10 },
+   graphic: centerLabel ? [
+    { type:'text', left:'center', top:'38%', style:{ text: centerValue, fontSize:26, fontWeight:800, fill: css('--text'), textAlign:'center' } },
+    { type:'text', left:'center', top:'54%', style:{ text: centerLabel, fontSize:11, fill: css('--text-muted'), textAlign:'center' } }
+   ] : undefined,
+   series:[{
+    type:'pie',
+    radius, center:['50%','42%'],
+    avoidLabelOverlap:true, minAngle:5,
+    label:{ show:true, fontSize:11, fontWeight:600, color: css('--text'), formatter: p => `${p.name}\n${fmt.int(p.value)} · ${p.percent.toFixed(1)}%` },
+    labelLine:{ show:true, length:8, length2:12 },
+    itemStyle:{ borderRadius:6, borderColor: css('--surface'), borderWidth:2 },
+    data: items
+   }]
+  });
+  if(c && onClick) c.on('click', p => onClick(p.name));
+  return c;
+ },
+ bar(id, items, { horizontal=true, valueFmt=fmt.int, onClick } = {}){
+  const c = mkChart(id, {
+   grid: horizontal
+    ? { left:8, right:70, top:14, bottom:8, containLabel:true }
+    : { left:8, right:12, top:34, bottom:8, containLabel:true },
+   xAxis: horizontal
+    ? { type:'value', axisLabel:{ formatter: v => valueFmt(v) } }
+    : { type:'category', data: items.map(d => d.name), axisLabel:{ rotate: items.length > 5 ? 25 : 0, width:90, overflow:'truncate' } },
+   yAxis: horizontal
+    ? { type:'category', inverse:true, data: items.map(d => d.name), axisLabel:{ width:130, overflow:'truncate' } }
+    : { type:'value', axisLabel:{ formatter: v => valueFmt(v) } },
+   series:[{
+    type:'bar', barMaxWidth:26,
+    itemStyle:{ borderRadius: horizontal ? [0,6,6,0] : [6,6,0,0] },
+    label:{ show:true, position: horizontal ? 'right' : 'top', fontSize:11, fontWeight:700, color: css('--text'), formatter: p => valueFmt(p.value) },
+    data: items.map(d => ({ value: d.value, itemStyle: d.color ? { color: d.color } : undefined }))
+   }]
+  });
+  if(c && onClick) c.on('click', p => onClick(p.name));
+  return c;
+ },
+ heatmap(id, xs, ys, data, { fmtV = v => v } = {}){
+  let max = 0; data.forEach(d => { if(d[2] > max) max = d[2]; });
+  return mkChart(id, {
+   tooltip:{ position:'top', formatter: p => `${esc(xs[p.value[0]])} × ${esc(ys[p.value[1]])}<br><b>${fmtV(p.value[2])}</b>` },
+   grid:{ left:8, right:8, top:20, bottom:60, containLabel:true },
+   xAxis:{ type:'category', data: xs, axisLabel:{ rotate: xs.length > 6 ? 25 : 0, width:100, overflow:'truncate' } },
+   yAxis:{ type:'category', data: ys },
+   visualMap:{ min:0, max: max || 1, calculable:true, orient:'horizontal', left:'center', bottom:0, itemWidth:12, itemHeight:90, textStyle:{ color: css('--text-muted'), fontSize:10 } },
+   series:[{
+    type:'heatmap', data,
+    label:{ show:true, fontSize:10, fontWeight:600, color:'#fff', formatter: p => p.value[2] ? fmtV(p.value[2]) : '' },
+    itemStyle:{ borderRadius:4, borderColor: css('--surface'), borderWidth:2 },
+    emphasis:{ itemStyle:{ shadowBlur:8 } }
+   }]
+  });
+ },
+ histogram(id, bins, { fmtV = v => fmt.int(v), color } = {}){
+  return mkChart(id, {
+   grid:{ left:8, right:12, top:24, bottom:8, containLabel:true },
+   xAxis:{ type:'category', data: bins.map(b => b.label), axisLabel:{ rotate: bins.length > 6 ? 30 : 0, fontSize:10 } },
+   yAxis:{ type:'value', axisLabel:{ formatter: v => fmtV(v) } },
+   series:[{
+    type:'bar', barMaxWidth:32,
+    itemStyle:{ borderRadius:[6,6,0,0], color: color || css('--chart-1') },
+    label:{ show: bins.length <= 12, position:'top', fontSize:10, fontWeight:700, color: css('--text'), formatter: p => p.value || '' },
+    data: bins.map(b => b.count)
+   }]
+  });
+ },
+ scatter(id, points, { xName, yName, onClick } = {}){
+  const c = mkChart(id, {
+   grid:{ left:8, right:12, top:26, bottom:34, containLabel:true },
+   tooltip:{
+    trigger:'item', confine:true,
+    formatter: p => {
+     const d = p.data;
+     if(!d) return '';
+     const id = d.id || '—';
+     const m = d.m ?? (Array.isArray(d.value) ? d.value[2] : null);
+     const tt = d.t ?? '—';
+     const ct = d.c ?? '—';
+     return `<b>${esc(id)}</b><br>${esc(xName)}: ${p.value[0]} · ${esc(yName)}: ${p.value[1]}<br>${m != null ? fmt.money(m) : ''} · ${tt} ${t('months')}<br>${esc(ct)}`;
+    }
+   },
+   xAxis:{ type:'value', name:xName, nameLocation:'middle', nameGap:26, min:0, max:100, nameTextStyle:{ color: css('--text-muted'), fontSize:11 } },
+   yAxis:{ type:'value', name:yName, nameLocation:'middle', nameGap:36, min:0, max:100, nameTextStyle:{ color: css('--text-muted'), fontSize:11 } },
+   series:[{
+    type:'scatter',
+    symbolSize: d => {
+     let m = 10;
+     if(d && Array.isArray(d.value)) m = d.value[2];
+     else if(d && typeof d === 'object' && d.m != null) m = d.m;
+     return Math.max(6, Math.min(20, m / 10));
+    },
+    itemStyle:{ opacity:.72 },
+    emphasis:{ itemStyle:{ opacity:1, borderColor:'#fff', borderWidth:2 } },
+    data: points
+   }]
+  });
+  if(c && onClick) c.on('click', p => onClick(p.data));
+  return c;
+ }
+};
+
+/* ============================================================
+   UI
+   ============================================================ */
+const UI = {
+ kpiCard({ label, value, fmtKey='int', icon='bi-graph-up', color='primary', tag=null, tagType='n', sub='' }){
+  const f = fmt[fmtKey] || fmt.int;
+  const cls = color === 'primary' ? '' : color;
+  return `<div class="kpi-card ${cls}">
+   <div class="kpi-head">
+    <div class="kpi-lbl">${esc(label)}</div>
+    <div class="kpi-ic"><i class="bi ${icon}"></i></div>
+   </div>
+   <div class="kpi-val" data-target="${value}" data-fmt="${fmtKey}">${esc(f(value))}</div>
+   <div class="kpi-sub">
+    ${tag ? `<span class="kpi-tag ${tagType}">${esc(tag)}</span>` : ''}
+    ${sub ? `<span>${esc(sub)}</span>` : ''}
+   </div>
+  </div>`;
+ },
+ countUp(){
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  document.querySelectorAll('.kpi-val[data-target]').forEach(el => {
+   const target = parseFloat(el.dataset.target);
+   if(!isFinite(target)) return;
+   const fm = el.dataset.fmt;
+   const start = performance.now();
+   const format = fmt[fm] || fmt.int;
+   const step = now => {
+    const p = Math.min(1, (now-start)/700);
+    const e = 1 - Math.pow(1-p, 3);
+    el.textContent = format(target * e);
+    if(p < 1) requestAnimationFrame(step);
+   };
+   requestAnimationFrame(step);
+  });
+ },
+ panel(title, hint, id, cls='s6', h=''){
+  return `<div class="pan ${cls}">
+   <div class="pan-head">
+    <div>
+     <h3 class="pan-title">${esc(title)}</h3>
+     ${hint ? `<p class="pan-hint">${esc(hint)}</p>` : ''}
+    </div>
+   </div>
+   <div id="${id}" class="ch ${h}"></div>
+  </div>`;
+ },
+ empty(){
+  return `<div class="empty">
+   <i class="bi bi-inbox"></i>
+   <h4>${esc(t('emptyT'))}</h4>
+   <p>${esc(t('emptyP'))}</p>
+   <button onclick="App.resetFilters()">${esc(t('bClearAll'))}</button>
+  </div>`;
+ },
+ segCard(segKey, count, sub, action){
+  const map = {
+   segHVLR:{ cls:'green', ic:'bi-shield-check' },
+   segHVHR:{ cls:'red', ic:'bi-exclamation-octagon' },
+   segLVHR:{ cls:'orange', ic:'bi-exclamation-triangle' },
+   segLVLR:{ cls:'blue', ic:'bi-shield' },
+   segNewHR:{ cls:'purple', ic:'bi-person-plus' }
+  };
+  const m = map[segKey] || map.segLVLR;
+  return `<div class="seg-card ${m.cls}">
+   <div class="seg-ic"><i class="bi ${m.ic}"></i></div>
+   <h4 class="seg-title">${esc(t(segKey))}</h4>
+   <div class="seg-val">${esc(fmt.int(count))}</div>
+   <div class="seg-sub">${esc(sub)}</div>
+   <div class="seg-action">${esc(t('tSegAction'))}: <b>${esc(action)}</b></div>
+  </div>`;
+ },
+ priorityBadge(p){
+  if(p === 'crit') return '<span class="bdg red">Critical</span>';
+  if(p === 'high') return '<span class="bdg orange">High</span>';
+  if(p === 'med')  return '<span class="bdg blue">Medium</span>';
+  return '<span class="bdg green">Positive</span>';
+ }
+};
+
+/* ============================================================
+   PAGES
+   ============================================================ */
+const Pages = {
+ overview(rows){
+  const K = Analytics.kpi(rows);
+  const { top } = Insights.executiveSummary(rows);
+  const heroItems = top.map((it, i) => {
+   const cls = it.pri === 'crit' ? 'crit' : it.pri === 'high' ? 'warn' : it.pri === 'pos' ? 'good' : '';
+   return `<div class="hb-item ${cls}">
+    <div class="hb-num">${String(i+1).padStart(2,'0')}</div>
+    <div><p><b>${esc(it.title)}.</b> ${it.body}</p></div>
+   </div>`;
+  }).join('');
+  const kpis = [
+   { label:t('kTotalCustomers'), value:K.n, fmtKey:'int', icon:'bi-people-fill', color:'primary' },
+   { label:t('kChurned'), value:K.churnN, fmtKey:'int', icon:'bi-person-dash-fill', color:'dngr' },
+   { label:t('kActive'), value:K.activeN, fmtKey:'int', icon:'bi-person-check-fill', color:'ok' },
+   { label:t('kChurnRate'), value:K.churnRate, fmtKey:'dec', icon:'bi-graph-down-arrow', color:'dngr', sub:t('basedCurrent') },
+   { label:t('kRetention'), value:K.retentionRate, fmtKey:'dec', icon:'bi-shield-fill-check', color:'ok' },
+   { label:t('kMRR'), value:K.mrr, fmtKey:'money', icon:'bi-currency-dollar', color:'primary' },
+   { label:t('kRevenueRisk'), value:K.revRisk, fmtKey:'money', icon:'bi-exclamation-diamond', color:'dngr', sub:`${fmt.pct(K.revRisk/(K.mrr||1)*100)} ${t('ofTotal')}` },
+   { label:t('kAvgMonthly'), value:K.avgMonthly, fmtKey:'money', icon:'bi-receipt', color:'alt' },
+   { label:t('kAvgTenure'), value:K.avgTenure, fmtKey:'dec', icon:'bi-hourglass-split', color:'alt', sub:t('months') },
+   { label:t('kAvgTotal'), value:K.avgTotal, fmtKey:'money', icon:'bi-cash-stack', color:'alt' },
+   { label:t('kHVHR'), value:K.hvhr, fmtKey:'int', icon:'bi-exclamation-octagon', color:'dngr' },
+   { label:t('kHighRisk'), value:K.hr, fmtKey:'int', icon:'bi-shield-exclamation', color:'warn' }
+  ].map(k => UI.kpiCard(k)).join('');
+  return `
+   <div class="hero-brief">
+    <div class="hb-head">
+     <span class="hb-badge">${esc(t('heroBadge'))}</span>
+     <h2 class="hb-title">${esc(t('heroTitle'))}</h2>
+    </div>
+    <p class="hb-sub">${esc(t('heroSub'))}</p>
+    <div class="hb-grid">${heroItems || '<div class="hb-item"><p>' + esc(t('emptyT')) + '</p></div>'}</div>
+   </div>
+   <h3 class="sec">${esc(t('pgOverview'))} <span class="badge">${fmt.int(K.n)} ${esc(t('customers'))}</span></h3>
+   <div class="kpi-grid">${kpis}</div>
+   <h3 class="sec">${esc(t('sectionAnalysis'))}</h3>
+   <div class="grid">
+    ${UI.panel(t('chChurnDonut'), t('chChurnDonutH'), 'ov_donut', 's4', 'lg')}
+    ${UI.panel(t('chByContract'), t('chByContractH'), 'ov_contract', 's8', 'lg')}
+    ${UI.panel(t('chRevenueRisk'), t('chRevenueRiskH'), 'ov_revrisk', 's6', 'lg')}
+    ${UI.panel(t('chTenure'), t('chTenureH'), 'ov_tenure', 's6', 'lg')}
+    ${UI.panel(t('chValueDist'), t('chValueDistH'), 'ov_charges', 's6', 'lg')}
+    ${UI.panel(t('chByInternet'), t('chByInternetH'), 'ov_internet', 's6', 'lg')}
+   </div>`;
+ },
+
+ churn(rows){
+  const K = Analytics.kpi(rows);
+  const kpis = [
+   { label:t('kChurnRate'), value:K.churnRate, fmtKey:'dec', icon:'bi-graph-down-arrow', color:'dngr' },
+   { label:t('kChurned'), value:K.churnN, fmtKey:'int', icon:'bi-person-dash-fill', color:'dngr' },
+   { label:t('kRevenueRisk'), value:K.revRisk, fmtKey:'money', icon:'bi-exclamation-diamond', color:'dngr' },
+   { label:t('kAvgMonthly'), value:K.avgMonthly, fmtKey:'money', icon:'bi-receipt', color:'alt' },
+   { label:t('kAvgTenure'), value:K.avgTenure, fmtKey:'dec', icon:'bi-hourglass-split', color:'alt', sub:t('months') },
+   { label:t('kHighRisk'), value:K.hr, fmtKey:'int', icon:'bi-shield-exclamation', color:'warn' }
+  ].map(k => UI.kpiCard(k)).join('');
+  return `
+   <h3 class="sec">${esc(t('pgChurn'))}</h3>
+   <div class="kpi-grid">${kpis}</div>
+   <div class="grid">
+    ${UI.panel(t('chByContract'), t('chByContractH'), 'c_contract', 's6', 'lg')}
+    ${UI.panel(t('chByInternet'), t('chByInternetH'), 'c_internet', 's6', 'lg')}
+    ${UI.panel(t('chByPayment'), t('chByPaymentH'), 'c_payment', 's6', 'lg')}
+    ${UI.panel(t('chTenure'), t('chTenureH'), 'c_tenure', 's6', 'lg')}
+    ${UI.panel(t('chCharges'), t('chChargesH'), 'c_charges', 's6', 'lg')}
+    ${UI.panel(t('chDemog'), t('chDemogH'), 'c_demog', 's6', 'lg')}
+    ${UI.panel(t('chServices'), t('chServicesH'), 'c_services', 's12', 'lg')}
+    ${UI.panel(t('chHeatmap'), t('chHeatmapH'), 'c_heatmap', 's12', 'lg')}
+   </div>`;
+ },
+
+ segments(rows){
+  const segs = { segHVLR:{n:0,mrr:0,churn:0}, segHVHR:{n:0,mrr:0,churn:0}, segLVHR:{n:0,mrr:0,churn:0}, segLVLR:{n:0,mrr:0,churn:0}, segNewHR:{n:0,mrr:0,churn:0} };
+  rows.forEach(r => { const s = segs[r.segment]; if(s){ s.n++; s.mrr += r.monthly; if(r.churned) s.churn++; } });
+  const segCards = Object.entries(segs).map(([k, v]) => {
+   const action = { segHVLR:t('actLoyalty'), segHVHR:t('actPriority'), segLVHR:t('actCostEff'), segLVLR:t('actStandard'), segNewHR:t('actOnboarding') }[k];
+   const sub = `${fmt.money(v.mrr, true)} · ${v.n ? fmt.pct(v.churn/v.n*100) + ' churn' : ''}`;
+   return UI.segCard(k, v.n, sub, action);
+  }).join('');
+  return `
+   <h3 class="sec">${esc(t('pgSegments'))}</h3>
+   <div class="seg-grid">${segCards}</div>
+   <h3 class="sec">${esc(t('chValueRisk'))} <span class="badge">hero</span></h3>
+   <div class="grid">
+    ${UI.panel(t('chValueRisk'), t('chValueRiskH'), 'sg_scatter', 's12', 'lg')}
+   </div>
+   <h3 class="sec">${esc(t('sectionAnalysis'))}</h3>
+   <div class="grid">
+    ${UI.panel(t('chSegmentDist'), t('chSegmentDistH'), 'sg_donut', 's6', 'lg')}
+    ${UI.panel(t('chValueScore'), t('chValueScoreH'), 'sg_val', 's6', 'lg')}
+    ${UI.panel(t('chRiskScore'), t('chRiskScoreH'), 'sg_risk', 's6', 'lg')}
+    ${UI.panel(t('chRevBySegment'), t('chRevBySegmentH'), 'sg_rev', 's6', 'lg')}
+   </div>`;
+ },
+
+ retention(rows){
+  const K = Analytics.kpi(rows);
+  const groups = Analytics.groupBy(rows, r => r.segment);
+  const mapAction = { segHVLR:t('actLoyalty'), segHVHR:t('actPriority'), segLVHR:t('actCostEff'), segLVLR:t('actStandard'), segNewHR:t('actOnboarding') };
+  const mapPriority = { segHVLR:'pos', segHVHR:'crit', segLVHR:'high', segLVLR:'med', segNewHR:'high' };
+  const rowsT = groups.map(g => ({ ...g, action: mapAction[g.k], priority: mapPriority[g.k] })).sort((a,b) => b.revRisk - a.revRisk);
+  const table = rowsT.map(r => `
+   <tr>
+    <td><b>${esc(t(r.k))}</b></td>
+    <td class="num">${fmt.int(r.n)}</td>
+    <td class="num">${fmt.pct(r.churnRate)}</td>
+    <td class="num">${fmt.money(r.mrr, true)}</td>
+    <td class="num" style="color:var(--danger)">${fmt.money(r.revRisk, true)}</td>
+    <td class="num">${fmt.dec(r.avgTenure,1)} ${t('months')}</td>
+    <td>${esc(r.action)}</td>
+    <td>${UI.priorityBadge(r.priority)}</td>
+   </tr>`).join('');
+  const hvhr = rows.filter(r => r.segment === 'segHVHR');
+  const hvhrMRR = hvhr.reduce((s,r) => s + r.monthly, 0);
+  return `
+   <h3 class="sec">${esc(t('pgRetention'))}</h3>
+   <div class="kpi-grid">
+    ${UI.kpiCard({ label:t('kHVHR'), value:hvhr.length, fmtKey:'int', icon:'bi-exclamation-octagon', color:'dngr' })}
+    ${UI.kpiCard({ label:t('kRevenueRisk'), value:hvhrMRR, fmtKey:'money', icon:'bi-currency-dollar', color:'dngr', sub:`${t('ofTotal')} ${fmt.pct(hvhrMRR/(K.mrr||1)*100)}` })}
+    ${UI.kpiCard({ label:t('kMRR'), value:K.mrr, fmtKey:'money', icon:'bi-graph-up-arrow', color:'primary' })}
+    ${UI.kpiCard({ label:t('kChurnRate'), value:K.churnRate, fmtKey:'dec', icon:'bi-graph-down-arrow', color:'dngr' })}
+   </div>
+   <h3 class="sec">${esc(t('tSegSegment'))}</h3>
+   <div class="pan">
+    <div class="tbl-wrap">
+     <table class="tbl">
+      <thead><tr>
+       <th>${esc(t('tSegSegment'))}</th><th>${esc(t('tSegCount'))}</th><th>${esc(t('tSegChurn'))}</th>
+       <th>${esc(t('tSegRevenue'))}</th><th>${esc(t('tSegRisk'))}</th><th>${esc(t('tSegTenure'))}</th>
+       <th>${esc(t('tSegAction'))}</th><th>${esc(t('tSegPriority'))}</th>
+      </tr></thead>
+      <tbody>${table || `<tr><td colspan="8">${esc(t('emptyT'))}</td></tr>`}</tbody>
+     </table>
+    </div>
+   </div>
+   <h3 class="sec">${esc(t('chRevBySegment'))}</h3>
+   <div class="grid">${UI.panel(t('chRevBySegment'), t('chRevBySegmentH'), 'rt_rev', 's12', 'lg')}</div>
+   <h3 class="sec">${esc(t('execTitle'))}</h3>
+   <div class="ins-grid">
+    ${Insights.generate(rows).map(ins => `
+     <div class="ins-card ${ins.pri}">
+      <div class="ins-head"><i class="bi bi-lightbulb-fill"></i><span>${esc(ins.cat)}</span></div>
+      <h4 class="ins-title">${esc(ins.title)}</h4>
+      <p class="ins-body">${ins.body}</p>
+      <div class="ins-rec"><b>${esc(t('cmRecommendation'))}:</b> ${esc(ins.rec)}</div>
+     </div>`).join('')}
+   </div>`;
+ },
+
+ explorer(rows){
+  const q = S.q.toLowerCase();
+  let L = q ? rows.filter(r => (r.customerID+' '+r.gender+' '+r.contract+' '+r.internet+' '+r.payment+' '+r.segment).toLowerCase().includes(q)) : rows.slice();
+  const dir = S.sortDir === 'asc' ? 1 : -1;
+  const sk = S.sortKey;
+  L.sort((a,b) => {
+   const av = a[sk], bv = b[sk];
+   if(typeof av === 'number' && typeof bv === 'number') return (av-bv) * dir;
+   return String(av).localeCompare(String(bv)) * dir;
+  });
+  const pg = Math.min(S.pg, Math.max(0, Math.ceil(L.length/S.pgSize) - 1));
+  const slice = L.slice(pg*S.pgSize, pg*S.pgSize + S.pgSize);
+  const sortIcon = k => sk === k ? (S.sortDir === 'asc' ? ' <i class="bi bi-caret-up-fill" style="color:var(--primary);font-size:9px"></i>' : ' <i class="bi bi-caret-down-fill" style="color:var(--primary);font-size:9px"></i>') : '';
+  return `
+   <h3 class="sec">${esc(t('pgExplorer'))} <span class="badge">${fmt.int(L.length)} ${esc(t('expVisible'))}</span></h3>
+   <div class="pan">
+    <div class="exp-toolbar">
+     <div class="exp-search"><i class="bi bi-search"></i>
+      <input id="expQ" type="search" placeholder="${esc(t('expSearch'))}" value="${esc(S.q)}">
+     </div>
+     <button class="btn-ghost" style="padding:9px 16px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text-2)" id="expExport">
+      <i class="bi bi-download"></i> ${esc(t('expExport'))}
+     </button>
+    </div>
+    <div class="tbl-wrap">
+     <table class="tbl">
+      <thead><tr>
+       <th data-k="customerID" style="cursor:pointer">${esc(t('tColId'))}${sortIcon('customerID')}</th>
+       <th>${esc(t('tColGender'))}</th><th>${esc(t('tColSenior'))}</th>
+       <th data-k="tenure" style="cursor:pointer">${esc(t('tColTenure'))}${sortIcon('tenure')}</th>
+       <th>${esc(t('tColInternet'))}</th>
+       <th data-k="contract" style="cursor:pointer">${esc(t('tColContract'))}${sortIcon('contract')}</th>
+       <th>${esc(t('tColPayment'))}</th>
+       <th data-k="monthly" style="cursor:pointer">${esc(t('tColMonthly'))}${sortIcon('monthly')}</th>
+       <th data-k="total" style="cursor:pointer">${esc(t('tColTotal'))}${sortIcon('total')}</th>
+       <th>${esc(t('tColChurn'))}</th>
+       <th data-k="valueScore" style="cursor:pointer">${esc(t('tColValue'))}${sortIcon('valueScore')}</th>
+       <th data-k="riskScore" style="cursor:pointer">${esc(t('tColRisk'))}${sortIcon('riskScore')}</th>
+      </tr></thead>
+      <tbody>
+       ${slice.map((r,i) => `
+        <tr class="cl" data-i="${pg*S.pgSize + i}">
+         <td><b style="font-family:monospace;font-size:11.5px">${esc(r.customerID)}</b></td>
+         <td>${esc(r.gender)}</td>
+         <td>${r.senior === 'Yes' ? '<span class="bdg blue">'+esc(t('yes'))+'</span>' : '<span class="bdg gray">'+esc(t('no'))+'</span>'}</td>
+         <td class="num">${fmt.int(r.tenure)}</td>
+         <td>${esc(r.internet)}</td><td>${esc(r.contract)}</td><td>${esc(r.payment)}</td>
+         <td class="num">${fmt.money(r.monthly)}</td>
+         <td class="num">${fmt.money(r.total, true)}</td>
+         <td>${r.churned ? '<span class="bdg red">'+esc(t('yes'))+'</span>' : '<span class="bdg green">'+esc(t('no'))+'</span>'}</td>
+         <td class="num">${fmt.int(r.valueScore)}</td>
+         <td class="num">${fmt.int(r.riskScore)}</td>
+        </tr>`).join('') || `<tr><td colspan="12" style="text-align:center;padding:24px;color:var(--text-muted)">${esc(t('emptyT'))}</td></tr>`}
+      </tbody>
+     </table>
+    </div>
+    <div class="pgn">
+     <div>${fmt.int(L.length)} ${esc(t('expVisible'))} · ${esc(t('expPage'))} ${pg+1} ${esc(t('expOf'))} ${Math.max(1, Math.ceil(L.length/S.pgSize))}</div>
+     <div class="pgn-btns">
+      <button class="pgn-btn" id="pv" ${pg === 0 ? 'disabled' : ''}><i class="bi bi-chevron-${rtl()?'right':'left'}"></i></button>
+      <button class="pgn-btn" id="nx" ${(pg+1)*S.pgSize >= L.length ? 'disabled' : ''}><i class="bi bi-chevron-${rtl()?'left':'right'}"></i></button>
+     </div>
+    </div>
+   </div>`;
+ },
+
+ data(){
+  const m = S.meta;
+  const quality = m.totalRows ? (m.validRows/m.totalRows*100) : 0;
+  const sizeStr = S.fileSize ? (S.fileSize/1024).toFixed(1)+' KB' : '—';
+  const loaded = S.loadedAt ? new Intl.DateTimeFormat(S.set.lang==='ar'?'ar-EG':'en-US', { dateStyle:'medium', timeStyle:'short' }).format(S.loadedAt) : '—';
+  return `
+   <h3 class="sec">${esc(t('dcOverview'))}</h3>
+   <div class="kpi-grid">
+    ${UI.kpiCard({ label:t('kTotalCustomers'), value:m.validRows, fmtKey:'int', icon:'bi-people-fill', color:'primary' })}
+    ${UI.kpiCard({ label:t('dcRows'), value:m.totalRows, fmtKey:'int', icon:'bi-list-ol', color:'alt' })}
+    ${UI.kpiCard({ label:t('dcCols'), value:S.cols.length, fmtKey:'int', icon:'bi-layout-three-columns', color:'alt' })}
+    ${UI.kpiCard({ label:t('dcScore'), value:quality, fmtKey:'dec', icon:'bi-shield-check', color:quality>90?'ok':'warn' })}
+    ${UI.kpiCard({ label:t('dcMissing'), value:m.missing, fmtKey:'int', icon:'bi-exclamation-circle', color:m.missing?'warn':'ok' })}
+    ${UI.kpiCard({ label:t('dcDupIds'), value:m.dupIds, fmtKey:'int', icon:'bi-files', color:m.dupIds?'warn':'ok' })}
+   </div>
+   <div class="grid">
+    <div class="pan s6">
+     <h3 class="pan-title">${esc(t('dcOverview'))}</h3>
+     <div class="tbl-wrap" style="margin-top:12px">
+      <table class="tbl" style="min-width:0"><tbody>
+       <tr><td>${esc(t('dcFileName'))}</td><td class="num">${esc(S.fileName || '—')}</td></tr>
+       <tr><td>${esc(t('dcFileSize'))}</td><td class="num">${esc(sizeStr)}</td></tr>
+       <tr><td>${esc(t('dcRows'))}</td><td class="num">${fmt.int(m.totalRows)}</td></tr>
+       <tr><td>${esc(t('dcCols'))}</td><td class="num">${fmt.int(S.cols.length)}</td></tr>
+       <tr><td>${esc(t('dcLoadedAt'))}</td><td class="num">${esc(loaded)}</td></tr>
+       <tr><td>${esc(t('dcStatus'))}</td><td class="num"><span class="bdg green">${esc(t('dcStatusOk'))}</span></td></tr>
+      </tbody></table>
+     </div>
+    </div>
+    <div class="pan s6">
+     <h3 class="pan-title">${esc(t('dcQuality'))}</h3>
+     <div class="tbl-wrap" style="margin-top:12px">
+      <table class="tbl" style="min-width:0"><tbody>
+       <tr><td>${esc(t('dcRows'))}</td><td class="num">${fmt.int(m.totalRows)}</td></tr>
+       <tr><td>${esc(t('kTotalCustomers'))}</td><td class="num">${fmt.int(m.validRows)}</td></tr>
+       <tr><td>${esc(t('dcMissing'))}</td><td class="num">${fmt.int(m.missing)}</td></tr>
+       <tr><td>${esc(t('dcDupIds'))}</td><td class="num">${fmt.int(m.dupIds)}</td></tr>
+       <tr><td>${esc(t('dcInvalidNum'))}</td><td class="num">${fmt.int(m.invalidNum)}</td></tr>
+       <tr><td>${esc(t('dcScore'))}</td><td class="num"><span class="bdg ${quality>90?'green':quality>70?'orange':'red'}">${fmt.dec(quality,1)}%</span></td></tr>
+      </tbody></table>
+     </div>
+    </div>
+   </div>
+   <h3 class="sec">${esc(t('execTitle'))}</h3>
+   <div class="ins-grid">
+    ${Insights.generate(S.filtered).map(ins => `
+     <div class="ins-card ${ins.pri}">
+      <div class="ins-head"><i class="bi bi-lightbulb-fill"></i><span>${esc(ins.cat)}</span></div>
+      <h4 class="ins-title">${esc(ins.title)}</h4>
+      <p class="ins-body">${ins.body}</p>
+     </div>`).join('')}
+   </div>`;
+ }
+};
+
+/* ============================================================
+   CHART RENDERERS
+   ============================================================ */
+function renderOverviewCharts(rows){
+ const K = Analytics.kpi(rows);
+ Charts.donut('ov_donut', [
+  { name: t('kActive'), value: K.activeN },
+  { name: t('kChurned'), value: K.churnN }
+ ], { centerLabel: t('kChurnRate'), centerValue: fmt.pct(K.churnRate), radius:['52%','72%'] });
+
+ const contracts = Analytics.groupBy(rows, r => r.contract).sort((a,b)=>b.churnRate-a.churnRate);
+ Charts.bar('ov_contract', contracts.map(c => ({ name: c.k, value: c.churnRate, color: c.churnRate > K.churnRate ? css('--danger') : css('--success') })),
+  { horizontal:true, valueFmt: v => fmt.pct(v,1), onClick: n => App.crossFilter('contract', n) });
+
+ Charts.bar('ov_revrisk', contracts.map(c => ({ name: c.k, value: c.revRisk })),
+  { horizontal:true, valueFmt: v => fmt.money(v, true), onClick: n => App.crossFilter('contract', n) });
+
+ const tenureBuckets = [
+  { label:'0–12', min:0, max:12 }, { label:'13–24', min:13, max:24 }, { label:'25–36', min:25, max:36 },
+  { label:'37–48', min:37, max:48 }, { label:'49–60', min:49, max:60 }, { label:'60+', min:61, max:Infinity }
+ ].map(b => {
+  const sub = rows.filter(r => r.tenure >= b.min && r.tenure <= b.max);
+  const churn = sub.filter(r => r.churned).length;
+  return { name: b.label + ' ' + t('months'), value: sub.length ? churn/sub.length*100 : 0 };
+ });
+ Charts.bar('ov_tenure', tenureBuckets, { horizontal:false, valueFmt: v => fmt.pct(v,1) });
+
+ const charges = rows.map(r => r.monthly).filter(isFinite);
+ const cmin = charges.length ? Math.min(...charges) : 0;
+ const cmax = charges.length ? Math.max(...charges) : 100;
+ const binN = 12;
+ const bw = (cmax - cmin) / binN || 1;
+ const bins = Array.from({length:binN}, (_,i) => ({ label: fmt.money(cmin+i*bw), count: 0 }));
+ charges.forEach(v => { const i = Math.min(binN-1, Math.max(0, Math.floor((v-cmin)/bw))); bins[i].count++; });
+ Charts.histogram('ov_charges', bins);
+
+ const inet = Analytics.groupBy(rows, r => r.internet).sort((a,b)=>b.churnRate-a.churnRate);
+ Charts.bar('ov_internet', inet.map(c => ({ name: c.k, value: c.churnRate, color: c.churnRate > K.churnRate ? css('--danger') : css('--success') })),
+  { horizontal:true, valueFmt: v => fmt.pct(v,1), onClick: n => App.crossFilter('internet', n) });
+}
+
+function renderChurnCharts(rows){
+ const contract = Analytics.groupBy(rows, r => r.contract).sort((a,b)=>b.churnRate-a.churnRate);
+ const inet = Analytics.groupBy(rows, r => r.internet).sort((a,b)=>b.churnRate-a.churnRate);
+ const payment = Analytics.groupBy(rows, r => r.payment).sort((a,b)=>b.churnRate-a.churnRate);
+ const tenureB = [
+  { label:'0–12', min:0, max:12 }, { label:'13–24', min:13, max:24 }, { label:'25–36', min:25, max:36 },
+  { label:'37–48', min:37, max:48 }, { label:'49–60', min:49, max:60 }, { label:'60+', min:61, max:Infinity }
+ ].map(b => {
+  const sub = rows.filter(r => r.tenure >= b.min && r.tenure <= b.max);
+  return { name: b.label, value: sub.length ? sub.filter(r=>r.churned).length/sub.length*100 : 0 };
+ });
+ const chargesB = [
+  { label:'< $30', min:0, max:30 }, { label:'$30–59', min:30, max:60 }, { label:'$60–89', min:60, max:90 },
+  { label:'$90–119', min:90, max:120 }, { label:'$120+', min:120, max:Infinity }
+ ].map(b => {
+  const sub = rows.filter(r => r.monthly >= b.min && r.monthly < b.max);
+  return { name: b.label, value: sub.length ? sub.filter(r=>r.churned).length/sub.length*100 : 0 };
+ });
+
+ Charts.bar('c_contract', contract.map(c => ({ name: c.k, value: c.churnRate })), { horizontal:true, valueFmt: v => fmt.pct(v,1) });
+ Charts.bar('c_internet', inet.map(c => ({ name: c.k, value: c.churnRate })), { horizontal:true, valueFmt: v => fmt.pct(v,1) });
+ Charts.bar('c_payment', payment.map(c => ({ name: c.k, value: c.churnRate })), { horizontal:true, valueFmt: v => fmt.pct(v,1) });
+ Charts.bar('c_tenure', tenureB, { horizontal:false, valueFmt: v => fmt.pct(v,1) });
+ Charts.bar('c_charges', chargesB, { horizontal:false, valueFmt: v => fmt.pct(v,1) });
+
+ const seniorG = Analytics.groupBy(rows, r => r.senior);
+ const partnerG = Analytics.groupBy(rows, r => r.partner);
+ const dependG = Analytics.groupBy(rows, r => r.dependents);
+ const paperG = Analytics.groupBy(rows, r => r.paperless);
+ const genderG = Analytics.groupBy(rows, r => r.gender);
+ mkChart('c_demog', {
+  tooltip:{ trigger:'axis', axisPointer:{ type:'shadow' } },
+  legend:{ top:0, icon:'circle', itemWidth:10, itemHeight:10 },
+  grid:{ left:8, right:12, top:36, bottom:8, containLabel:true },
+  xAxis:{ type:'category', data:[t('chartSenior'), t('chartPartner'), t('chartDependents'), t('chartPaperless'), t('chartGender')] },
+  yAxis:{ type:'value', axisLabel:{ formatter: v => fmt.pct(v,1) } },
+  series:[
+   { name: t('yes'), type:'bar', barMaxWidth:28, itemStyle:{ borderRadius:[6,6,0,0] },
+    data:[
+     seniorG.find(x=>x.k==='Yes')?.churnRate||0,
+     partnerG.find(x=>x.k==='Yes')?.churnRate||0,
+     dependG.find(x=>x.k==='Yes')?.churnRate||0,
+     paperG.find(x=>x.k==='Yes')?.churnRate||0,
+     genderG.find(x=>x.k==='Male')?.churnRate||0
+    ]},
+   { name: t('chartNoOther'), type:'bar', barMaxWidth:28, itemStyle:{ borderRadius:[6,6,0,0] },
+    data:[
+     seniorG.find(x=>x.k==='No')?.churnRate||0,
+     partnerG.find(x=>x.k==='No')?.churnRate||0,
+     dependG.find(x=>x.k==='No')?.churnRate||0,
+     paperG.find(x=>x.k==='No')?.churnRate||0,
+     genderG.find(x=>x.k==='Female')?.churnRate||0
+    ]}
+  ]
+ });
+
+ const services = [
+  { key:'onlineSecurity', label:'Online Security' }, { key:'onlineBackup', label:'Online Backup' },
+  { key:'deviceProtection', label:'Device Protection' }, { key:'techSupport', label:'Tech Support' },
+  { key:'streamingTV', label:'Streaming TV' }, { key:'streamingMovies', label:'Streaming Movies' }
+ ];
+ const labels = services.map(s => s.label);
+ const withData = services.map(s => { const sub = rows.filter(r => /^yes$/i.test(r[s.key])); return sub.length ? sub.filter(r=>r.churned).length/sub.length*100 : 0; });
+ const withoutData = services.map(s => { const sub = rows.filter(r => /^no$/i.test(r[s.key])); return sub.length ? sub.filter(r=>r.churned).length/sub.length*100 : 0; });
+ mkChart('c_services', {
+  tooltip:{ trigger:'axis', axisPointer:{ type:'shadow' } },
+  legend:{ top:0, icon:'circle', itemWidth:10, itemHeight:10 },
+  grid:{ left:8, right:12, top:36, bottom:8, containLabel:true },
+  xAxis:{ type:'category', data: labels, axisLabel:{ rotate: labels.length > 4 ? 20 : 0 } },
+  yAxis:{ type:'value', axisLabel:{ formatter: v => fmt.pct(v,1) } },
+  series:[
+   { name: t('chartWithService'), type:'bar', barMaxWidth:26, itemStyle:{ borderRadius:[6,6,0,0], color: css('--success') }, data: withData },
+   { name: t('chartWithoutService'), type:'bar', barMaxWidth:26, itemStyle:{ borderRadius:[6,6,0,0], color: css('--danger') }, data: withoutData }
+  ]
+ });
+
+ const ct = Analytics.crosstab(rows, r => r.contract, r => r.internet);
+ const hmData = [];
+ ct.xs.forEach((x, i) => ct.ys.forEach((y, j) => {
+  const cell = rows.filter(r => r.contract === x && r.internet === y);
+  const rate = cell.length ? cell.filter(r=>r.churned).length / cell.length * 100 : 0;
+  hmData.push([i, j, Math.round(rate)]);
+ }));
+ Charts.heatmap('c_heatmap', ct.xs, ct.ys, hmData, { fmtV: v => v ? fmt.pct(v,0) : '' });
+}
+
+function renderSegmentsCharts(rows){
+ const segColor = r => r.segment === 'segHVHR' ? css('--danger') :
+                     r.segment === 'segNewHR' ? css('--chart-4') :
+                     r.segment === 'segLVHR' ? css('--warning') :
+                     r.segment === 'segHVLR' ? css('--success') :
+                     css('--chart-2');
+ const data = rows.slice(0, 2000).map(r => ({
+  value: [r.valueScore, r.riskScore, r.monthly],
+  id: r.customerID,
+  m: r.monthly, t: r.tenure, c: r.contract, s: r.segment,
+  itemStyle: { color: segColor(r) }
+ }));
+ Charts.scatter('sg_scatter', data, { xName: t('axisValueScore'), yName: t('axisRiskScore') });
+
+ const segs = Analytics.groupBy(rows, r => r.segment);
+ Charts.donut('sg_donut', segs.map(s => ({ name: t(s.k), value: s.n })), { radius:['45%','70%'] });
+
+ const valueBins = Array.from({length:10}, (_, i) => ({ label: (i*10)+'', count:0 }));
+ const riskBins = Array.from({length:10}, (_, i) => ({ label: (i*10)+'', count:0 }));
+ rows.forEach(r => {
+  valueBins[Math.min(9, Math.floor(r.valueScore/10))].count++;
+  riskBins[Math.min(9, Math.floor(r.riskScore/10))].count++;
+ });
+ Charts.histogram('sg_val', valueBins, { color: css('--chart-2') });
+ Charts.histogram('sg_risk', riskBins, { color: css('--danger') });
+
+ const segRev = segs.map(s => ({ name: t(s.k), value: s.revRisk })).sort((a,b)=>b.value-a.value);
+ Charts.bar('sg_rev', segRev, { horizontal:true, valueFmt: v => fmt.money(v, true) });
+}
+
+function renderRetentionCharts(rows){
+ const segs = Analytics.groupBy(rows, r => r.segment);
+ const segRev = segs.map(s => ({ name: t(s.k), value: s.revRisk, color: s.k === 'segHVHR' ? css('--danger') : undefined })).sort((a,b)=>b.value-a.value);
+ Charts.bar('rt_rev', segRev, { horizontal:true, valueFmt: v => fmt.money(v, true) });
+}
+
+/* ============================================================
+   APP
+   ============================================================ */
+const App = {
+ navigate(page){
+  if(page === S.page) return;
+  Sound.nav();
+  S.page = page; S.pg = 0; S.q = '';
+  render();
+  $('#view').scrollTop = 0;
+ },
+ crossFilter(key, value){
+  const map = { contract:'contract', internet:'internet' };
+  const fk = map[key]; if(!fk) return;
+  if(S.filters[fk] === value) delete S.filters[fk];
+  else S.filters[fk] = value;
+  Sound.tap();
+  render();
+ },
+ applyFilters(){ S.filtered = Analytics.applyFilters(S.data); renderFilterChips(); },
+ resetFilters(){
+  Swal.fire({
+   icon:'question', title:t('swResetTtl'), text:t('swResetBody'),
+   showCancelButton:true, confirmButtonText:t('swResetOk'), cancelButtonText:t('swResetCancel'),
+   confirmButtonColor: css('--primary'), cancelButtonColor: css('--text-muted')
+  }).then(res => {
+   if(!res.isConfirmed) return;
+   S.filters = {}; S.q = ''; S.pg = 0;
+   App.applyFilters(); render(); Sound.tap();
+   toast('success', t('bClearAll'));
+  });
+ },
+ async handleFile(file){
+  if(!file) return;
+  if(!/\.csv$/i.test(file.name)){ Sound.error(); return showError(t('swBadTtl')); }
+  Swal.fire({ title:file.name, html:fmt.int(file.size/1024)+' KB', didOpen:()=>Swal.showLoading(), allowOutsideClick:false, showConfirmButton:false });
+  try { const text = await file.text(); Swal.close(); await App.ingest(text, file.name, file.size); }
+  catch(e){ Swal.close(); console.error(e); showError(t('swBadTtl')); }
+ },
+ async ingest(text, name, size){
+  if(S.data.length){
+   const ok = await Swal.fire({
+    icon:'question', title:t('swReplTtl'),
+    text:t('swReplBody', { a: fmt.int(S.meta.totalRows), b: '…' }),
+    showCancelButton:true, confirmButtonText:t('swReplOk'), cancelButtonText:t('swReplCancel'),
+    confirmButtonColor: css('--primary')
+   });
+   if(!ok.isConfirmed) return;
+  }
+  const res = await Data.load(text, name, size);
+  if(!res.ok){
+   Sound.error();
+   if(res.missing && res.missing.length){
+    return Swal.fire({
+     icon:'error', title:t('swBadTtl'),
+     html:`<div style="text-align:start;font-size:13px">
+      <p><b>${esc(t('swBadBody', { c: res.missing.join(', ') }))}</b></p>
+      <p style="color:var(--text-muted);font-size:12px">Found columns:<br>${esc((res.fields||[]).slice(0,25).join(', '))}</p>
+     </div>`
+    });
+   }
+   return showError(t('swBadTtl'));
+  }
+  S.filtered = S.data.slice();
+  Sound.upload();
+  Swal.fire({ icon:'success', title:t('swLoadedTtl'), text:t('swLoadedBody', { n: fmt.int(res.rows.length) }), timer:2200, showConfirmButton:false });
+  updateDataStatus();
+  render();
+ },
+ async loadRemote(){
+  try {
+   let txt = null;
+   try { const r = await fetch(CONFIG.csvFile + '?v=' + Date.now()); if(r.ok) txt = await r.text(); } catch(e){}
+   if(!txt){
+    txt = await new Promise((res, rej) => {
+     const x = new XMLHttpRequest();
+     x.open('GET', CONFIG.csvFile);
+     x.onload = () => (x.status === 200 || (x.status === 0 && x.responseText)) ? res(x.responseText) : rej();
+     x.onerror = rej; x.send();
+    }).catch(() => null);
+   }
+   if(!txt) throw new Error('not found');
+   await App.ingest(txt, CONFIG.csvFile, txt.length);
+  } catch(e){
+   console.warn('auto load failed', e);
+   Sound.warn();
+   Swal.fire({
+    icon:'info', title:'Auto-load failed',
+    text:'Please upload the CSV file manually.',
+    confirmButtonText:t('bBrowse'), confirmButtonColor: css('--primary')
+   }).then(() => $('#fileIn').click());
+  }
+ }
+};
+
+/* ============================================================
+   BUILDERS
+   ============================================================ */
+function buildSidebarNav(){
+ const items = [
+  { sec:t('sectionAnalysis') },
+  { id:'overview',  meta: PAGES_META.overview },
+  { id:'churn',     meta: PAGES_META.churn },
+  { id:'segments',  meta: PAGES_META.segments },
+  { sec:t('sectionActions') },
+  { id:'retention', meta: PAGES_META.retention },
+  { id:'explorer',  meta: PAGES_META.explorer },
+  { sec:t('sectionData') },
+  { id:'data',      meta: PAGES_META.data }
+ ];
+ $('#sbNav').innerHTML = items.map(it => {
+  if(it.sec) return `<div class="sb-sec">${esc(it.sec)}</div>`;
+  return `<button class="sb-item ${it.id === S.page ? 'on' : ''}" data-p="${it.id}" title="${esc(t(it.meta.label))}">
+   <i class="bi ${it.meta.icon}"></i><span>${esc(t(it.meta.label))}</span>
+  </button>`;
+ }).join('');
+ $$('#sbNav .sb-item').forEach(b => b.addEventListener('click', () => App.navigate(b.dataset.p)));
+}
+
+function updateDataStatus(){
+ const dot = $('#sbDot'), txt = $('#sbStatusText');
+ if(S.data.length){
+  dot.classList.add('live');
+  txt.textContent = `${fmt.int(S.data.length)} ${t('customers')}`;
+ } else {
+  dot.classList.remove('live');
+  txt.textContent = t('noDataset');
+ }
+}
+
+function buildThemeMenu(){
+ const tr = $('#themeTrigger'), menu = $('#themeMenu');
+ if(!tr || !menu) return;
+ const cur = S.set.theme;
+ const meta = THEMES.find(x => x.id === cur) || THEMES[0];
+ const sws = tr.querySelectorAll('[data-sw]');
+ sws[0].style.background = meta.colors[0];
+ sws[1].style.background = meta.colors[1];
+ $('#themeName').textContent = rtl() ? meta.ar : meta.name;
+ menu.innerHTML = `<div class="tm-title">${esc(t('themeMenu'))}</div>` + THEMES.map(th => `
+  <button class="tm-opt ${th.id === cur ? 'on' : ''}" data-v="${th.id}">
+   <span class="sw"><i style="background:${th.colors[0]}"></i><i style="background:${th.colors[1]}"></i></span>
+   <span>${esc(rtl() ? th.ar : th.name)}</span>
+   <i class="bi bi-check2 ck"></i>
+  </button>`).join('');
+ menu.querySelectorAll('.tm-opt').forEach(b => {
+  b.addEventListener('click', e => {
+   e.stopPropagation();
+   const th = THEMES.find(x => x.id === b.dataset.v);
+   if(!th) return;
+   S.set.theme = th.id;
+   document.documentElement.dataset.theme = th.id;
+   document.documentElement.dataset.mode = th.mode || 'light';
+   const mt = document.querySelector('meta[name=theme-color]');
+   if(mt) mt.content = th.colors[0];
+   save(); Sound.tap(); closeThemeMenu(); render();
+  });
+ });
+}
+function openThemeMenu(){
+ const tr = $('#themeTrigger'), menu = $('#themeMenu');
+ if(!tr || !menu) return;
+ const r = tr.getBoundingClientRect();
+ const mw = Math.min(260, window.innerWidth - 24);
+ menu.style.minWidth = mw + 'px';
+ menu.style.top = (r.bottom + 8) + 'px';
+ // Align menu's LEFT edge with trigger's LEFT edge (extends rightward).
+ // This works identically in LTR and RTL because we set an absolute left.
+ let leftPos = r.left;
+ if(leftPos + mw > window.innerWidth - 12) leftPos = window.innerWidth - mw - 12;
+ if(leftPos < 12) leftPos = 12;
+ menu.style.left = leftPos + 'px';
+ menu.style.right = 'auto';
+ menu.classList.add('open');
+}
+function closeThemeMenu(){ const m = $('#themeMenu'); if(m) m.classList.remove('open'); }
+document.addEventListener('click', e => {
+ const tr = $('#themeTrigger'), menu = $('#themeMenu');
+ if(!tr || !menu) return;
+ if(tr.contains(e.target)){ if(menu.classList.contains('open')) closeThemeMenu(); else openThemeMenu(); return; }
+ if(!menu.contains(e.target) && menu.classList.contains('open')) closeThemeMenu();
+});
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeThemeMenu(); });
+window.addEventListener('resize', () => { const m = $('#themeMenu'); if(m && m.classList.contains('open')) openThemeMenu(); });
+
+function buildFilterDrawer(){
+ const body = $('#fdBody');
+ if(!S.data.length){ body.innerHTML = `<p style="color:var(--text-muted);text-align:center;padding:20px">${esc(t('noDataset'))}</p>`; return; }
+ const uniq = k => Array.from(new Set(S.data.map(r => r[k]).filter(Boolean))).sort();
+ const groups = [
+  { key:'churn', label:t('tColChurn'), values:['Yes','No'], display:v => v === 'Yes' ? t('yes') : t('no') },
+  { key:'contract', label:t('tColContract'), values: uniq('contract') },
+  { key:'internet', label:t('tColInternet'), values: uniq('internet') },
+  { key:'payment', label:t('tColPayment'), values: uniq('payment') },
+  { key:'gender', label:t('tColGender'), values: uniq('gender') },
+  { key:'senior', label:t('tColSenior'), values:['Yes','No'], display:v => v === 'Yes' ? t('yes') : t('no') },
+  { key:'partner', label:t('tColPartner'), values:['Yes','No'], display:v => v === 'Yes' ? t('yes') : t('no') },
+  { key:'dependents', label:t('tColDependents'), values:['Yes','No'], display:v => v === 'Yes' ? t('yes') : t('no') },
+  { key:'paperless', label:t('chartPaperless'), values:['Yes','No'], display:v => v === 'Yes' ? t('yes') : t('no') }
+ ];
+ const html = groups.map(g => {
+  const active = S.filters[g.key];
+  const vals = Array.isArray(active) ? active : (active ? [active] : []);
+  return `<details class="fd-group" ${vals.length ? 'open' : ''}>
+   <summary>${esc(g.label)} ${vals.length ? `<span class="bdg red" style="margin-inline-start:8px">${vals.length}</span>` : ''}<i class="bi bi-chevron-down"></i></summary>
+   <div class="fd-body-inner">
+    ${g.values.map(v => `<label class="fd-opt ${vals.includes(v) ? 'on' : ''}">
+     <input type="checkbox" data-k="${g.key}" data-v="${esc(v)}" ${vals.includes(v) ? 'checked' : ''}>
+     <span>${esc(g.display ? g.display(v) : v)}</span>
+    </label>`).join('')}
+   </div>
+  </details>`;
+ }).join('') + `
+  <details class="fd-group">
+   <summary>${esc(t('tColTenure'))}<i class="bi bi-chevron-down"></i></summary>
+   <div class="fd-body-inner"><div class="fd-range">
+    <input class="fd-input" type="number" placeholder="${t('from')}" data-r="tenureMin" value="${S.filters.tenureMin ?? ''}" min="0">
+    <input class="fd-input" type="number" placeholder="${t('to')}" data-r="tenureMax" value="${S.filters.tenureMax ?? ''}" min="0">
+   </div></div>
+  </details>
+  <details class="fd-group">
+   <summary>${esc(t('tColMonthly'))}<i class="bi bi-chevron-down"></i></summary>
+   <div class="fd-body-inner"><div class="fd-range">
+    <input class="fd-input" type="number" placeholder="${t('from')}" data-r="monthlyMin" value="${S.filters.monthlyMin ?? ''}" min="0">
+    <input class="fd-input" type="number" placeholder="${t('to')}" data-r="monthlyMax" value="${S.filters.monthlyMax ?? ''}" min="0">
+   </div></div>
+  </details>`;
+ body.innerHTML = html;
+ body.querySelectorAll('input[type=checkbox]').forEach(cb => {
+  cb.addEventListener('change', () => {
+   const k = cb.dataset.k, v = cb.dataset.v;
+   let arr = Array.isArray(S.filters[k]) ? S.filters[k].slice() : (S.filters[k] ? [S.filters[k]] : []);
+   if(cb.checked){ if(!arr.includes(v)) arr.push(v); } else { arr = arr.filter(x => x !== v); }
+   if(arr.length === 0) delete S.filters[k]; else S.filters[k] = arr;
+   Sound.tap();
+   cb.closest('.fd-opt').classList.toggle('on', cb.checked);
+  });
+ });
+ body.querySelectorAll('input[data-r]').forEach(inp => {
+  inp.addEventListener('change', () => {
+   const k = inp.dataset.r;
+   const v = inp.value === '' ? null : parseFloat(inp.value);
+   if(v == null || isNaN(v)) delete S.filters[k]; else S.filters[k] = v;
+  });
+ });
+}
+function renderFilterChips(){
+ const c = $('#fdChips'); if(!c) return;
+ const count = Object.keys(S.filters).length;
+ const badge = $('#fdCount'), tbBadge = $('#tbFilterCount');
+ if(count){ badge.style.display = ''; badge.textContent = count; tbBadge.style.display = ''; tbBadge.textContent = count; }
+ else { badge.style.display = 'none'; tbBadge.style.display = 'none'; }
+ c.innerHTML = Object.entries(S.filters).map(([k, v]) => {
+  const label = Array.isArray(v) ? v.join(', ') : v;
+  return `<span class="chip" data-k="${esc(k)}">${esc(k)}: ${esc(label)} <i class="bi bi-x"></i></span>`;
+ }).join('');
+ c.querySelectorAll('.chip').forEach(ch => ch.addEventListener('click', () => {
+  delete S.filters[ch.dataset.k];
+  buildFilterDrawer(); App.applyFilters(); render(); Sound.tap();
+ }));
+}
+function openFilterDrawer(){ $('#filterDrawer').classList.add('open'); $('#fback').classList.add('open'); }
+function closeFilterDrawer(){ $('#filterDrawer').classList.remove('open'); $('#fback').classList.remove('open'); }
+
+/* ============================================================
+   CUSTOMER MODAL
+   ============================================================ */
+function openCustomerModal(r){
+ const field = (label, val, full=false) => `<div class="field ${full?'full':''}"><span>${esc(label)}</span><b>${esc(val)}</b></div>`;
+ const services = ['phone','multipleLines','internet','onlineSecurity','onlineBackup','deviceProtection','techSupport','streamingTV','streamingMovies'];
+ const segAction = { segHVLR:t('actLoyalty'), segHVHR:t('actPriority'), segLVHR:t('actCostEff'), segLVLR:t('actStandard'), segNewHR:t('actOnboarding') }[r.segment] || '—';
+ const riskBdg = r.riskLabel === 'Critical' ? 'red' : r.riskLabel === 'High' ? 'red' : r.riskLabel === 'Medium' ? 'orange' : 'green';
+ Swal.fire({
+  width:720,
+  title:`<span style="font-family:monospace;font-size:16px">${esc(r.customerID)}</span>`,
+  html:`<div class="cust-modal">
+   <div class="row">
+    ${field(t('tColGender'), r.gender)}
+    ${field(t('tColSenior'), r.senior === 'Yes' ? t('yes') : t('no'))}
+    ${field(t('tColPartner'), r.partner === 'Yes' ? t('yes') : t('no'))}
+    ${field(t('tColDependents'), r.dependents === 'Yes' ? t('yes') : t('no'))}
+    ${field(t('tColTenure'), fmt.int(r.tenure) + ' ' + t('months'))}
+    ${field(t('tColContract'), r.contract)}
+    ${field(t('tColPayment'), r.payment, true)}
+    ${field(t('tColMonthly'), fmt.money(r.monthly))}
+    ${field(t('tColTotal'), fmt.money(r.total))}
+   </div>
+   <div style="margin-top:10px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted)">${esc(t('cmServices'))}</div>
+   <div class="row" style="margin-top:6px">
+    ${services.map(s => `<div class="field"><span>${esc(s)}</span><b>${esc(r[s] || '—')}</b></div>`).join('')}
+   </div>
+   <div class="cust-scores">
+    <div class="score-card">
+     <div class="score-val" style="color:var(--primary)">${fmt.int(r.valueScore)}</div>
+     <div class="score-lbl">${esc(t('tColValue'))}</div>
+    </div>
+    <div class="score-card">
+     <div class="score-val" style="color:${r.riskScore >= 70 ? 'var(--danger)' : r.riskScore >= 50 ? 'var(--warning)' : 'var(--success)'}">${fmt.int(r.riskScore)}</div>
+     <div class="score-lbl">${esc(t('tColRisk'))} · <span class="bdg ${riskBdg}">${esc(r.riskLabel)}</span></div>
+    </div>
+   </div>
+   <div style="margin-top:12px;padding:11px 14px;background:var(--primary-soft);border-radius:10px;border-inline-start:3px solid var(--primary)">
+    <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--primary)">${esc(t('cmRecommendation'))}</div>
+    <div style="font-size:13px;font-weight:600;color:var(--text);margin-top:2px">${esc(segAction)}</div>
+   </div>
+   <div style="margin-top:10px;display:flex;gap:10px;align-items:center">
+    <span style="font-size:11px;color:var(--text-muted)">${esc(t('cmChurnStatus'))}:</span>
+    ${r.churned ? '<span class="bdg red">'+esc(t('yes'))+'</span>' : '<span class="bdg green">'+esc(t('no'))+'</span>'}
+   </div>
+  </div>`,
+  showConfirmButton:true, confirmButtonText:t('bClose'), confirmButtonColor: css('--primary'),
+  didOpen: () => Sound.tap()
+ });
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function render(){
+ CH.splice(0).forEach(c => { try{ c.dispose(); }catch(e){} });
+
+ document.documentElement.lang = S.set.lang;
+ document.documentElement.dir = rtl() ? 'rtl' : 'ltr';
+ document.documentElement.dataset.theme = S.set.theme;
+ const th = THEMES.find(x => x.id === S.set.theme);
+ if(th) document.documentElement.dataset.mode = th.mode || 'light';
+
+ const pm = PAGES_META[S.page] || PAGES_META.overview;
+ $('#tbPath').textContent = 'Dashboard';
+ $('#tbTitle').innerHTML = `<i class="bi bi-broadcast-pin"></i><span>${esc(t(pm.label))}</span>`;
+ $('#tbLangLbl').textContent = rtl() ? 'English' : 'عربي';
+ $('#tbFilterLbl').textContent = t('filters');
+ $('#sbUpload').querySelector('span').textContent = t('uploadDataset');
+ $('#fdTitle').textContent = t('filters');
+ $('#fdClear').textContent = t('bClearAll');
+ $('#fdApply').textContent = t('bApply');
+ $('#tbSound').querySelector('span').textContent = t('sound');
+
+ updateDataStatus();
+ buildSidebarNav();
+ buildThemeMenu();
+
+ const view = $('#view');
+ if(!S.data.length){ view.innerHTML = uploadHero(); bindUploadHero(); return; }
+
+ App.applyFilters();
+ const rows = S.filtered;
+ if(!rows.length){ view.innerHTML = UI.empty(); return; }
+
+ const builder = Pages[S.page];
+ if(!builder){ view.innerHTML = UI.empty(); return; }
+ view.innerHTML = builder.call(Pages, rows);
+
+ try {
+  if(S.page === 'overview') renderOverviewCharts(rows);
+  else if(S.page === 'churn') renderChurnCharts(rows);
+  else if(S.page === 'segments') renderSegmentsCharts(rows);
+  else if(S.page === 'retention') renderRetentionCharts(rows);
+  else if(S.page === 'explorer') bindExplorer(rows);
+ } catch(e){ console.error('chart error', e); }
+
+ UI.countUp();
+}
+
+function bindExplorer(rows){
+ const q = $('#expQ');
+ if(q){
+  q.addEventListener('input', debounce(e => {
+   S.q = e.target.value; S.pg = 0;
+   render();
+   const i = $('#expQ'); if(i){ i.focus(); i.setSelectionRange(i.value.length, i.value.length); }
+  }, 220));
+ }
+ $$('#view th[data-k]').forEach(th => th.addEventListener('click', () => {
+  const k = th.dataset.k;
+  if(S.sortKey === k) S.sortDir = S.sortDir === 'asc' ? 'desc' : 'asc';
+  else { S.sortKey = k; S.sortDir = 'asc'; }
+  Sound.tap(); render();
+ }));
+ const pv = $('#pv'), nx = $('#nx');
+ if(pv) pv.addEventListener('click', () => { S.pg = Math.max(0, S.pg-1); render(); Sound.tap(); });
+ if(nx) nx.addEventListener('click', () => { S.pg = S.pg + 1; render(); Sound.tap(); });
+ const ex = $('#expExport');
+ if(ex) ex.addEventListener('click', () => { exportCsv(S.filtered); Sound.tap(); });
+ $$('#view tr.cl').forEach(tr => tr.addEventListener('click', () => {
+  const idx = parseInt(tr.dataset.i, 10);
+  const q2 = S.q.toLowerCase();
+  let L = q2 ? rows.filter(r => (r.customerID+' '+r.gender+' '+r.contract+' '+r.internet+' '+r.payment+' '+r.segment).toLowerCase().includes(q2)) : rows.slice();
+  const dir = S.sortDir === 'asc' ? 1 : -1;
+  const sk = S.sortKey;
+  L.sort((a,b) => {
+   const av = a[sk], bv = b[sk];
+   if(typeof av === 'number' && typeof bv === 'number') return (av-bv) * dir;
+   return String(av).localeCompare(String(bv)) * dir;
+  });
+  const r = L[idx];
+  if(r) openCustomerModal(r);
+ }));
+}
+
+function uploadHero(){
+ return `<div class="upload-hero">
+  <div class="uh-logo"><i class="bi bi-broadcast-pin"></i></div>
+  <h2>Telecom Customer Intelligence</h2>
+  <p>Load <b>telcom_customer_churn.csv</b> to explore churn drivers, revenue exposure, and segmentation — all computed locally in your browser.</p>
+  <button class="uh-cta" id="uhLoad"><i class="bi bi-cloud-arrow-down"></i> ${esc(t('bLoadData'))}</button>
+  <div class="uh-or">${esc(t('or'))}</div>
+  <div class="uh-drop" id="uhDrop">
+   <i class="bi bi-file-earmark-spreadsheet"></i>
+   <b>${esc(t('bBrowse'))}</b>
+   <small>Drag & drop your CSV here</small>
+  </div>
+ </div>`;
+}
+function bindUploadHero(){
+ const load = $('#uhLoad');
+ if(load) load.addEventListener('click', () => App.loadRemote());
+ const dz = $('#uhDrop');
+ if(dz){
+  dz.addEventListener('click', () => $('#fileIn').click());
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+  dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('over'); const f = e.dataTransfer.files[0]; if(f) App.handleFile(f); });
+ }
+}
+
+function exportCsv(rows){
+ const cols = REQ_COLS;
+ const cell = v => { v = String(v ?? ''); if(/^[=+\-@]/.test(v)) v = "'" + v; return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+ const out = [cols.join(',')].concat(rows.map(r => [
+  r.customerID, r.gender, r.senior === 'Yes' ? '1' : '0', r.partner, r.dependents, r.tenure,
+  r.phone, r.multipleLines, r.internet, r.onlineSecurity, r.onlineBackup, r.deviceProtection,
+  r.techSupport, r.streamingTV, r.streamingMovies, r.contract, r.paperless, r.payment,
+  r.monthly, r.total, r.churn
+ ].map(cell).join(',')));
+ const blob = new Blob([out.join('\n')], { type:'text/csv' });
+ const a = document.createElement('a');
+ a.href = URL.createObjectURL(blob); a.download = 'telco-filtered.csv'; a.click();
+ toast('success', t('swExported'));
+}
+
+function toast(icon, title){
+ Swal.fire({ toast:true, position: rtl() ? 'top-start' : 'top-end', icon, title, showConfirmButton:false, timer:2400 });
+}
+function showError(msg){
+ Swal.fire({ icon:'error', title: t('swBadTtl'), text: msg, confirmButtonColor: css('--primary') });
+}
+
+/* ============================================================
+   WIRING
+   ============================================================ */
+$('#sbToggle').addEventListener('click', () => {
+ S.set.sidebarCollapsed = true;
+ $('#app').classList.add('collapsed');
+ save(); Sound.tap();
+ setTimeout(() => CH.forEach(c => c.resize()), 320);
+});
+if(S.set.sidebarCollapsed) $('#app').classList.add('collapsed');
+
+$('#sbUpload').addEventListener('click', () => $('#fileIn').click());
+$('#fileIn').addEventListener('change', e => { const f = e.target.files[0]; if(f) App.handleFile(f); e.target.value = ''; });
+
+$('#tbBurger').addEventListener('click', () => {
+ if(innerWidth < 900){
+  $('#sidebar').classList.toggle('open');
+ } else {
+  S.set.sidebarCollapsed = false;
+  $('#app').classList.remove('collapsed');
+  save();
+  setTimeout(() => CH.forEach(c => c.resize()), 320);
+ }
+ Sound.tap();
+});
+
+$('#sidebar').addEventListener('click', e => {
+ if(e.target.closest('.sb-item') && innerWidth < 900) $('#sidebar').classList.remove('open');
+});
+
+$('#tbFilter').addEventListener('click', () => { buildFilterDrawer(); openFilterDrawer(); Sound.tap(); });
+$('#fdClose').addEventListener('click', () => { closeFilterDrawer(); Sound.tap(); });
+$('#fback').addEventListener('click', () => closeFilterDrawer());
+$('#fdApply').addEventListener('click', () => { App.applyFilters(); closeFilterDrawer(); render(); Sound.success(); });
+$('#fdClear').addEventListener('click', () => { S.filters = {}; buildFilterDrawer(); App.applyFilters(); render(); Sound.tap(); });
+
+$('#tbLang').addEventListener('click', () => {
+ S.set.lang = rtl() ? 'en' : 'ar';
+ save(); Sound.tap();
+ render();
+ toast('info', rtl() ? 'العربية' : 'English');
+});
+
+$('#tbSound').addEventListener('click', () => {
+ S.set.sound = !S.set.sound; save();
+ const el = $('#tbSound');
+ el.classList.toggle('on', S.set.sound);
+ el.querySelector('i').className = 'bi ' + (S.set.sound ? 'bi-volume-up' : 'bi-volume-mute');
+ Sound.tap();
+});
+if(!S.set.sound){
+ const el = $('#tbSound');
+ el.classList.remove('on');
+ el.querySelector('i').className = 'bi bi-volume-mute';
+}
+
+$('#tbFull').addEventListener('click', () => {
+ if(!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+ else document.exitFullscreen?.();
+ Sound.tap();
+});
+
+(async function init(){
+ try {
+  const th = THEMES.find(x => x.id === S.set.theme) || THEMES[0];
+  document.documentElement.dataset.theme = th.id;
+  document.documentElement.dataset.mode = th.mode || 'light';
+  document.documentElement.lang = S.set.lang;
+  document.documentElement.dir = rtl() ? 'rtl' : 'ltr';
+  const mt = document.querySelector('meta[name=theme-color]');
+  if(mt) mt.content = th.colors[0];
+
+  buildSidebarNav();
+  buildThemeMenu();
+  render();
+ } catch(e){ console.error('init error', e); }
+ finally {
+  setTimeout(() => { const b = $('#boot'); if(b){ b.style.opacity = 0; setTimeout(() => b.remove(), 400); } }, 400);
+ }
+})();
+
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => {
+ if(S.data.length && e.dataTransfer.files[0]){ e.preventDefault(); App.handleFile(e.dataTransfer.files[0]); }
+});
+window.addEventListener('resize', debounce(() => CH.forEach(c => c.resize()), 150));
+document.addEventListener('keydown', e => {
+ if(e.key === 'Escape'){ closeFilterDrawer(); closeThemeMenu(); }
+});
+</script>
+</body>
+</html>
