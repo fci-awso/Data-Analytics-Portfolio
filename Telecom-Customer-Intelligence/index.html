@@ -62,19 +62,11 @@ input,select{font:inherit}
 ::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--text) 18%,transparent);border-radius:9px}
 ::-webkit-scrollbar-thumb:hover{background:color-mix(in srgb,var(--text) 30%,transparent)}
 
-/* ============================================================
-   LAYOUT
-   Grid naturally follows writing direction. In RTL, the FIRST
-   column starts at the RIGHT edge, so the sidebar (column 1)
-   automatically appears on the RIGHT without any override.
-   ============================================================ */
+/* LAYOUT */
 .app{display:grid;grid-template-columns:var(--sidebar-w) 1fr;height:100vh;height:100dvh;transition:grid-template-columns .3s var(--ease)}
 .app.collapsed{grid-template-columns:var(--sidebar-w-collapsed) 1fr}
 
-/* ============================================================
-   SIDEBAR
-   Column 1 = inline-start. In LTR that is left, in RTL that is right.
-   ============================================================ */
+/* SIDEBAR */
 .sidebar{
  grid-column:1;grid-row:1;
  background:linear-gradient(180deg,var(--surface) 0%,var(--surface-2) 100%);
@@ -117,9 +109,7 @@ input,select{font:inherit}
 .sb-dot.live{background:var(--success);box-shadow:0 0 0 3px color-mix(in srgb,var(--success) 25%,transparent);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 3px color-mix(in srgb,var(--success) 25%,transparent)}50%{box-shadow:0 0 0 8px color-mix(in srgb,var(--success) 0%,transparent)}}
 
-/* ============================================================
-   MAIN
-   ============================================================ */
+/* MAIN */
 .main{grid-column:2;grid-row:1;display:flex;flex-direction:column;min-width:0;overflow:hidden}
 .topbar{height:var(--topbar-h);background:color-mix(in srgb,var(--surface) 85%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;padding:0 20px;position:relative;z-index:10;flex:none}
 .tb-hamburger{display:none;width:44px;height:44px;border:0;background:var(--surface-3);border-radius:11px;color:var(--text);font-size:22px;place-items:center;transition:all .18s;flex:none}
@@ -370,18 +360,17 @@ input,select{font:inherit}
 @keyframes bootSlide{0%{margin-inline-start:-35%}100%{margin-inline-start:100%}}
 .boot-msg{font-size:12px;color:var(--text-muted)}
 
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
+/* SIDEBAR BACKDROP (mobile) */
+#sbBack{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:90;opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s}
+#sbBack.open{opacity:1;visibility:visible}
+
+/* RESPONSIVE */
 @media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}.s8{grid-column:span 12}}
 @media(max-width:900px){
- .app{grid-template-columns:1fr}
- /* Mobile: sidebar becomes fixed off-canvas drawer.
-    inset-inline-start:0 auto-flips to right:0 in RTL.
-    translateX auto-flips: -100% in LTR (slide from left),
-    +100% in RTL (slide from right). */
+ .app,.app.collapsed{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+ .main{grid-column:1;grid-row:1;width:100%}
  .sidebar{
-  position:fixed;inset-inline-start:0;top:0;bottom:0;width:280px;
+  position:fixed;inset-inline-start:0;top:0;bottom:0;width:min(300px,85vw);
   transform:translateX(-100%);
   transition:transform .3s var(--ease);z-index:100;
   box-shadow:12px 0 40px -12px rgba(0,0,0,.25);
@@ -389,13 +378,16 @@ input,select{font:inherit}
  [dir=rtl] .sidebar{transform:translateX(100%);box-shadow:-12px 0 40px -12px rgba(0,0,0,.25)}
  .sidebar.open{transform:none!important}
  .tb-hamburger{display:grid!important}
- .topbar{padding:0 12px;gap:8px}
- .tb-crumb h1{font-size:15px}
- .tb-crumb h1 i{font-size:17px}
+ .topbar{height:auto;min-height:56px;padding:6px 10px;gap:6px}
+ .tb-crumb h1{white-space:normal;overflow:visible;line-height:1.25;font-size:14px;align-items:flex-start}
+ .tb-crumb h1 span{white-space:normal;overflow:visible;text-overflow:clip}
+ .tb-crumb h1 i{font-size:17px;margin-top:1px}
  .tb-crumb .path{display:none}
  .tb-btn{min-width:40px;height:40px;padding:0 6px;font-size:9px}
  .tb-btn i{font-size:17px}
  .tb-btn span{display:none}
+ #tbFull,#tbSound{display:none}
+ .theme-trigger{min-width:44px}
  .theme-trigger .cn{display:none}
  #view{padding:12px 12px 32px}
  .hero-brief{padding:16px 18px;border-radius:16px}
@@ -419,8 +411,10 @@ input,select{font:inherit}
  #filterDrawer{width:100%;max-width:100%}
 }
 @media(max-width:520px){
- .kpi-grid{grid-template-columns:1fr}
- .kpi-val{font-size:22px}
+ .kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .kpi-lbl{font-size:10px;letter-spacing:.03em}
+ .kpi-val{font-size:18px}
+ .kpi-ic{display:none}
  .hero-brief{padding:14px}
  .hb-grid{grid-template-columns:1fr}
  .upload-hero{margin:20px auto;padding:28px 18px}
@@ -431,7 +425,7 @@ input,select{font:inherit}
  .tbl th,.tbl td{padding:8px 10px}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-@media print{.sidebar,.topbar,.fd-head,.fd-foot,#filterDrawer,#fback,.chips{display:none!important}.app{grid-template-columns:1fr!important}body{overflow:visible}#view{overflow:visible;padding:0}}
+@media print{.sidebar,.topbar,.fd-head,.fd-foot,#filterDrawer,#fback,#sbBack,.chips{display:none!important}.app{grid-template-columns:1fr!important}body{overflow:visible}#view{overflow:visible;padding:0}}
 </style>
 </head>
 <body>
@@ -485,6 +479,7 @@ input,select{font:inherit}
  </main>
 </div>
 
+<div id="sbBack"></div>
 <div id="themeMenu" role="listbox"></div>
 <div id="fback"></div>
 <aside id="filterDrawer" aria-label="Filters">
@@ -629,7 +624,7 @@ const I18N = {
   dcLoadedAt:'Loaded', dcStatus:'Status', dcStatusOk:'Validated',
   dcMissing:'Missing Values', dcDupIds:'Duplicate IDs', dcInvalidNum:'Invalid Numeric', dcScore:'Quality Score',
   bClearAll:'Clear all', bApply:'Apply', bReset:'Reset Dashboard', bClose:'Close',
-  bLoadData:'Load Data', bBrowse:'Browse CSV',
+  bLoadData:'Load Data', bBrowse:'Browse CSV', or:'or',
   swLoadedTtl:'Dataset Loaded', swLoadedBody:'{n} customers processed.',
   swBadTtl:'Invalid Dataset', swBadBody:'Missing columns: {c}',
   swReplTtl:'Replace current dataset?', swReplBody:'Current: {a} rows · New: {b} rows.',
@@ -724,7 +719,7 @@ const I18N = {
   dcLoadedAt:'تم التحميل', dcStatus:'الحالة', dcStatusOk:'تم التحقق',
   dcMissing:'قيم مفقودة', dcDupIds:'معرّفات مكررة', dcInvalidNum:'أرقام غير صالحة', dcScore:'درجة الجودة',
   bClearAll:'مسح الكل', bApply:'تطبيق', bReset:'إعادة تعيين اللوحة', bClose:'إغلاق',
-  bLoadData:'تحميل البيانات', bBrowse:'تصفح CSV',
+  bLoadData:'تحميل البيانات', bBrowse:'تصفح CSV', or:'أو',
   swLoadedTtl:'تم تحميل البيانات', swLoadedBody:'{n} عميل تمت معالجته.',
   swBadTtl:'ملف غير صالح', swBadBody:'أعمدة مفقودة: {c}',
   swReplTtl:'استبدال البيانات الحالية؟', swReplBody:'الحالية: {a} صف · الجديدة: {b} صف.',
@@ -962,6 +957,7 @@ const Analytics = {
     if(k === 'tenureMax' && r.tenure > v) return false;
     if(k === 'monthlyMin' && r.monthly < v) return false;
     if(k === 'monthlyMax' && r.monthly > v) return false;
+    if(k === 'tenureMin' || k === 'tenureMax' || k === 'monthlyMin' || k === 'monthlyMax') continue;
     if(Array.isArray(v)){ if(v.length && !v.includes(r[k])) return false; }
     else if(r[k] !== v && !String(r[k]).includes(v)) return false;
    }
@@ -1153,15 +1149,16 @@ const Charts = {
   return c;
  },
  bar(id, items, { horizontal=true, valueFmt=fmt.int, onClick } = {}){
+  const small = innerWidth < 600;
   const c = mkChart(id, {
    grid: horizontal
-    ? { left:8, right:70, top:14, bottom:8, containLabel:true }
+    ? { left:8, right: small ? 46 : 70, top:14, bottom:8, containLabel:true }
     : { left:8, right:12, top:34, bottom:8, containLabel:true },
    xAxis: horizontal
     ? { type:'value', axisLabel:{ formatter: v => valueFmt(v) } }
     : { type:'category', data: items.map(d => d.name), axisLabel:{ rotate: items.length > 5 ? 25 : 0, width:90, overflow:'truncate' } },
    yAxis: horizontal
-    ? { type:'category', inverse:true, data: items.map(d => d.name), axisLabel:{ width:130, overflow:'truncate' } }
+    ? { type:'category', inverse:true, data: items.map(d => d.name), axisLabel:{ width: small ? 80 : 130, overflow:'truncate' } }
     : { type:'value', axisLabel:{ formatter: v => valueFmt(v) } },
    series:[{
     type:'bar', barMaxWidth:26,
@@ -1920,8 +1917,6 @@ function openThemeMenu(){
  const mw = Math.min(260, window.innerWidth - 24);
  menu.style.minWidth = mw + 'px';
  menu.style.top = (r.bottom + 8) + 'px';
- // Align menu's LEFT edge with trigger's LEFT edge (extends rightward).
- // This works identically in LTR and RTL because we set an absolute left.
  let leftPos = r.left;
  if(leftPos + mw > window.innerWidth - 12) leftPos = window.innerWidth - mw - 12;
  if(leftPos < 12) leftPos = 12;
@@ -1936,7 +1931,6 @@ document.addEventListener('click', e => {
  if(tr.contains(e.target)){ if(menu.classList.contains('open')) closeThemeMenu(); else openThemeMenu(); return; }
  if(!menu.contains(e.target) && menu.classList.contains('open')) closeThemeMenu();
 });
-document.addEventListener('keydown', e => { if(e.key === 'Escape') closeThemeMenu(); });
 window.addEventListener('resize', () => { const m = $('#themeMenu'); if(m && m.classList.contains('open')) openThemeMenu(); });
 
 function buildFilterDrawer(){
@@ -2203,34 +2197,48 @@ function showError(msg){
 }
 
 /* ============================================================
-   WIRING
+   WIRING  (sidebar: desktop collapse + mobile drawer)
    ============================================================ */
-$('#sbToggle').addEventListener('click', () => {
- S.set.sidebarCollapsed = true;
- $('#app').classList.add('collapsed');
- save(); Sound.tap();
- setTimeout(() => CH.forEach(c => c.resize()), 320);
-});
-if(S.set.sidebarCollapsed) $('#app').classList.add('collapsed');
+const mqMobile = window.matchMedia('(max-width:900px)');
+const isMobile = () => mqMobile.matches;
 
-$('#sbUpload').addEventListener('click', () => $('#fileIn').click());
-$('#fileIn').addEventListener('change', e => { const f = e.target.files[0]; if(f) App.handleFile(f); e.target.value = ''; });
+function openDrawer(){ $('#sidebar').classList.add('open'); $('#sbBack').classList.add('open'); }
+function closeDrawer(){ $('#sidebar').classList.remove('open'); $('#sbBack').classList.remove('open'); }
 
-$('#tbBurger').addEventListener('click', () => {
- if(innerWidth < 900){
-  $('#sidebar').classList.toggle('open');
+function syncSidebar(){
+ const app = $('#app');
+ if(isMobile()){
+  app.classList.remove('collapsed');
  } else {
-  S.set.sidebarCollapsed = false;
-  $('#app').classList.remove('collapsed');
-  save();
-  setTimeout(() => CH.forEach(c => c.resize()), 320);
+  closeDrawer();
+  app.classList.toggle('collapsed', !!S.set.sidebarCollapsed);
  }
+ $('#sbToggle i').className = 'bi ' + (isMobile() ? 'bi-x-lg' : 'bi-chevron-left');
+ setTimeout(() => CH.forEach(c => c.resize()), 320);
+}
+
+$('#sbToggle').addEventListener('click', () => {
+ if(isMobile()) closeDrawer();
+ else { S.set.sidebarCollapsed = true; save(); syncSidebar(); }
  Sound.tap();
 });
 
-$('#sidebar').addEventListener('click', e => {
- if(e.target.closest('.sb-item') && innerWidth < 900) $('#sidebar').classList.remove('open');
+$('#tbBurger').addEventListener('click', () => {
+ if(isMobile()) openDrawer();
+ else { S.set.sidebarCollapsed = false; save(); syncSidebar(); }
+ Sound.tap();
 });
+
+$('#sbBack').addEventListener('click', closeDrawer);
+
+$('#sidebar').addEventListener('click', e => {
+ if(e.target.closest('.sb-item') && isMobile()) closeDrawer();
+});
+
+mqMobile.addEventListener('change', syncSidebar);
+
+$('#sbUpload').addEventListener('click', () => $('#fileIn').click());
+$('#fileIn').addEventListener('change', e => { const f = e.target.files[0]; if(f) App.handleFile(f); e.target.value = ''; });
 
 $('#tbFilter').addEventListener('click', () => { buildFilterDrawer(); openFilterDrawer(); Sound.tap(); });
 $('#fdClose').addEventListener('click', () => { closeFilterDrawer(); Sound.tap(); });
@@ -2276,6 +2284,7 @@ $('#tbFull').addEventListener('click', () => {
 
   buildSidebarNav();
   buildThemeMenu();
+  syncSidebar();
   render();
  } catch(e){ console.error('init error', e); }
  finally {
@@ -2289,7 +2298,7 @@ document.addEventListener('drop', e => {
 });
 window.addEventListener('resize', debounce(() => CH.forEach(c => c.resize()), 150));
 document.addEventListener('keydown', e => {
- if(e.key === 'Escape'){ closeFilterDrawer(); closeThemeMenu(); }
+ if(e.key === 'Escape'){ closeFilterDrawer(); closeThemeMenu(); closeDrawer(); }
 });
 </script>
 </body>
