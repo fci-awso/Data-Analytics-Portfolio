@@ -1,0 +1,1757 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="healthcare" data-mode="light">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#eef2f6">
+<title>Healthcare Analytics Intelligence</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b6fb8'/%3E%3Cpath d='M28 12h8v16h16v8H36v16h-8V36H12v-8h16z' fill='%23fff'/%3E%3C/svg%3E">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Noto+Sans+Arabic:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+ --top:#fff;--rib:#f3f7fa;--bg:#eef2f6;--surf:#fff;--text:#0f1e2e;--muted:#5a6b7c;--line:#dbe4ec;
+ --a:#0b6fb8;--up:#0b8a5b;--dn:#d64545;--r:16px;--sh:0 1px 2px rgba(15,30,46,.05),0 10px 30px -14px rgba(15,30,46,.22);
+ --y:#0b6fb8;
+ --c1:#0b6fb8;--c2:#1e5b8e;--c3:#0e8a7d;--c4:#6b3fa0;--c5:#c23c78;--c6:#2a7f9e;
+ --font:'Inter','Noto Sans Arabic',system-ui,sans-serif;--ease:cubic-bezier(.2,.8,.2,1)
+}
+html[data-mode=dark]{--top:#111c2a;--rib:#152235;--bg:#0a121e;--surf:#12202f;--text:#e6edf3;--muted:#8ba0b5;--line:#24364a;--up:#34d399;--dn:#f87171;color-scheme:dark}
+html[data-mode=dark] .swal2-popup{background:var(--surf);color:var(--text)}html[data-mode=dark] .swal2-title,html[data-mode=dark] .swal2-html-container{color:var(--text)}
+[data-theme=clinical]{--a:#0e7490;--c1:#0e7490;--c2:#0d9488;--c3:#0ea5e9;--c4:#6366f1;--c5:#f43f5e;--c6:#64748b}
+[data-theme=midnight]{--a:#7c3aed;--c1:#7c3aed;--c2:#2563eb;--c3:#0891b2;--c4:#db2777;--c5:#f59e0b;--c6:#64748b}
+[data-theme=highcontrast]{--a:#000;--c1:#000;--c2:#c00;--c3:#06c;--c4:#060;--c5:#909;--c6:#666}
+[data-theme=teal]{--a:#0d9488;--c1:#0d9488;--c2:#0e7490;--c3:#0369a1;--c4:#7c3aed;--c5:#db2777;--c6:#65a30d}
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;font:13px var(--font);background:radial-gradient(900px 500px at 85% -10%,color-mix(in srgb,var(--a) 14%,transparent),transparent),radial-gradient(700px 400px at -5% 110%,color-mix(in srgb,var(--c3) 14%,transparent),transparent),var(--bg);color:var(--text);overflow:hidden}
+.muted{color:var(--muted)}
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+.title{display:flex;align-items:center;gap:8px;background:transparent;border:0;padding:10px 16px 2px;min-width:0}
+.title svg{width:26px;height:26px;border-radius:7px;flex:none}.title b{font-weight:600;white-space:nowrap}.title h1{font-size:13px;font-weight:400;margin:0;color:var(--muted);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ribbon{display:flex;gap:2px;align-items:stretch;padding:5px 8px;margin:6px 12px;border:1px solid var(--line);border-radius:18px;background:color-mix(in srgb,var(--surf) 78%,transparent);backdrop-filter:blur(14px);box-shadow:var(--sh);overflow-x:auto;overflow-y:hidden;scrollbar-width:none;position:relative}
+.ribbon::-webkit-scrollbar{display:none}
+.rb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:56px;padding:4px 8px;border:0;background:none;color:var(--text);font:inherit;font-size:11px;cursor:pointer;border-radius:12px;white-space:nowrap;transition:transform .2s var(--ease),background .2s}
+.rb i{font-size:19px;transition:transform .25s var(--ease)}
+.rb:hover{background:color-mix(in srgb,var(--a) 12%,transparent);transform:translateY(-2px)}.rb:hover i{transform:scale(1.18) rotate(-6deg);color:var(--a)}.rb:active{transform:scale(.93)}
+.rsep{width:1px;background:var(--line);margin:6px}
+
+/* ===== Theme picker (trigger only) ===== */
+.theme-picker{position:relative;display:flex;align-items:stretch}
+.theme-trigger{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:64px;padding:4px 8px;border:0;background:none;color:var(--text);font:inherit;font-size:11px;cursor:pointer;border-radius:12px;white-space:nowrap;transition:background .2s,transform .2s var(--ease)}
+.theme-trigger:hover{background:color-mix(in srgb,var(--a) 12%,transparent);transform:translateY(-2px)}
+.theme-trigger .swatches{display:inline-flex;gap:2px}
+.theme-trigger .swatches i{width:14px;height:14px;border-radius:4px;display:block;border:1px solid rgba(0,0,0,.1);box-shadow:0 1px 2px rgba(0,0,0,.15);transition:transform .25s var(--ease)}
+.theme-trigger:hover .swatches i:first-child{transform:translateX(-2px)}
+.theme-trigger:hover .swatches i:last-child{transform:translateX(2px)}
+.theme-trigger .caret{font-size:9px;color:var(--muted);margin-top:-2px;transition:transform .25s var(--ease)}
+.theme-picker.open .caret{transform:rotate(180deg)}
+
+/* ===== Theme menu — OUTSIDE ribbon, direct child of body ===== */
+#themeMenu{position:fixed;top:0;left:0;min-width:240px;max-width:calc(100vw - 24px);background:var(--surf);border:1px solid var(--line);border-radius:14px;box-shadow:0 16px 40px -12px rgba(0,0,0,.28),0 2px 8px rgba(0,0,0,.06);padding:6px;z-index:500;opacity:0;visibility:hidden;transform:translateY(-8px) scale(.96);transform-origin:top;transition:opacity .2s var(--ease),transform .2s var(--ease),visibility 0s .2s;pointer-events:none;display:none}
+#themeMenu.open{opacity:1;visibility:visible;transform:none;transition:opacity .2s var(--ease),transform .2s var(--ease),visibility 0s;pointer-events:auto;display:block}
+.theme-menu-title{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600;padding:8px 10px 4px}
+.theme-opt{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border:0;background:none;color:var(--text);font:inherit;font-size:12.5px;border-radius:10px;cursor:pointer;text-align:start;transition:background .15s,transform .15s}
+.theme-opt:hover{background:color-mix(in srgb,var(--a) 10%,transparent);transform:translateX(2px)}
+[dir=rtl] .theme-opt:hover{transform:translateX(-2px)}
+.theme-opt.on{background:color-mix(in srgb,var(--a) 14%,transparent);font-weight:600}
+.theme-opt .swatches{display:inline-flex;gap:3px;flex:none}
+.theme-opt .swatches i{width:16px;height:16px;border-radius:5px;display:block;border:1px solid rgba(0,0,0,.12);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.theme-opt .check{margin-inline-start:auto;color:var(--a);opacity:0;transform:scale(.6);transition:opacity .2s,transform .2s var(--ease)}
+.theme-opt.on .check{opacity:1;transform:scale(1)}
+
+.body{flex:1;display:flex;min-height:0;padding:0 12px}.center{flex:1;display:flex;flex-direction:column;min-width:0}
+#view{flex:1;overflow:auto;padding:8px 4px 12px;overscroll-behavior:contain}
+#nav{display:flex;overflow-x:auto;margin:0 12px 8px;padding:5px;gap:4px;border:1px solid var(--line);border-radius:18px;background:color-mix(in srgb,var(--surf) 78%,transparent);backdrop-filter:blur(14px);box-shadow:var(--sh);scrollbar-width:none}
+#nav::-webkit-scrollbar{display:none}
+#nav a{padding:7px 16px;border:0;border-radius:999px;white-space:nowrap;cursor:pointer;color:var(--muted);transition:background .25s,color .2s,transform .2s;display:flex;align-items:center;gap:6px;font-size:12.5px}
+#nav a:hover{background:color-mix(in srgb,var(--a) 12%,transparent);color:var(--text);transform:translateY(-1px)}
+#nav a.on{background:linear-gradient(135deg,var(--a),color-mix(in srgb,var(--a) 65%,#fff));color:#fff;box-shadow:0 6px 16px -6px color-mix(in srgb,var(--a) 70%,transparent)}
+#fbar{width:284px;flex:none;background:var(--surf);border:1px solid var(--line);border-radius:var(--r);margin-inline-start:8px;margin-bottom:8px;overflow:auto;box-shadow:var(--sh)}#fbar:empty,#fbar.off{display:none}
+.ph{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surf);z-index:1;border-radius:var(--r) var(--r) 0 0}.ph b{flex:1;font-size:14px;font-weight:600}
+#fcount:not(:empty){background:var(--y);color:#fff;border-radius:9px;padding:0 7px;font-size:11px;min-width:18px;text-align:center}
+.fc{border:0;margin:4px 8px;border-radius:12px;background:color-mix(in srgb,var(--rib) 55%,transparent)}
+.fc summary{list-style:none;cursor:pointer;padding:8px 12px;font-weight:600;display:flex;justify-content:space-between;align-items:center;border-radius:12px}
+.fc summary::-webkit-details-marker{display:none}
+.fc[open] summary i{transform:rotate(180deg)}
+.fc summary i{transition:transform .3s var(--ease)}
+.fb{padding:0 12px 10px}
+.sl{display:flex;flex-direction:column;max-height:180px;overflow:auto}
+.opt{border:0;background:none;text-align:start;padding:5px 8px;color:var(--text);font:inherit;cursor:pointer;display:flex;gap:8px;align-items:center;border-radius:10px;transition:background .15s,transform .15s}
+.opt:hover{background:color-mix(in srgb,var(--a) 10%,transparent);transform:translateX(3px)}
+[dir=rtl] .opt:hover{transform:translateX(-3px)}
+.opt[aria-pressed=true]{font-weight:600}.opt i{color:var(--a);transition:transform .25s var(--ease)}.opt[aria-pressed=true] i{transform:scale(1.15)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.ibtn,.pill{height:36px;border-radius:999px;border:1px solid var(--line);background:var(--surf);color:var(--text);font:inherit;padding:0 14px;min-width:0;transition:border-color .2s,box-shadow .2s,transform .15s}
+.pill{width:100%}.ibtn{width:36px;padding:0;cursor:pointer}
+.ibtn:hover,.pill:hover{border-color:var(--a);transform:translateY(-1px)}
+.ibtn:active{transform:scale(.92)}
+.pill:focus{outline:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--a) 20%,transparent)}
+select.pill{appearance:none;padding-inline-end:30px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23888' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+[dir=rtl] select.pill{background-position:left 12px center}
+.tabbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px}.fld{display:flex;flex-direction:column;gap:2px;min-width:0;max-width:100%}.fld>span{font-size:11px;color:var(--muted)}
+.seg{display:inline-flex;border:0;border-radius:999px;padding:3px;background:color-mix(in srgb,var(--text) 8%,transparent);gap:2px;max-width:100%;overflow-x:auto;scrollbar-width:none}
+.seg::-webkit-scrollbar{display:none}
+.seg button{border:0;border-radius:999px;background:none;color:var(--text);font:inherit;padding:6px 16px;cursor:pointer;flex:none;white-space:nowrap;transition:background .3s,color .2s,transform .2s,box-shadow .3s}
+.seg button:hover{transform:translateY(-1px)}
+.seg button.on{background:linear-gradient(135deg,var(--a),color-mix(in srgb,var(--a) 65%,#fff));color:#fff;box-shadow:0 4px 12px -3px color-mix(in srgb,var(--a) 60%,transparent)}
+.hl{margin:2px 0 10px}.hl h2{font-size:18px;font-weight:600;margin:0 0 2px;letter-spacing:-.01em}.hl p{color:var(--muted);margin:0}
+.sec{font-size:14px;font-weight:600;margin:14px 0 6px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-bottom:8px}
+.kpi{position:relative;overflow:hidden;display:flex;flex-direction:column;background:var(--surf);border:1px solid color-mix(in srgb,var(--line) 70%,transparent);border-radius:var(--r);padding:12px 14px;box-shadow:var(--sh);transition:transform .3s var(--ease),box-shadow .3s,border-color .2s;animation:rise .55s var(--ease) both}
+.kpi:before{content:"";position:absolute;inset-inline:0;top:0;height:3px;background:linear-gradient(90deg,var(--a),var(--c3));transform:scaleX(.25);transform-origin:left;transition:transform .5s var(--ease)}
+[dir=rtl] .kpi:before{transform-origin:right}
+.kpi:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--a) 50%,transparent);box-shadow:0 14px 34px -14px color-mix(in srgb,var(--a) 45%,transparent)}
+.kpi:hover:before{transform:scaleX(1)}
+.kpi .v{order:1;font-size:28px;font-weight:300;line-height:1.2;letter-spacing:-.02em}
+.kpi .l{order:2;color:var(--muted);font-weight:600;font-size:12px}
+.kpi .sub{order:3;font-size:11px;color:var(--muted)}
+.kpi .chg{order:4;font-size:12px;font-weight:600}
+.kpi .help{order:5;font-size:11px;color:var(--muted);margin:4px 0 0}
+.kpi svg{order:6;width:100%;height:24px;margin-top:4px}
+.kpi svg path{fill:none;stroke:var(--a);stroke-width:1.5}
+.chg{font-size:12px;font-weight:600}.chg span{color:var(--muted);font-weight:400}
+.chg.up,.up{color:var(--up)}.chg.dn,.dn{color:var(--dn)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:8px}
+.grid>*{min-width:0}
+.s12{grid-column:span 12}.s8{grid-column:span 8}.s6{grid-column:span 6}.s4{grid-column:span 4}
+.pan{background:var(--surf);border:1px solid color-mix(in srgb,var(--line) 70%,transparent);border-radius:var(--r);padding:10px 14px;min-width:0;box-shadow:var(--sh);transition:transform .3s var(--ease),box-shadow .3s,border-color .2s;animation:rise .55s var(--ease) both;overflow:hidden}
+.pan:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--a) 50%,transparent);box-shadow:0 14px 34px -14px color-mix(in srgb,var(--a) 45%,transparent)}
+.pan h3{font-size:12px;font-weight:600;margin:0}.hint{font-size:11px;color:var(--muted);margin:1px 0 4px}
+.ch{height:290px}.ch.lg{height:340px}
+@keyframes rise{from{opacity:0;transform:translateY(16px) scale(.98)}}
+.kpis>:nth-child(2),.grid>:nth-child(2){animation-delay:.05s}.kpis>:nth-child(3),.grid>:nth-child(3){animation-delay:.1s}.kpis>:nth-child(4),.grid>:nth-child(4){animation-delay:.15s}.kpis>:nth-child(5){animation-delay:.2s}.kpis>:nth-child(6){animation-delay:.25s}.kpis>:nth-child(n+7){animation-delay:.3s}
+.tbl{width:100%;font-size:12px;border-collapse:collapse}
+.tbl th{background:transparent;color:var(--muted);font-weight:600;text-align:start;border-bottom:1px solid var(--line);padding:6px 8px;white-space:nowrap;position:sticky;top:0;background:var(--surf);z-index:1}
+.tbl td{padding:5px 8px;border-bottom:1px solid var(--line)}
+.tbl tr.cl{cursor:pointer;transition:background .15s}.tbl tr.cl:hover{background:var(--rib)}
+.drop{border:2px dashed var(--line);padding:3rem 1rem;text-align:center;background:var(--surf);max-width:620px;margin:3rem auto;border-radius:18px;transition:border-color .2s,background .2s}
+.drop.over{border-color:var(--a);background:color-mix(in srgb,var(--a) 8%,transparent)}
+.status{background:transparent;border:0;padding:2px 16px;font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#boot{position:fixed;inset:0;background:var(--bg);display:grid;place-items:center;z-index:99;text-align:center;transition:opacity .4s}
+#boot b{font-size:1.5rem;font-weight:300}
+.bar{width:200px;height:3px;background:var(--line);margin:1rem auto .5rem;overflow:hidden;border-radius:2px}
+.bar i{display:block;height:100%;width:40%;background:linear-gradient(90deg,var(--a),var(--c3));animation:sl 1s infinite alternate ease-in-out}
+@keyframes sl{to{margin-inline-start:60%}}
+[dir=rtl] .dir-icon{transform:scaleX(-1)}
+#view>*{animation:fi .2s ease}
+@keyframes fi{from{opacity:0}}
+:focus-visible{outline:2px solid var(--a);outline-offset:1px}
+*::-webkit-scrollbar{width:8px;height:8px}
+*::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--text) 22%,transparent);border-radius:9px}
+.swal2-popup{border-radius:22px!important}.swal2-confirm{border-radius:999px!important}.swal2-cancel{border-radius:999px!important}
+.hero{position:relative;text-align:center;max-width:640px;margin:5vh auto;padding:2.6rem 1.4rem;border-radius:28px;background:color-mix(in srgb,var(--surf) 82%,transparent);border:1px solid var(--line);box-shadow:var(--sh);overflow:hidden;animation:rise .7s var(--ease) both}
+.hero>*{position:relative}
+.hero h2{font-size:clamp(1.5rem,4vw,2.1rem);font-weight:600;margin:.9rem 0 .4rem;background:linear-gradient(90deg,var(--text),var(--a));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);max-width:44ch;margin:0 auto 1.4rem}
+.hlogo{width:68px;height:68px;animation:float 4s ease-in-out infinite}
+.orb{position:absolute;border-radius:50%;filter:blur(40px);opacity:.5;animation:float 7s ease-in-out infinite}
+.o1{width:220px;height:220px;background:var(--a);top:-70px;inset-inline-start:-60px}
+.o2{width:200px;height:200px;background:var(--c3);bottom:-70px;inset-inline-end:-50px;animation-delay:-3s}
+@keyframes float{50%{transform:translateY(-10px)}}
+.cta{display:inline-flex;align-items:center;gap:.6rem;border:0;border-radius:999px;padding:.95rem 2rem;font:inherit;font-size:1.05rem;font-weight:600;color:#fff;background:linear-gradient(135deg,var(--a),color-mix(in srgb,var(--a) 65%,#000));cursor:pointer;box-shadow:0 10px 28px -8px color-mix(in srgb,var(--a) 80%,transparent);transition:transform .25s var(--ease),box-shadow .25s}
+.cta i{font-size:1.3rem}.cta:hover{transform:translateY(-3px) scale(1.04)}.cta:active{transform:scale(.96)}.cta:disabled{opacity:.75;cursor:wait}
+.stp{margin-top:1rem;color:var(--muted);animation:rise .3s both}
+.spin{display:inline-block;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.or{color:var(--muted);margin:1.3rem 0 .7rem;font-size:.85rem}
+.hero .drop{border-radius:18px;margin:0 auto;padding:1.2rem;background:transparent;max-width:none}
+.hero .drop.over{background:color-mix(in srgb,var(--a) 10%,transparent)}
+#fclose{flex:none}
+#fback{display:none;position:fixed;inset:0;z-index:39;background:rgba(0,0,0,.42)}
+.chip{display:inline-flex;align-items:center;gap:4px;background:color-mix(in srgb,var(--a) 15%,transparent);border:1px solid color-mix(in srgb,var(--a) 40%,transparent);border-radius:999px;padding:3px 10px;font-size:11px;cursor:pointer;color:var(--text);margin:2px}
+.chip:hover{background:color-mix(in srgb,var(--a) 25%,transparent)}
+
+.ins-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px;margin-bottom:6px}
+.ins-card{background:var(--surf);border:1px solid color-mix(in srgb,var(--line) 70%,transparent);border-inline-start:4px solid var(--a);border-radius:14px;padding:12px 14px;box-shadow:var(--sh);animation:rise .5s var(--ease) both;transition:transform .25s var(--ease),box-shadow .25s}
+.ins-card:hover{transform:translateY(-2px);box-shadow:0 12px 28px -14px color-mix(in srgb,var(--a) 40%,transparent)}
+.ins-card.Risk,.ins-card.Warning,.ins-card.Anomaly{border-inline-start-color:var(--dn)}
+.ins-card.Opportunity,.ins-card.Performance{border-inline-start-color:var(--up)}
+.ins-card.Attention{border-inline-start-color:#f59e0b}
+.ins-head{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.ins-head i{color:var(--a);font-size:14px}
+.ins-card.Risk .ins-head i,.ins-card.Warning .ins-head i,.ins-card.Anomaly .ins-head i{color:var(--dn)}
+.ins-card.Opportunity .ins-head i,.ins-card.Performance .ins-head i{color:var(--up)}
+.ins-card.Attention .ins-head i{color:#f59e0b}
+.ins-body{font-size:13px;line-height:1.55;color:var(--text)}
+
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-bottom:6px}
+.stat-card{background:var(--surf);border:1px solid color-mix(in srgb,var(--line) 70%,transparent);border-radius:14px;padding:14px;box-shadow:var(--sh);animation:rise .5s var(--ease) both}
+.stat-title{font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px;color:var(--text)}
+.stat-title i{color:var(--a);font-size:15px}
+.stat-rows{display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-size:12px;align-items:center}
+.stat-rows>span{color:var(--muted)}
+.stat-rows>b{font-weight:600;text-align:end;color:var(--text);font-variant-numeric:tabular-nums}
+
+.corr-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.corr-item{background:linear-gradient(135deg,color-mix(in srgb,var(--a) 12%,transparent),color-mix(in srgb,var(--c3) 8%,transparent));border-radius:12px;padding:14px;text-align:center;border:1px solid color-mix(in srgb,var(--a) 20%,transparent)}
+.corr-item .val{font-size:26px;font-weight:300;color:var(--a);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.corr-item .lbl{font-size:11px;color:var(--muted);margin-top:4px}
+.corr-note{font-size:11px;color:var(--muted);margin-top:10px;font-style:italic}
+.out-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.out-item{background:color-mix(in srgb,var(--rib) 70%,transparent);border-radius:12px;padding:12px;border:1px solid var(--line)}
+.out-item .onum{font-size:22px;font-weight:300;color:var(--dn);letter-spacing:-.02em}
+.out-item .olab{font-size:11px;color:var(--muted);margin-top:2px}
+.out-item .othr{font-size:11px;color:var(--text);margin-top:6px;font-weight:600}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media(max-width:900px){
+ .title{padding:8px 12px 0}
+ .ribbon,#nav{margin:6px 8px}
+ .body{padding:0 8px}
+ #view{padding:6px 0 10px}
+ .hl h2{font-size:16px;overflow-wrap:anywhere}
+ .kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+ .kpi{padding:9px 10px;min-width:0}
+ .kpi .l{font-size:11.5px}
+ .kpi .v{font-size:clamp(18px,5.6vw,26px);overflow-wrap:anywhere}
+ .pan{padding:8px 10px}
+ .ch{height:250px}.ch.lg{height:300px}
+ .s8,.s6,.s4{grid-column:span 12}
+ .tbl th,.tbl td{white-space:nowrap}
+ .hero{margin:2vh auto;padding:1.6rem 1rem;border-radius:22px}
+ .hlogo{width:56px;height:56px}
+ .ins-grid{grid-template-columns:1fr}
+ .stats-grid{grid-template-columns:1fr}
+ .corr-grid,.out-grid{grid-template-columns:1fr}
+ #fbar{position:fixed;top:0;bottom:0;inset-inline-end:0;margin:0;width:88%;max-width:340px;border-radius:0;border-width:0;border-inline-start:1px solid var(--line);z-index:40;box-shadow:none;visibility:hidden;padding-bottom:env(safe-area-inset-bottom,0px);transition:transform .25s var(--ease),visibility 0s .25s;transform:translateX(100%)}
+ [dir=rtl] #fbar{transform:translateX(-100%)}
+ #fbar.show{transform:none!important;visibility:visible;box-shadow:0 0 40px rgba(0,0,0,.35);transition:transform .25s var(--ease),visibility 0s}
+ #fbar.off{display:block}
+ #fbar:empty{display:none!important}
+ #fbar .ph{border-radius:0;padding-top:calc(8px + env(safe-area-inset-top,0px))}
+ #fbar .fc{margin:4px 6px}
+ #fbar .pill,#q{font-size:16px}
+ body.fopen #fback{display:block;animation:fi .2s}
+ #themeMenu{min-width:0;max-width:none}
+}
+@media print{.ribbon,#nav,#fbar,.tabbar,.title,.status,#themeMenu{display:none}body{overflow:visible}#view{overflow:visible}}
+</style>
+</head>
+<body>
+<div id="boot"><div><b>Healthcare Analytics</b><div class="bar"><i></i></div><small id="bootMsg">Loading…</small></div></div>
+<div id="app">
+ <div class="title">
+  <svg viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#0b6fb8"/><path d="M28 12h8v16h16v8H36v16h-8V36H12v-8h16z" fill="#fff"/></svg>
+  <b>Healthcare Intelligence</b><span class="muted">|</span><h1 id="pageTitle"></h1>
+ </div>
+ <div class="ribbon" role="toolbar">
+  <button id="openf" class="rb"></button>
+  <button id="ftog" class="rb"></button>
+  <button id="rst" class="rb"></button>
+  <span class="rsep"></span>
+  <div class="theme-picker" id="themePicker">
+   <button class="theme-trigger" id="themeTrigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Theme">
+    <span class="swatches"><i data-swatch></i><i data-swatch></i></span>
+    <span class="theme-name"></span>
+    <i class="bi bi-chevron-down caret"></i>
+   </button>
+  </div>
+  <button id="mode" class="rb"></button>
+  <button id="lang" class="rb"></button>
+  <button id="snd" class="rb"></button>
+  <span class="rsep"></span>
+  <button id="prt" class="rb"></button>
+ </div>
+ <div class="body">
+  <div class="center">
+   <section id="view" aria-live="polite"></section>
+   <nav id="nav" aria-label="Sections"></nav>
+  </div>
+  <aside id="fbar" aria-label="Filters"></aside>
+ </div>
+ <footer class="status"><span id="dsStatus"></span></footer>
+</div>
+<!-- Theme menu is a direct child of body to escape ribbon's backdrop-filter containing block -->
+<div id="themeMenu" role="listbox"></div>
+<input type="file" id="fileIn" accept=".csv" hidden>
+<div id="fback"></div>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+/* ============ i18n ============ */
+const I18N = {
+ en:{
+  overview:'Executive Overview', patients:'Patient Analytics', medical:'Medical Analytics',
+  hospitals:'Hospital Analytics', financial:'Financial Analytics', insurance:'Insurance Analytics',
+  admissions:'Admissions', doctors:'Doctor Analytics', medications:'Medication Analytics',
+  explorer:'Patient Explorer', quality:'Data Quality', insights:'Insights & Decisions',
+  loaddata:'Load data', wel_t:'Healthcare Analytics', wel_s:'Your decision intelligence dashboard. Upload your cleaned healthcare_dataset.csv to begin exploring your data.',
+  or:'or', dropsub:'Drag & drop a CSV here, or browse', browse:'Browse CSV file',
+  dl:'Downloading…', parse:'Reading rows…', an:'Building your dashboard…',
+  nofile:'Could not find healthcare_dataset.csv next to this page. Choose the file manually instead.',
+  empty:'No data matches the selected filters.', badfile:'Unable to process this CSV. Verify it contains all required columns.',
+  missing:'Missing columns: {c}', loaded:'Dataset loaded: {n} records', loadedttl:'Dataset successfully loaded',
+  replaceT:'Replace current dataset?', replaceB:'Current: {a} records. New file: {b} records.', replace:'Replace & analyze', cancel:'Cancel',
+  total:'Total records', valid:'Valid records', invalid:'Invalid records', dups:'Duplicate records',
+  score:'Data quality score', reasons:'Rejected rows by reason',
+  r_missing:'Missing values', r_date:'Invalid dates', r_number:'Invalid billing values', r_age:'Invalid age values', r_dup:'Duplicate records',
+  filters:'Filters', all:'All', from:'From', to:'To', clear:'Clear filters', close:'Close',
+  date:'Date', gender:'Gender', age:'Age group', cond:'Medical condition', hosp:'Hospital', ins:'Insurance provider',
+  atype:'Admission type', med:'Medication', test:'Test results', doctor:'Doctor', blood:'Blood type',
+  minbill:'Min billing', maxbill:'Max billing', minlos:'Min LOS', maxlos:'Max LOS',
+  k_patients:'Total patients', k_bill:'Total billing', k_abill:'Avg billing', k_mbill:'Median billing',
+  k_aage:'Avg age', k_mage:'Median age', k_hosp:'Hospitals', k_cond:'Conditions', k_doc:'Doctors',
+  k_ins:'Insurance providers', k_med:'Medications', k_los:'Avg length of stay', k_mlos:'Median LOS',
+  k_male:'Male patients', k_female:'Female patients', k_bestday:'Busiest day', k_topcond:'Top condition',
+  k_tophosp:'Top hospital', k_topins:'Top insurer', k_topblood:'Top blood type', k_toptest:'Top test result',
+  k_rooms:'Rooms used', k_minbill:'Min billing', k_maxbill:'Max billing', k_highbill:'High-billing records (IQR)',
+  k_longstay:'Long stays (>7d)', k_topmed:'Top medication', k_topdoc:'Top doctor', k_share:'Share of records',
+  vol:'Patient volume trend', volhint:'Admissions over time. Red dots mark statistical anomalies.',
+  bycond:'Patients by condition', bycondhint:'Distribution of recorded medical conditions.',
+  bybill:'Billing by condition', bybillhint:'Total billing attributed per medical condition.',
+  admix:'Admission type mix', admixhint:'Share of emergency, elective, urgent admissions.',
+  insmix:'Insurance mix', insmixhint:'Patient volume by insurance provider.',
+  toph:'Top hospitals by volume', tophhint:'Ranked by number of admissions.',
+  topbill:'Top hospitals by billing', topbillhint:'Total billing associated with each hospital.',
+  gd:'Gender', agd:'Age groups', bld:'Blood type', tst:'Test results', medd:'Medication',
+  condgen:'Condition × Gender', condage:'Condition × Age group', condhosp:'Hospital × Condition',
+  condins:'Insurance × Condition', hospins:'Hospital × Insurance',
+  agbill:'Age vs Billing', losbill:'Length of stay vs Billing', billdist:'Billing distribution', losdist:'Length of stay distribution',
+  monadm:'Admissions by month', wdadm:'Admissions by weekday', calh:'Admissions calendar heatmap',
+  loscond:'Length of stay by condition', losadm:'Length of stay by admission type',
+  docvol:'Top doctors by patient volume', docbill:'Top doctors by associated billing',
+  medfreq:'Medication frequency', medcond:'Medication × Condition', medtest:'Medication × Test result',
+  insbill:'Billing by insurer', insadm:'Admission type by insurer', insvol:'Patients by insurer',
+  hospvol:'Patients per hospital', hosplos:'Avg LOS by hospital', hospadm:'Admission type by hospital',
+  stats:'Statistical summary', stat_field:'Field', stat_n:'Count', stat_mean:'Mean', stat_med:'Median',
+  stat_min:'Min', stat_max:'Max', stat_sd:'Std dev', stat_q1:'Q1', stat_q3:'Q3', stat_iqr:'IQR',
+  outliers:'Statistical outliers', corr:'Correlation analysis', corr_age:'Age vs Billing',
+  corr_los:'Length of stay vs Billing', corr_note:'Correlation does not imply causation.',
+  sever:'Severity', Info:'Info', Attention:'Attention', Critical:'Critical',
+  search:'Search…', export:'Export filtered CSV', exported:'Export completed', rows:'rows',
+  s_new:'Newest', s_old:'Oldest', s_high:'Highest billing', s_low:'Lowest billing', ps:'Rows', sort:'Sort',
+  name:'Name', room:'Room', los:'LOS (days)',
+  insight_title:'Data-driven insights', insight_hint:'Deterministic analysis of the loaded dataset.',
+  method:'Methodology: all metrics computed from the loaded CSV. Median = 50th percentile. Outliers use the 1.5×IQR rule. "Billing" refers to the Billing Amount column — not profit or revenue.',
+  i_cond:'Condition "{c}" represents {p} of all recorded patients.',
+  i_hosp:'{h} has the highest patient volume ({n} patients).',
+  i_billcond:'Condition "{c}" has the highest average billing ({v}).',
+  i_billhosp:'{h} has the highest average billing ({v}).',
+  i_ins:'{i} covers the largest patient volume ({n} patients).',
+  i_insbill:'{i} is associated with the highest total billing ({v}).',
+  i_los:'Average length of stay is {v} days.',
+  i_loscond:'Condition "{c}" has the longest average length of stay ({v} days).',
+  i_age:'Patients aged {g} represent {p} of the dataset.',
+  i_male:'{p} of patients are male and {q} female.',
+  i_test:'Test results: {a} normal, {b} abnormal, {c} inconclusive.',
+  i_outlier:'{n} high-billing outliers detected (IQR rule).',
+  i_longstay:'{n} records show length of stay greater than 7 days.',
+  i_topmed:'Most common medication: {m} ({n} prescriptions).',
+  i_topdoc:'Doctor with highest patient volume: {d} ({n} patients).',
+  i_quality:'Data quality score: {p}.',
+  i_dups:'{n} duplicate records detected.',
+  i_missing:'{n} records contain missing values.',
+  vsprev:'vs previous period', nohist:'Insufficient historical data for this comparison.',
+  sev_note:'Statistical outlier (1.5×IQR)', sound_ttl:'Sound', mode_ttl:'Mode',
+  theme_menu:'Choose theme', above:'above'
+ },
+ ar:{
+  overview:'النظرة التنفيذية', patients:'تحليل المرضى', medical:'التحليل الطبي',
+  hospitals:'تحليل المستشفيات', financial:'التحليل المالي', insurance:'تحليل التأمين',
+  admissions:'الدخول والخروج', doctors:'تحليل الأطباء', medications:'تحليل الأدوية',
+  explorer:'مستكشف المرضى', quality:'جودة البيانات', insights:'الرؤى والقرارات',
+  loaddata:'تحميل البيانات', wel_t:'تحليل الرعاية الصحية', wel_s:'لوحة دعم القرار. ارفع ملف healthcare_dataset.csv لبدء الاستكشاف.',
+  or:'أو', dropsub:'اسحب ملف CSV هنا أو تصفح', browse:'تصفح ملف CSV',
+  dl:'جارٍ التنزيل…', parse:'جارٍ قراءة الصفوف…', an:'جارٍ بناء اللوحة…',
+  nofile:'لم يتم العثور على healthcare_dataset.csv. اختر الملف يدويًا.',
+  empty:'لا توجد بيانات مطابقة للفلاتر.', badfile:'تعذّرت معالجة هذا الملف. تأكد من وجود جميع الأعمدة المطلوبة.',
+  missing:'أعمدة مفقودة: {c}', loaded:'تم تحميل البيانات: {n} سجل', loadedttl:'تم تحميل البيانات بنجاح',
+  replaceT:'استبدال مجموعة البيانات؟', replaceB:'الحالية: {a}. الجديد: {b}.', replace:'استبدل وحلل', cancel:'إلغاء',
+  total:'إجمالي السجلات', valid:'سجلات صالحة', invalid:'سجلات غير صالحة', dups:'سجلات مكررة',
+  score:'درجة جودة البيانات', reasons:'الصفوف المرفوضة حسب السبب',
+  r_missing:'قيم مفقودة', r_date:'تواريخ غير صالحة', r_number:'قيم فاتورة غير صالحة', r_age:'قيم عمر غير صالحة', r_dup:'سجلات مكررة',
+  filters:'الفلاتر', all:'الكل', from:'من', to:'إلى', clear:'مسح الفلاتر', close:'إغلاق',
+  date:'التاريخ', gender:'الجنس', age:'الفئة العمرية', cond:'الحالة الطبية', hosp:'المستشفى', ins:'شركة التأمين',
+  atype:'نوع الدخول', med:'الدواء', test:'نتائج الفحص', doctor:'الطبيب', blood:'فصيلة الدم',
+  minbill:'أقل فاتورة', maxbill:'أعلى فاتورة', minlos:'أقل مدة', maxlos:'أعلى مدة',
+  k_patients:'إجمالي المرضى', k_bill:'إجمالي الفواتير', k_abill:'متوسط الفاتورة', k_mbill:'وسيط الفاتورة',
+  k_aage:'متوسط العمر', k_mage:'وسيط العمر', k_hosp:'المستشفيات', k_cond:'الحالات الطبية', k_doc:'الأطباء',
+  k_ins:'شركات التأمين', k_med:'الأدوية', k_los:'متوسط الإقامة', k_mlos:'وسيط الإقامة',
+  k_male:'المرضى الذكور', k_female:'المرضى الإناث', k_bestday:'أكثر يوم ازدحامًا', k_topcond:'أكثر حالة',
+  k_tophosp:'أكبر مستشفى', k_topins:'أكبر شركة تأمين', k_topblood:'أشهر فصيلة دم', k_toptest:'أشهر نتيجة فحص',
+  k_rooms:'الغرف المستخدمة', k_minbill:'أقل فاتورة', k_maxbill:'أعلى فاتورة', k_highbill:'فواتير مرتفعة (IQR)',
+  k_longstay:'إقامات طويلة (>7 أيام)', k_topmed:'أشهر دواء', k_topdoc:'أكثر طبيب', k_share:'نسبة من السجلات',
+  vol:'اتجاه أعداد المرضى', volhint:'الدخول عبر الزمن. النقاط الحمراء شذوذ إحصائي.',
+  bycond:'المرضى حسب الحالة', bycondhint:'توزيع الحالات الطبية المسجلة.',
+  bybill:'الفواتير حسب الحالة', bybillhint:'إجمالي الفواتير لكل حالة طبية.',
+  admix:'مزيج نوع الدخول', admixhint:'نسبة الطوارئ والاختياري والعاجل.',
+  insmix:'مزيج التأمين', insmixhint:'أعداد المرضى حسب شركة التأمين.',
+  toph:'أفضل المستشفيات بالحجم', tophhint:'مرتبة حسب عدد الدخول.',
+  topbill:'أفضل المستشفيات بالفواتير', topbillhint:'إجمالي الفواتير المرتبطة بكل مستشفى.',
+  gd:'الجنس', agd:'الفئات العمرية', bld:'فصيلة الدم', tst:'نتائج الفحص', medd:'الدواء',
+  condgen:'الحالة × الجنس', condage:'الحالة × الفئة العمرية', condhosp:'المستشفى × الحالة',
+  condins:'التأمين × الحالة', hospins:'المستشفى × التأمين',
+  agbill:'العمر مقابل الفاتورة', losbill:'مدة الإقامة مقابل الفاتورة', billdist:'توزيع الفواتير', losdist:'توزيع مدة الإقامة',
+  monadm:'الدخول حسب الشهر', wdadm:'الدخول حسب يوم الأسبوع', calh:'خريطة حرارية للدخول',
+  loscond:'مدة الإقامة حسب الحالة', losadm:'مدة الإقامة حسب نوع الدخول',
+  docvol:'أكثر الأطباء بعدد المرضى', docbill:'أكثر الأطباء بالفواتير المرتبطة',
+  medfreq:'تكرار الأدوية', medcond:'الدواء × الحالة', medtest:'الدواء × نتيجة الفحص',
+  insbill:'الفواتير حسب التأمين', insadm:'نوع الدخول حسب التأمين', insvol:'المرضى حسب التأمين',
+  hospvol:'المرضى لكل مستشفى', hosplos:'متوسط الإقامة حسب المستشفى', hospadm:'نوع الدخول حسب المستشفى',
+  stats:'الملخص الإحصائي', stat_field:'الحقل', stat_n:'العدد', stat_mean:'المتوسط', stat_med:'الوسيط',
+  stat_min:'الأدنى', stat_max:'الأعلى', stat_sd:'الانحراف المعياري', stat_q1:'الربع 1', stat_q3:'الربع 3', stat_iqr:'المدى الربيعي',
+  outliers:'القيم الشاذة إحصائيًا', corr:'تحليل الارتباط', corr_age:'العمر مقابل الفاتورة',
+  corr_los:'مدة الإقامة مقابل الفاتورة', corr_note:'الارتباط لا يعني السببية.',
+  sever:'الخطورة', Info:'معلومة', Attention:'انتباه', Critical:'حرج',
+  search:'بحث…', export:'تصدير CSV المفلتر', exported:'اكتمل التصدير', rows:'صف',
+  s_new:'الأحدث', s_old:'الأقدم', s_high:'الأعلى فاتورة', s_low:'الأدنى فاتورة', ps:'الصفوف', sort:'ترتيب',
+  name:'الاسم', room:'الغرفة', los:'مدة الإقامة (يوم)',
+  insight_title:'رؤى مدعومة بالبيانات', insight_hint:'تحليل حتمي للبيانات المحمّلة.',
+  method:'المنهجية: جميع المؤشرات محسوبة من ملف CSV. الوسيط = المئين 50. القيم الشاذة باستخدام قاعدة 1.5×IQR. "الفاتورة" تشير إلى عمود Billing Amount وليس الربح.',
+  i_cond:'الحالة "{c}" تمثل {p} من إجمالي المرضى.',
+  i_hosp:'{h} الأعلى في عدد المرضى ({n} مريض).',
+  i_billcond:'الحالة "{c}" الأعلى في متوسط الفاتورة ({v}).',
+  i_billhosp:'{h} الأعلى في متوسط الفاتورة ({v}).',
+  i_ins:'{i} يغطي أكبر عدد من المرضى ({n} مريض).',
+  i_insbill:'{i} الأعلى في إجمالي الفواتير ({v}).',
+  i_los:'متوسط مدة الإقامة {v} يوم.',
+  i_loscond:'الحالة "{c}" الأطول في متوسط الإقامة ({v} يوم).',
+  i_age:'المرضى بعمر {g} يمثلون {p} من البيانات.',
+  i_male:'{p} من المرضى ذكور و{q} إناث.',
+  i_test:'نتائج الفحص: {a} طبيعي، {b} غير طبيعي، {c} غير حاسم.',
+  i_outlier:'تم رصد {n} قيمة شاذة في الفواتير (قاعدة IQR).',
+  i_longstay:'{n} سجل بمدة إقامة تتجاوز 7 أيام.',
+  i_topmed:'أشهر دواء: {m} ({n} وصفة).',
+  i_topdoc:'أكثر طبيب بعدد المرضى: {d} ({n} مريض).',
+  i_quality:'درجة جودة البيانات: {p}.',
+  i_dups:'{n} سجل مكرر.',
+  i_missing:'{n} سجل بقيم مفقودة.',
+  vsprev:'مقارنة بالفترة السابقة', nohist:'لا توجد بيانات كافية للمقارنة.',
+  sev_note:'قيمة شاذة إحصائيًا (1.5×IQR)', sound_ttl:'الصوت', mode_ttl:'الوضع',
+  theme_menu:'اختر المظهر', above:'أعلى من'
+ }
+};
+const THEMES = ['healthcare','clinical','midnight','teal','highcontrast'];
+const THEME_META = {
+ healthcare:{name:'Healthcare', ar:'رعاية صحية', colors:['#0b6fb8','#0e8a7d']},
+ clinical:{name:'Clinical Clean', ar:'سريري نظيف', colors:['#0e7490','#0d9488']},
+ midnight:{name:'Midnight Executive', ar:'تنفيذي ليلي', colors:['#7c3aed','#2563eb']},
+ teal:{name:'Teal Medical', ar:'فيروزي طبي', colors:['#0d9488','#0e7490']},
+ highcontrast:{name:'High Contrast', ar:'تباين عالٍ', colors:['#000000','#cc0000']}
+};
+</script>
+<script>
+/* ============ Config + State ============ */
+const CONFIG = { csvFile:'healthcare_dataset.csv', currency:'USD', maxTop:12 };
+const REQ = ['Name','Age','Gender','Blood Type','Medical Condition','Date of Admission','Doctor','Hospital',
+ 'Insurance Provider','Billing Amount','Room Number','Admission Type','Discharge Date','Medication','Test Results'];
+const AGES = [['0–17',0,17],['18–29',18,29],['30–44',30,44],['45–59',45,59],['60–74',60,74],['75+',75,200]];
+const ageGroup = a => (AGES.find(g => a>=g[1] && a<=g[2]) || AGES[5])[0];
+const num = x => { const v = parseFloat(x); return isFinite(v) ? v : NaN; };
+const $ = s => document.querySelector(s);
+
+const S = {
+ raw:[], data:[], bad:[], name:'', page:'overview', q:'', pg:0,
+ f:{from:'',to:'',gender:'',cond:'',ag:'',hosp:'',ins:'',atype:'',med:'',test:'',doctor:'',blood:'',minbill:'',maxbill:'',minlos:'',maxlos:''},
+ meta:null,
+ tc:{gran:'day', metric:'rev', ps:'25', sort:'new'},
+ set:Object.assign({lang:'en',theme:'healthcare',mode:'light',sound:true,vol:.5}, JSON.parse(localStorage.hc1||'{}'))
+};
+const save = () => localStorage.hc1 = JSON.stringify(S.set);
+const t = (k,p) => { let s = (I18N[S.set.lang][k] ?? I18N.en[k] ?? k); if(p) for(const x in p) s = s.replace('{'+x+'}', p[x]); return s; };
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rtl = () => S.set.lang === 'ar';
+const loc = () => rtl() ? 'ar-EG' : 'en-US';
+const nf = (v,o) => isFinite(v) ? new Intl.NumberFormat(loc(),o).format(v) : '—';
+const money = v => !isFinite(v) ? '—' : nf(v,{style:'currency',currency:CONFIG.currency,notation:Math.abs(v)>=1e4?'compact':'standard',maximumFractionDigits:Math.abs(v)>=1e4?2:0});
+const money2 = v => !isFinite(v) ? '—' : nf(v,{style:'currency',currency:CONFIG.currency,maximumFractionDigits:0});
+const pc = v => v==null || !isFinite(v) ? '—' : nf(v/100,{style:'percent',maximumFractionDigits:1,signDisplay:'exceptZero'});
+const sh = v => !isFinite(v) ? '—' : nf(v,{style:'percent',maximumFractionDigits:1});
+const dec = (v,d=1) => isFinite(v) ? nf(v,{maximumFractionDigits:d}) : '—';
+const dfmt = (d,o) => !d ? '—' : new Intl.DateTimeFormat(loc(), o || {dateStyle:'medium',timeZone:'UTC'}).format(new Date(d));
+const isoDay = d => { const x = new Date(d); return new Date(x.getTime()-x.getTimezoneOffset()*60000).toISOString().slice(0,10); };
+
+let ac;
+function beep(f=660,d=.12,g=1){
+ if(!S.set.sound) return;
+ try{
+  ac = ac || new (window.AudioContext||window.webkitAudioContext)(); ac.resume();
+  const o = ac.createOscillator(), n = ac.createGain();
+  o.frequency.value = f; n.gain.value = Math.max(.002,.12*g*S.set.vol);
+  o.connect(n); n.connect(ac.destination); o.start();
+  n.gain.exponentialRampToValueAtTime(.0005, ac.currentTime+d); o.stop(ac.currentTime+d);
+ }catch(e){}
+}
+function navSound(){ if(!S.set.sound) return; beep(720,.06,.8); setTimeout(()=>beep(1080,.09,.7), 70); }
+function softTap(){ if(!S.set.sound) return; beep(880,.04,.5); }
+const chime = () => [523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.28),i*110));
+const toast = (icon,title) => Swal.fire({toast:true,position:rtl()?'top-start':'top-end',icon,title,showConfirmButton:false,timer:2600});
+const showError = m => { beep(220,.25); return Swal.fire({icon:'error',text:m}); };
+
+/* ECharts */
+const CH = [];
+const cs = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const pal = () => [1,2,3,4,5,6].map(i=>cs('--c'+i));
+function chart(id,opt){
+ const el = document.getElementById(id); if(!el) return;
+ const c = echarts.init(el);
+ const tx = cs('--muted'), ln = cs('--line');
+ const yp = rtl()?'right':'left';
+ [].concat(opt.xAxis||[], opt.yAxis||[]).forEach(a => {
+  if(!a) return;
+  a.axisLabel = Object.assign({color:tx}, a.axisLabel);
+  a.axisLine = Object.assign({lineStyle:{color:ln}}, a.axisLine);
+  a.splitLine = Object.assign({lineStyle:{color:ln}}, a.splitLine);
+ });
+ [].concat(opt.yAxis||[]).forEach(y => { if(y && !y.position) y.position = yp; });
+ const o = Object.assign({
+  textStyle:{fontFamily:cs('--font'),color:tx},
+  color:pal(),
+  animationDuration:600,
+  grid:{left:8,right:8,top:30,bottom:8,containLabel:true}
+ }, opt);
+ o.tooltip = Object.assign({
+  trigger:'axis', confine:true,
+  backgroundColor:cs('--surf'), borderColor:ln, textStyle:{color:cs('--text')},
+  valueFormatter:v=>typeof v==='number' ? nf(v,{maximumFractionDigits:1}) : v
+ }, opt.tooltip||{});
+ if(o.legend) o.legend.textStyle = Object.assign({color:tx}, o.legend.textStyle||{});
+ c.setOption(o);
+ CH.push(c);
+ return c;
+}
+window.addEventListener('resize', () => CH.forEach(c => c.resize()));
+
+function group(rows, keyFn){
+ const m = new Map();
+ for(const r of rows){
+  const k = keyFn(r); if(k==null || k==='') continue;
+  let g = m.get(k);
+  if(!g){ g = {k, n:0, bill:0, los:0, losN:0, ages:0, males:0, females:0}; m.set(k,g); }
+  g.n++;
+  if(isFinite(r.bill)) g.bill += r.bill;
+  if(isFinite(r.los)){ g.los += r.los; g.losN++; }
+  if(isFinite(r.age)) g.ages += r.age;
+  if(r.gender==='Male'||r.gender==='M'||r.gender==='ذكر') g.males++;
+  else if(r.gender==='Female'||r.gender==='F'||r.gender==='أنثى') g.females++;
+ }
+ return [...m.values()].map(g=>({
+  ...g,
+  avgBill: g.n ? g.bill/g.n : 0,
+  avgLos: g.losN ? g.los/g.losN : 0,
+  avgAge: g.n ? g.ages/g.n : 0
+ }));
+}
+function crosstab(rows, xf, yf){
+ const xs = new Set(), ys = new Set(), m = new Map();
+ for(const r of rows){
+  const x = xf(r), y = yf(r);
+  if(!x || !y) continue;
+  xs.add(x); ys.add(y);
+  const k = x+'|||'+y;
+  m.set(k, (m.get(k)||0)+1);
+ }
+ return {xs:[...xs].sort(), ys:[...ys].sort(), get:(x,y)=>m.get(x+'|||'+y)||0};
+}
+const median = arr => { const a = arr.filter(isFinite).slice().sort((x,y)=>x-y); if(!a.length) return NaN; const h = a.length>>1; return a.length % 2 ? a[h] : (a[h-1]+a[h])/2; };
+const quantile = (a,q) => { const s = a.filter(isFinite).slice().sort((x,y)=>x-y); if(!s.length) return NaN; const p = (s.length-1)*q, lo = Math.floor(p), hi = Math.ceil(p); return s[lo] + (s[hi]-s[lo])*(p-lo); };
+const stdev = a => { const v = a.filter(isFinite); if(v.length<2) return NaN; const m = v.reduce((x,y)=>x+y,0)/v.length; return Math.sqrt(v.reduce((s,x)=>s+(x-m)**2,0)/(v.length-1)); };
+const pearson = (xs,ys) => { const pairs = xs.map((x,i)=>[x,ys[i]]).filter(([x,y])=>isFinite(x)&&isFinite(y)); if(pairs.length<3) return NaN; const n = pairs.length; const mx = pairs.reduce((s,p)=>s+p[0],0)/n; const my = pairs.reduce((s,p)=>s+p[1],0)/n; let num=0,dx=0,dy=0; for(const [x,y] of pairs){ num += (x-mx)*(y-my); dx += (x-mx)**2; dy += (y-my)**2; } return dx*dy ? num/Math.sqrt(dx*dy) : NaN; };
+
+function normalize(raw){
+ const rows = [], bad = [], seen = new Set();
+ raw.forEach((r,i) => {
+  const admStr = String(r['Date of Admission']??'').trim();
+  const disStr = String(r['Discharge Date']??'').trim();
+  const adm = admStr ? new Date(admStr) : new Date(NaN);
+  const dis = disStr ? new Date(disStr) : new Date(NaN);
+  let los = NaN;
+  if(!isNaN(adm) && !isNaN(dis)) los = Math.round((dis - adm)/86400000);
+  const o = {
+   name: String(r['Name']??'').trim(), age: num(r['Age']), gender: String(r['Gender']??'').trim(),
+   blood: String(r['Blood Type']??'').trim(), cond: String(r['Medical Condition']??'').trim(),
+   adm, dis, los, doc: String(r['Doctor']??'').trim(), hosp: String(r['Hospital']??'').trim(),
+   ins: String(r['Insurance Provider']??'').trim(), bill: num(r['Billing Amount']),
+   room: String(r['Room Number']??'').trim(), atype: String(r['Admission Type']??'').trim(),
+   med: String(r['Medication']??'').trim(), test: String(r['Test Results']??'').trim(),
+   day: '', ag: ''
+  };
+  let why = null;
+  if(!o.name || !o.cond || !o.hosp) why = 'missing';
+  else if(isNaN(adm)) why = 'date';
+  else if(isNaN(o.bill) || o.bill < 0) why = 'number';
+  else if(isNaN(o.age) || o.age < 0 || o.age > 120) why = 'age';
+  else { const key = o.name + '|' + isoDay(adm) + '|' + o.hosp; if(seen.has(key)) why = 'dup'; seen.add(key); }
+  if(isNaN(adm)) o.day = ''; else o.day = isoDay(adm);
+  o.ag = isFinite(o.age) ? ageGroup(o.age) : '';
+  if(why) bad.push({row:i+2, why});
+  else rows.push(o);
+ });
+ return {rows, bad};
+}
+function filt(skipDate){
+ const f = S.f, n = v => v===''||v==null ? null : +v;
+ const mB = n(f.minbill), xB = n(f.maxbill), mL = n(f.minlos), xL = n(f.maxlos);
+ return S.data.filter(r =>
+  (skipDate || ((!f.from || r.day >= f.from) && (!f.to || r.day <= f.to))) &&
+  (!f.gender || r.gender === f.gender) &&
+  (!f.cond || r.cond === f.cond) &&
+  (!f.ag || r.ag === f.ag) &&
+  (!f.hosp || r.hosp === f.hosp) &&
+  (!f.ins || r.ins === f.ins) &&
+  (!f.atype || r.atype === f.atype) &&
+  (!f.med || r.med === f.med) &&
+  (!f.test || r.test === f.test) &&
+  (!f.doctor || r.doc === f.doctor) &&
+  (!f.blood || r.blood === f.blood) &&
+  (mB==null || r.bill >= mB) && (xB==null || r.bill <= xB) &&
+  (mL==null || (isFinite(r.los) && r.los >= mL)) && (xL==null || (isFinite(r.los) && r.los <= xL))
+ );
+}
+function prevRows(rows){
+ if(!rows.length) return null;
+ let a = rows[0].day, b = a;
+ for(const r of rows){ if(r.day && r.day < a) a = r.day; if(r.day > b) b = r.day; }
+ const len = Math.max(1, Math.round((new Date(b)-new Date(a))/86400000)+1);
+ const pa = new Date(new Date(a).getTime() - len*86400000).toISOString().slice(0,10);
+ const p = filt(true).filter(r => r.day >= pa && r.day < a);
+ return p.length ? p : null;
+}
+function kpi(rows){
+ let bill=0, los=0, losN=0, age=0, ageN=0;
+ const hospitals = new Set(), conds = new Set(), docs = new Set(), ins = new Set(), meds = new Set(), atypes = new Set(), bloods = new Set(), tests = new Set(), rooms = new Set();
+ let male=0, female=0;
+ const bills = [], ages = [], loss = [];
+ for(const r of rows){
+  if(isFinite(r.bill)){ bill += r.bill; bills.push(r.bill); }
+  if(isFinite(r.los)){ los += r.los; losN++; loss.push(r.los); }
+  if(isFinite(r.age)){ age += r.age; ageN++; ages.push(r.age); }
+  hospitals.add(r.hosp); conds.add(r.cond); docs.add(r.doc); ins.add(r.ins);
+  meds.add(r.med); atypes.add(r.atype); bloods.add(r.blood); tests.add(r.test); rooms.add(r.room);
+  if(r.gender==='Male'||r.gender==='M') male++;
+  else if(r.gender==='Female'||r.gender==='F') female++;
+ }
+ return {
+  n: rows.length, bill, bills, abill: rows.length ? bill/rows.length : 0, mbill: median(bills),
+  minbill: bills.length ? Math.min(...bills) : NaN, maxbill: bills.length ? Math.max(...bills) : NaN,
+  age: ageN ? age/ageN : NaN, mage: median(ages), ages, male, female,
+  los: losN ? los/losN : NaN, mlos: median(loss), loss,
+  nHosp: hospitals.size, nCond: conds.size, nDoc: docs.size, nIns: ins.size, nMed: meds.size,
+  nAdm: atypes.size, nBlood: bloods.size, nTest: tests.size, nRoom: rooms.size,
+  hospitals, conds, docs, ins, meds, atypes, bloods, tests, rooms
+ };
+}
+const growth = (a,b) => (isFinite(a) && isFinite(b) && b>0) ? (a-b)/b*100 : null;
+function outlierCut(arr){
+ const a = arr.filter(isFinite);
+ if(a.length < 4) return {lo:-Infinity, hi:Infinity};
+ const q1 = quantile(a,.25), q3 = quantile(a,.75), iqr = q3-q1;
+ return {lo: q1 - 1.5*iqr, hi: q3 + 1.5*iqr};
+}
+function daily(rows){
+ const m = new Map();
+ for(const r of rows){
+  if(!r.day) continue;
+  let g = m.get(r.day);
+  if(!g){ g = {k:r.day, n:0, bill:0, los:0, losN:0}; m.set(r.day, g); }
+  g.n++;
+  if(isFinite(r.bill)) g.bill += r.bill;
+  if(isFinite(r.los)){ g.los += r.los; g.losN++; }
+ }
+ return [...m.values()].map(g=>({...g, los: g.losN ? g.los/g.losN : 0})).sort((a,b)=>a.k<b.k?-1:1);
+}
+function anomalies(dl){
+ const out = [], W = 7;
+ for(let i=W; i<dl.length; i++){
+  const w = dl.slice(i-W,i).map(d=>d.n);
+  const m = w.reduce((a,b)=>a+b,0)/W;
+  const sd = Math.sqrt(w.reduce((s,x)=>s+(x-m)**2,0)/W);
+  if(!sd) continue;
+  const z = (dl[i].n-m)/sd, az = Math.abs(z);
+  if(az >= 2) out.push({day:dl[i].k, n:dl[i].n, expected:m, z, sev: az>4?'Critical': az>3?'High': az>2.5?'Medium':'Low'});
+ }
+ return out;
+}
+
+const setBoot = m => { const e = $('#bootMsg'); if(e) e.textContent = m; };
+const hideBoot = () => { const b = $('#boot'); if(b){ b.style.opacity = 0; setTimeout(()=>b.remove(), 400); } };
+
+function ingest(text, name){
+ return new Promise(res => {
+  Papa.parse(text, {header:true, skipEmptyLines:true, complete: async r => {
+   try{
+    const fields = r.meta.fields || [];
+    const miss = REQ.filter(c => !fields.includes(c));
+    if(miss.length){ await showError(t('missing',{c:miss.join(', ')})); return res(false); }
+    const n = normalize(r.data);
+    if(!n.rows.length){ await showError(t('badfile')); return res(false); }
+    if(S.data.length){
+     const ok = await Swal.fire({icon:'question', title:t('replaceT'), text:t('replaceB',{a:nf(S.data.length), b:nf(n.rows.length)}), showCancelButton:true, confirmButtonText:t('replace'), cancelButtonText:t('cancel')});
+     if(!ok.isConfirmed) return res(false);
+    }
+    S.data = n.rows;
+    S.bad = n.bad;
+    S.name = name;
+    S.meta = { total:r.data.length, bad:n.bad, extra:fields.filter(c=>!REQ.includes(c)) };
+    Object.keys(S.f).forEach(k => S.f[k] = '');
+    buildFbar(); buildNav(); render(); chime();
+    Swal.fire({icon:'success', title:t('loadedttl'), text:t('loaded',{n:nf(n.rows.length)}), timer:2400, showConfirmButton:false});
+    res(true);
+   }catch(e){ console.error(e); showError(t('badfile')); res(false); }
+  }, error: e => { console.error(e); showError(t('badfile')); res(false); } });
+ });
+}
+async function handleFile(f){
+ if(!f) return;
+ if(!/\.csv$/i.test(f.name) || f.size > 100*1048576) return showError(t('badfile'));
+ Swal.fire({title:f.name, html:esc((f.size/1048576).toFixed(2))+' MB', didOpen:()=>Swal.showLoading(), allowOutsideClick:false, showConfirmButton:false});
+ const text = await f.text();
+ Swal.close();
+ await ingest(text, f.name);
+}
+
+const V = h => $('#view').innerHTML = h;
+const emptyPage = () => `<div class="pan muted" style="text-align:center;padding:3rem 1rem">${esc(t('empty'))}<div style="margin-top:12px"><button class="pill" onclick="resetF()">${esc(t('clear'))}</button></div></div>`;
+const pn = (title, hint, id, cls='s6', h='') =>
+ `<div class="pan ${cls}"><h3>${esc(title)}</h3>${hint?`<p class="hint">${esc(hint)}</p>`:''}<div id="${id}" class="ch ${h}"></div></div>`;
+const tabbar = defs => `<div class="tabbar">${defs.map(([k,l,opts]) =>
+ `<div class="fld"><span>${esc(l)}</span><div class="seg" role="group" data-tc="${k}">${opts.map(([v,lb]) =>
+  `<button type="button" data-v="${v}" class="${String(S.tc[k])===String(v)?'on':''}" aria-pressed="${String(S.tc[k])===String(v)}">${esc(lb)}</button>`
+ ).join('')}</div></div>`).join('')}</div>`;
+const bindTabs = () => document.querySelectorAll('.seg[data-tc]').forEach(g => g.querySelectorAll('button').forEach(b => b.onclick = () => { S.tc[g.dataset.tc] = b.dataset.v; softTap(); render(); }));
+
+function countUp(){
+ if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+ document.querySelectorAll('.kpi .v[data-v]').forEach(el => {
+  const to = +el.dataset.v, fmt = el.dataset.f || 'nf', t0 = performance.now();
+  const f = fmt === 'money' ? money : fmt === 'dec' ? dec : fmt === 'sh' ? sh : nf;
+  const st = n => { const p = Math.min(1, (n - t0)/700); el.textContent = f(to*(1 - Math.pow(1 - p, 3))); if(p < 1) requestAnimationFrame(st); };
+  requestAnimationFrame(st);
+ });
+}
+const KFMT = { money: v => money(v), money2: v => money2(v), dec: v => dec(v), sh: v => sh(v), nf: v => nf(v), days: v => dec(v,1) + 'd' };
+const kcard = (label, value, fmtKey, sub='', help='', sparkSvg=null, chg=null) => {
+ const cls = chg == null ? '' : (chg >= 0 ? 'up' : 'dn');
+ return `<div class="kpi">
+  <div class="l">${esc(label)}</div>
+  <div class="v" data-v="${value}" data-f="${fmtKey}">${esc(KFMT[fmtKey]?KFMT[fmtKey](value):nf(value))}</div>
+  ${sub?`<div class="sub">${esc(sub)}</div>`:''}
+  ${chg==null?'':`<div class="chg ${cls}"><i class="bi ${chg>=0?'bi-arrow-up-right':'bi-arrow-down-right'}"></i> ${esc(pc(chg))} <span>${esc(t('vsprev'))}</span></div>`}
+  ${help?`<p class="help">${esc(help)}</p>`:''}
+  ${sparkSvg||''}
+ </div>`;
+};
+function spark(arr){
+ if(!arr || arr.length < 2) return '';
+ const step = Math.max(1, Math.ceil(arr.length/40));
+ const p = arr.filter((_,i) => i%step === 0);
+ const mn = Math.min(...p), mx = Math.max(...p);
+ return `<svg viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true"><path d="${p.map((v,i) =>
+  (i?'L':'M') + (i/(p.length-1)*100).toFixed(1) + ' ' + (26 - (mx===mn?.5:(v-mn)/(mx-mn))*24).toFixed(1)).join('')}"/></svg>`;
+}
+
+function bar(id, data, opt={}){
+ const fmt = opt.fmt || money;
+ const h = opt.h;
+ const labelColor = cs('--text');
+ const c = chart(id, {
+  grid: h ? {left:8, right:74, top:10, bottom:8, containLabel:true}
+          : {left:8, right:16, top:34, bottom:8, containLabel:true},
+  xAxis: h ? {type:'value',axisLabel:{formatter:v=>fmt(v)}} 
+           : {type:'category',data:data.map(d=>d.k),axisLabel:{rotate:data.length>6?30:0,width:100,overflow:'truncate'}},
+  yAxis: h ? {type:'category',inverse:true,data:data.map(d=>d.k),axisLabel:{width:120,overflow:'truncate'}} 
+           : {type:'value',axisLabel:{formatter:v=>fmt(v)}},
+  series:[{
+   type:'bar', barMaxWidth:26,
+   itemStyle:{borderRadius: h ? [0,4,4,0] : [4,4,0,0]},
+   label:{
+    show:true,
+    position: h ? 'right' : 'top',
+    formatter: p => fmt(p.value),
+    fontSize: 11,
+    fontWeight: 600,
+    color: labelColor
+   },
+   data:data.map(d=>d.v)
+  }],
+  tooltip:{trigger:'axis',valueFormatter:v=>fmt(v)}
+ });
+ if(c && opt.click) c.on('click', p => opt.click(p.name));
+ return c;
+}
+
+/* ============ Pie — NOW WITH PERCENTAGES ============ */
+function pie(id, data, opt={}){
+ const fmt = opt.fmt || nf;
+ const c = chart(id, {
+  tooltip:{trigger:'item', formatter: p => `${esc(p.name)}<br><b>${fmt(p.value)}</b> · <b>${p.percent.toFixed(1)}%</b>`},
+  legend:{bottom:0, type:'scroll'},
+  series:[{
+   type:'pie',
+   radius: opt.radius || ['40%','60%'],
+   center: opt.center || ['50%','42%'],
+   avoidLabelOverlap: true,
+   minAngle: 4,
+   label:{
+    show:true,
+    formatter: p => `${p.name}\n${fmt(p.value)} · ${p.percent.toFixed(1)}%`,
+    fontSize:10,
+    lineHeight:13,
+    color: cs('--text'),
+    fontWeight:600
+   },
+   labelLine:{show:true, length:8, length2:10, lineStyle:{color:cs('--line')}},
+   itemStyle:{borderRadius:6, borderColor:cs('--surf'), borderWidth:2},
+   data: data.map(d => ({name:d.k, value:d.v}))
+  }]
+ });
+ if(c && opt.click) c.on('click', p => opt.click(p.name));
+ return c;
+}
+
+const pages = {};
+
+pages.overview = rows => {
+ const K = kpi(rows), p = prevRows(rows), P = p && kpi(p);
+ const dl = daily(rows);
+ const conds = group(rows, r => r.cond).sort((a,b)=>b.n-a.n).map(c=>({k:c.k, v:c.n}));
+ const condsBill = group(rows, r => r.cond).sort((a,b)=>b.bill-a.bill);
+ const hosps = group(rows, r => r.hosp).sort((a,b)=>b.n-a.n).map(h=>({k:h.k, v:h.n}));
+ const atypes = group(rows, r => r.atype).sort((a,b)=>b.n-a.n).map(a=>({k:a.k, v:a.n}));
+ const ins = group(rows, r => r.ins).sort((a,b)=>b.n-a.n).map(i=>({k:i.k, v:i.n}));
+
+ V(`
+  <div class="hl"><h2>${esc(rtl() ? `${nf(K.n)} مريض · ${money(K.bill)} إجمالي الفواتير · ${nf(K.nHosp)} مستشفى` : `${nf(K.n)} patients · ${money(K.bill)} total billing · ${nf(K.nHosp)} hospitals`)}</h2>
+  <p>${esc(t('insight_hint'))}</p></div>
+
+  <h2 class="sec">${esc(t('overview'))}</h2>
+  <div class="kpis">
+   ${kcard(t('k_patients'), K.n, 'nf', '', '', spark(dl.map(d=>d.n)), P?growth(K.n,P.n):null)}
+   ${kcard(t('k_bill'), K.bill, 'money', '', '', spark(dl.map(d=>d.bill)), P?growth(K.bill,P.bill):null)}
+   ${kcard(t('k_abill'), K.abill, 'money2', '', '', null, P&&P.abill?growth(K.abill,P.abill):null)}
+   ${kcard(t('k_mbill'), K.mbill, 'money2')}
+   ${kcard(t('k_aage'), K.age, 'dec')}
+   ${kcard(t('k_los'), K.los, 'days', '', '', spark(dl.map(d=>d.los)))}
+   ${kcard(t('k_hosp'), K.nHosp, 'nf')}
+   ${kcard(t('k_cond'), K.nCond, 'nf')}
+  </div>
+
+  <div class="grid">
+   ${pn(t('vol'), t('volhint'), 'c1', 's8', 'lg')}
+   ${pn(t('bycond'), t('bycondhint'), 'c2', 's4', 'lg')}
+   ${pn(t('bybill'), t('bybillhint'), 'c3', 's6')}
+   ${pn(t('admix'), t('admixhint'), 'c4', 's6')}
+   ${pn(t('toph'), t('tophhint'), 'c5', 's6')}
+   ${pn(t('insmix'), t('insmixhint'), 'c6', 's6')}
+  </div>
+ `);
+
+ const an = anomalies(dl);
+ chart('c1', {
+  xAxis:{type:'category',data:dl.map(d=>d.k),axisLabel:{formatter:v=>dfmt(v,{month:'short',day:'numeric',timeZone:'UTC'})}},
+  yAxis:{type:'value',axisLabel:{formatter:v=>nf(v)}},
+  dataZoom:[{type:'inside'}],
+  series:[
+   {name:t('k_patients'), type:'line', smooth:false, showSymbol:false, lineStyle:{width:2}, areaStyle:{opacity:.12}, data:dl.map(d=>d.n)},
+   {name:'Anomalies', type:'scatter', symbolSize:9, itemStyle:{color:cs('--dn')}, data:an.map(a=>[a.day,a.n]),
+    label:{show:true, position:'top', formatter:p=>nf(p.value[1]), fontSize:10, color:cs('--dn'), fontWeight:600}}
+  ],
+  tooltip:{trigger:'axis', formatter:ps=>{ const d = dl[ps[0].dataIndex]; return `${esc(d.k)}<br>${esc(t('k_patients'))}: <b>${nf(d.n)}</b><br>${esc(t('k_bill'))}: ${money(d.bill)}`; }}
+ });
+ pie('c2', conds, {click: n => { S.f.cond = n; buildFbar(); render(); softTap(); }});
+ bar('c3', condsBill.slice(0,10).map(c=>({k:c.k, v:c.bill})), {h:1, click:n=>{S.f.cond = n; buildFbar(); render();}});
+ pie('c4', atypes);
+ bar('c5', hosps.slice(0,10), {h:1, fmt:nf, click:n=>{S.f.hosp = n; buildFbar(); render();}});
+ bar('c6', ins.slice(0,10), {h:1, fmt:nf, click:n=>{S.f.ins = n; buildFbar(); render();}});
+ countUp();
+};
+
+pages.patients = rows => {
+ const g = group(rows, r => r.gender).map(x=>({k:x.k, v:x.n}));
+ const ag = group(rows, r => r.ag), bl = group(rows, r => r.blood).map(x=>({k:x.k, v:x.n}));
+ const agOrder = AGES.map(a=>a[0]);
+ V(`
+  <h2 class="sec">${esc(t('patients'))}</h2>
+  <div class="grid">
+   ${pn(t('gd'), '', 'p1', 's4', 'lg')}
+   ${pn(t('agd'), '', 'p2', 's4', 'lg')}
+   ${pn(t('bld'), '', 'p3', 's4', 'lg')}
+   ${pn(t('agbill'), t('corr_note'), 'p4', 's12', 'lg')}
+  </div>
+ `);
+ pie('p1', g, {radius:['42%','62%'], center:['50%','44%']});
+ chart('p2', {xAxis:{type:'category',data:agOrder}, yAxis:{type:'value',axisLabel:{color:cs('--muted')}},
+  series:[{type:'bar', barMaxWidth:40, itemStyle:{borderRadius:[6,6,0,0]},
+   label:{show:true, position:'top', formatter:p=>nf(p.value), fontSize:11, fontWeight:600, color:cs('--text')},
+   data:agOrder.map(k => (ag.find(x=>x.k===k)||{n:0}).n)}],
+  tooltip:{trigger:'axis', valueFormatter:v=>nf(v)}});
+ pie('p3', bl, {radius:['40%','60%'], center:['50%','44%']});
+ const pts = rows.filter(r=>isFinite(r.age)&&isFinite(r.bill)).map(r=>[r.age, r.bill]);
+ chart('p4', {
+  xAxis:{type:'value',name:rtl()?'العمر':'Age',nameLocation:'middle',nameGap:26},
+  yAxis:{type:'value',name:rtl()?'الفاتورة':'Billing',axisLabel:{formatter:v=>money(v)}},
+  series:[{type:'scatter', symbolSize:5, itemStyle:{opacity:.55}, data:pts.slice(0,3000)}],
+  tooltip:{trigger:'item', formatter:p=>`${rtl()?'العمر':'Age'}: ${p.value[0]}<br>${rtl()?'الفاتورة':'Billing'}: ${money(p.value[1])}`}
+ });
+};
+
+pages.medical = rows => {
+ const conds = group(rows, r => r.cond).sort((a,b)=>b.n-a.n);
+ const meds = group(rows, r => r.med).sort((a,b)=>b.n-a.n);
+ const tests = group(rows, r => r.test).sort((a,b)=>b.n-a.n);
+ const ctCG = crosstab(rows, r=>r.cond, r=>r.gender);
+ const genders = ctCG.ys;
+ const condList = ctCG.xs.slice().sort((a,b)=>{
+  const ca = conds.find(c=>c.k===a) || {n:0}, cb = conds.find(c=>c.k===b) || {n:0};
+  return cb.n - ca.n;
+ }).slice(0,10);
+ const ctCA = crosstab(rows, r=>r.cond, r=>r.ag);
+ const xa = ctCA.xs.slice(0,10);
+ const ya = AGES.map(a=>a[0]).filter(a => ctCA.ys.includes(a));
+ const dataHA = []; let maxHA = 0;
+ xa.forEach((x,i)=>ya.forEach((y,j)=>{ const v = ctCA.get(x,y); if(v>maxHA) maxHA = v; dataHA.push([i,j,v]); }));
+ V(`
+  <h2 class="sec">${esc(t('medical'))}</h2>
+  <div class="grid">
+   ${pn(t('bycond'), '', 'm0', 's12', 'lg')}
+   ${pn(t('condgen'), '', 'm1', 's6', 'lg')}
+   ${pn(t('condage'), '', 'm2', 's6', 'lg')}
+   ${pn(t('medfreq'), '', 'm3', 's6')}
+   ${pn(t('tst'), '', 'm4', 's6')}
+  </div>
+ `);
+ bar('m0', conds.slice(0,12).map(c=>({k:c.k,v:c.n})), {h:1, fmt:nf});
+ chart('m1', {
+  xAxis:{type:'category', data:condList, axisLabel:{rotate:25, color:cs('--muted')}},
+  yAxis:{type:'value', axisLabel:{color:cs('--muted')}},
+  legend:{top:0, textStyle:{color:cs('--muted')}},
+  tooltip:{trigger:'axis'},
+  series:genders.map((g,i)=>({
+   name:g, type:'bar', stack:'g',
+   itemStyle:{borderRadius:i===genders.length-1?[4,4,0,0]:0},
+   label:{show:true, position:'inside', fontSize:10, color:'#fff', fontWeight:600, formatter: p => p.value > 0 ? p.value : ''},
+   data:condList.map(c=>ctCG.get(c,g))
+  }))
+ });
+ chart('m2', {
+  tooltip:{position:'top', formatter:p=>`${esc(xa[p.value[0]])} × ${esc(ya[p.value[1]])}: <b>${p.value[2]}</b>`},
+  grid:{left:8,right:8,top:20,bottom:60,containLabel:true},
+  xAxis:{type:'category',data:xa,axisLabel:{rotate:25, color:cs('--muted')}},
+  yAxis:{type:'category',data:ya, axisLabel:{color:cs('--muted')}},
+  visualMap:{min:0,max:maxHA||1,calculable:true,orient:'horizontal',left:'center',bottom:0,textStyle:{color:cs('--muted')}},
+  series:[{type:'heatmap', data:dataHA, label:{show:true, fontSize:10, fontWeight:600, color:'#fff'}, emphasis:{itemStyle:{shadowBlur:8}}}]
+ });
+ bar('m3', meds.slice(0,12).map(x=>({k:x.k,v:x.n})), {h:1, fmt:nf});
+ bar('m4', tests.map(x=>({k:x.k,v:x.n})), {h:1, fmt:nf});
+};
+
+pages.hospitals = rows => {
+ const hosp = group(rows, r => r.hosp).sort((a,b)=>b.n-a.n);
+ const topH = hosp.slice(0,10);
+ const conds = group(rows, r => r.cond).sort((a,b)=>b.n-a.n).slice(0,8).map(c=>c.k);
+ const ctHC = crosstab(rows, r=>r.hosp, r=>r.cond);
+ const xh = topH.map(h=>h.k);
+ const yh = conds;
+ const dataHC = []; let maxHC = 0;
+ xh.forEach((x,i)=>yh.forEach((y,j)=>{ const v = ctHC.get(x,y); if(v>maxHC) maxHC=v; dataHC.push([i,j,v]); }));
+ const insList = group(rows, r => r.ins).sort((a,b)=>b.n-a.n).slice(0,6).map(c=>c.k);
+ const ctHI = crosstab(rows, r=>r.hosp, r=>r.ins);
+ const dataHI = []; let maxHI = 0;
+ xh.forEach((x,i)=>insList.forEach((y,j)=>{ const v=ctHI.get(x,y); if(v>maxHI) maxHI=v; dataHI.push([i,j,v]); }));
+ V(`
+  <h2 class="sec">${esc(t('hospitals'))}</h2>
+  <div class="grid">
+   ${pn(t('toph'), t('tophhint'), 'h1', 's6', 'lg')}
+   ${pn(t('topbill'), t('topbillhint'), 'h2', 's6', 'lg')}
+   ${pn(t('condhosp'), '', 'h3', 's6', 'lg')}
+   ${pn(t('hospins'), '', 'h4', 's6', 'lg')}
+   ${pn(t('hosplos'), '', 'h5', 's6')}
+   ${pn(t('hospadm'), '', 'h6', 's6')}
+  </div>
+ `);
+ bar('h1', hosp.slice(0,12).map(h=>({k:h.k,v:h.n})), {h:1, fmt:nf, click:n=>{S.f.hosp=n; buildFbar(); render();}});
+ bar('h2', hosp.slice().sort((a,b)=>b.bill-a.bill).slice(0,12).map(h=>({k:h.k,v:h.bill})), {h:1});
+ bar('h5', hosp.filter(h=>h.losN>0).sort((a,b)=>b.avgLos-a.avgLos).slice(0,10).map(h=>({k:h.k,v:h.avgLos})), {h:1, fmt:v=>dec(v,1)+'d'});
+ chart('h3', {
+  tooltip:{position:'top', formatter:p=>`${esc(xh[p.value[0]])} × ${esc(yh[p.value[1]])}: <b>${p.value[2]}</b>`},
+  grid:{left:8,right:8,top:20,bottom:60,containLabel:true},
+  xAxis:{type:'category',data:xh,axisLabel:{rotate:25,width:100,overflow:'truncate',color:cs('--muted')}},
+  yAxis:{type:'category',data:yh, axisLabel:{color:cs('--muted')}},
+  visualMap:{min:0,max:maxHC||1,calculable:true,orient:'horizontal',left:'center',bottom:0,textStyle:{color:cs('--muted')}},
+  series:[{type:'heatmap', data:dataHC, label:{show:true, fontSize:10, fontWeight:600, color:'#fff'}}]
+ });
+ chart('h4', {
+  tooltip:{position:'top', formatter:p=>`${esc(xh[p.value[0]])} × ${esc(insList[p.value[1]])}: <b>${p.value[2]}</b>`},
+  grid:{left:8,right:8,top:20,bottom:60,containLabel:true},
+  xAxis:{type:'category',data:xh,axisLabel:{rotate:25,width:100,overflow:'truncate',color:cs('--muted')}},
+  yAxis:{type:'category',data:insList, axisLabel:{color:cs('--muted')}},
+  visualMap:{min:0,max:maxHI||1,calculable:true,orient:'horizontal',left:'center',bottom:0,textStyle:{color:cs('--muted')}},
+  series:[{type:'heatmap', data:dataHI, label:{show:true, fontSize:10, fontWeight:600, color:'#fff'}}]
+ });
+ const atypes = group(rows, r=>r.atype).map(x=>x.k).slice(0,6);
+ const ctHA = crosstab(rows, r=>r.hosp, r=>r.atype);
+ chart('h6', {
+  xAxis:{type:'category', data:topH.map(h=>h.k), axisLabel:{rotate:25,width:100,overflow:'truncate',color:cs('--muted')}},
+  yAxis:{type:'value', axisLabel:{color:cs('--muted')}},
+  legend:{top:0,type:'scroll', textStyle:{color:cs('--muted')}},
+  series:atypes.map((a,i)=>({
+   name:a, type:'bar', stack:'a',
+   itemStyle:{borderRadius:i===atypes.length-1?[4,4,0,0]:0},
+   label:{show:true, position:'inside', fontSize:10, color:'#fff', fontWeight:600, formatter: p => p.value > 0 ? p.value : ''},
+   data:topH.map(h=>ctHA.get(h.k,a))
+  })),
+  tooltip:{trigger:'axis'}
+ });
+};
+
+pages.financial = rows => {
+ const conds = group(rows, r => r.cond).sort((a,b)=>b.bill-a.bill);
+ const ins = group(rows, r => r.ins).sort((a,b)=>b.bill-a.bill);
+ const atypes = group(rows, r => r.atype).sort((a,b)=>b.bill-a.bill);
+ const bills = rows.map(r=>r.bill).filter(isFinite);
+ const cut = outlierCut(bills);
+ const outliers = bills.filter(b => b > cut.hi);
+ const binCount = 24;
+ const bmin = bills.length ? Math.min(...bills) : 0, bmax = bills.length ? Math.max(...bills) : 1;
+ const bw = (bmax - bmin)/binCount || 1;
+ const bins = Array.from({length:binCount}, (_,i)=>({x:bmin+i*bw, n:0}));
+ bills.forEach(b => { const i = Math.min(binCount-1, Math.max(0, Math.floor((b-bmin)/bw))); bins[i].n++; });
+ const pts = rows.filter(r=>isFinite(r.los)&&isFinite(r.bill)).map(r=>[r.los, r.bill]);
+ V(`
+  <h2 class="sec">${esc(t('financial'))}</h2>
+  <div class="kpis">
+   ${kcard(t('k_bill'), kpi(rows).bill, 'money')}
+   ${kcard(t('k_abill'), kpi(rows).abill, 'money2')}
+   ${kcard(t('k_mbill'), kpi(rows).mbill, 'money2')}
+   ${kcard(t('k_maxbill'), kpi(rows).maxbill, 'money2')}
+   ${kcard(t('k_minbill'), kpi(rows).minbill, 'money2')}
+   ${kcard(t('k_highbill'), outliers.length, 'nf')}
+  </div>
+  <div class="grid">
+   ${pn(t('billdist'), '', 'f1', 's12', 'lg')}
+   ${pn(t('bybill'), '', 'f2', 's6', 'lg')}
+   ${pn(t('insbill'), '', 'f3', 's6', 'lg')}
+   ${pn(t('bybill')+' · '+t('atype'), '', 'f4', 's6', 'lg')}
+   ${pn(t('losbill'), t('corr_note'), 'f5', 's6', 'lg')}
+  </div>
+ `);
+ chart('f1', {
+  xAxis:{type:'category', data:bins.map((b,i)=>i%4? '':money(b.x)), axisLabel:{color:cs('--muted')}},
+  yAxis:{type:'value', axisLabel:{color:cs('--muted')}},
+  tooltip:{trigger:'axis', formatter:ps => { const i = ps[0].dataIndex; const b = bins[i]; return `${money(b.x)} – ${money(b.x+bw)}<br>${esc(t('k_patients'))}: <b>${b.n}</b>`; }},
+  series:[{type:'bar', data:bins.map(b=>b.n), itemStyle:{borderRadius:[4,4,0,0]},
+   label:{show:true, position:'top', fontSize:10, fontWeight:600, color:cs('--text'), formatter: p => p.value > 0 ? nf(p.value) : ''}}]
+ });
+ bar('f2', conds.slice(0,12).map(c=>({k:c.k,v:c.bill})), {h:1, click:n=>{S.f.cond=n; buildFbar(); render();}});
+ bar('f3', ins.slice(0,10).map(x=>({k:x.k,v:x.bill})), {h:1, click:n=>{S.f.ins=n; buildFbar(); render();}});
+ bar('f4', atypes.map(x=>({k:x.k,v:x.bill})), {h:1});
+ chart('f5', {
+  xAxis:{type:'value', name:rtl()?'مدة الإقامة (يوم)':'Length of stay (days)', nameLocation:'middle', nameGap:26, axisLabel:{color:cs('--muted')}},
+  yAxis:{type:'value', name:rtl()?'الفاتورة':'Billing', axisLabel:{formatter:v=>money(v), color:cs('--muted')}},
+  series:[{type:'scatter', symbolSize:5, itemStyle:{opacity:.55}, data:pts.slice(0,3000)}],
+  tooltip:{trigger:'item', formatter:p=>`${rtl()?'المدة':'LOS'}: ${p.value[0]}d<br>${rtl()?'الفاتورة':'Billing'}: ${money(p.value[1])}`}
+ });
+};
+
+pages.insurance = rows => {
+ const ins = group(rows, r => r.ins).sort((a,b)=>b.n-a.n);
+ const ctIC = crosstab(rows, r=>r.ins, r=>r.cond);
+ const insList = ins.map(x=>x.k);
+ const condList = group(rows, r=>r.cond).sort((a,b)=>b.n-a.n).slice(0,10).map(c=>c.k);
+ const data = []; let mx = 0;
+ insList.forEach((x,i)=>condList.forEach((y,j)=>{ const v = ctIC.get(x,y); if(v>mx) mx=v; data.push([i,j,v]); }));
+ V(`
+  <h2 class="sec">${esc(t('insurance'))}</h2>
+  <div class="grid">
+   ${pn(t('insvol'), '', 'i1', 's6', 'lg')}
+   ${pn(t('insbill'), '', 'i2', 's6', 'lg')}
+   ${pn(t('condins'), '', 'i3', 's12', 'lg')}
+   ${pn(t('insadm'), '', 'i4', 's12')}
+  </div>
+ `);
+ pie('i1', ins.map(x=>({k:x.k, v:x.n})), {radius:['40%','60%'], center:['50%','44%']});
+ bar('i2', ins.map(x=>({k:x.k,v:x.bill})), {h:1, click:n=>{S.f.ins=n; buildFbar(); render();}});
+ chart('i3', {
+  tooltip:{position:'top', formatter:p=>`${esc(insList[p.value[0]])} × ${esc(condList[p.value[1]])}: <b>${p.value[2]}</b>`},
+  grid:{left:8,right:8,top:20,bottom:60,containLabel:true},
+  xAxis:{type:'category',data:insList,axisLabel:{rotate:20,width:100,overflow:'truncate',color:cs('--muted')}},
+  yAxis:{type:'category',data:condList, axisLabel:{color:cs('--muted')}},
+  visualMap:{min:0,max:mx||1,calculable:true,orient:'horizontal',left:'center',bottom:0,textStyle:{color:cs('--muted')}},
+  series:[{type:'heatmap', data, label:{show:true, fontSize:10, fontWeight:600, color:'#fff'}}]
+ });
+ const atypes = group(rows, r=>r.atype).map(x=>x.k).slice(0,6);
+ const ctIA = crosstab(rows, r=>r.ins, r=>r.atype);
+ chart('i4', {
+  xAxis:{type:'category', data:insList, axisLabel:{rotate:20,width:100,overflow:'truncate',color:cs('--muted')}},
+  yAxis:{type:'value', axisLabel:{color:cs('--muted')}},
+  legend:{top:0,type:'scroll', textStyle:{color:cs('--muted')}},
+  series:atypes.map((a,i)=>({
+   name:a, type:'bar', stack:'a',
+   itemStyle:{borderRadius:i===atypes.length-1?[4,4,0,0]:0},
+   label:{show:true, position:'inside', fontSize:10, color:'#fff', fontWeight:600, formatter: p => p.value > 0 ? p.value : ''},
+   data:insList.map(x=>ctIA.get(x,a))
+  })),
+  tooltip:{trigger:'axis'}
+ });
+};
+
+pages.admissions = rows => {
+ const dl = daily(rows);
+ const mon = group(rows, r => r.day.slice(0,7)).sort((a,b)=>a.k<b.k?-1:1);
+ const wd = [0,1,2,3,4,5,6].map(i => ({k:dfmt(new Date(Date.UTC(2024,0,7+i)),{weekday:'short',timeZone:'UTC'}), n:0}));
+ dl.forEach(d => { const i = new Date(d.k).getUTCDay(); wd[i].n += d.n; });
+ const loss = rows.map(r=>r.los).filter(isFinite);
+ const binCount = 20;
+ const lmin = loss.length ? Math.min(...loss) : 0, lmax = loss.length ? Math.max(...loss) : 1;
+ const bw = Math.max(1, (lmax - lmin)/binCount);
+ const bins = Array.from({length:binCount}, (_,i)=>({x:lmin+i*bw, n:0}));
+ loss.forEach(v => { const i = Math.min(binCount-1, Math.max(0, Math.floor((v - lmin)/bw))); bins[i].n++; });
+ const losByCond = group(rows, r=>r.cond).filter(c=>c.losN>0).sort((a,b)=>b.avgLos-a.avgLos);
+ const ctWM = crosstab(rows, r => r.day.slice(5,7), r => String(new Date(r.day).getUTCDay()));
+ const months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
+ const dataWM = []; let mxWM = 0;
+ months.forEach((m,i)=>[0,1,2,3,4,5,6].forEach((d,j)=>{ const v = ctWM.get(m,String(d)); if(v>mxWM) mxWM=v; dataWM.push([i,j,v]); }));
+ V(`
+  <h2 class="sec">${esc(t('admissions'))}</h2>
+  <div class="kpis">
+   ${kcard(t('k_los'), kpi(rows).los, 'days')}
+   ${kcard(t('k_mlos'), kpi(rows).mlos, 'days')}
+   ${kcard(t('k_longstay'), rows.filter(r=>isFinite(r.los)&&r.los>7).length, 'nf')}
+  </div>
+  <div class="grid">
+   ${pn(t('vol'), '', 'a1', 's12', 'lg')}
+   ${pn(t('monadm'), '', 'a2', 's6')}
+   ${pn(t('wdadm'), '', 'a3', 's6')}
+   ${pn(t('losdist'), '', 'a4', 's6')}
+   ${pn(t('loscond'), '', 'a5', 's6')}
+   ${pn(t('calh'), '', 'a6', 's12', 'lg')}
+  </div>
+ `);
+ chart('a1', {
+  xAxis:{type:'category', data:dl.map(d=>d.k), axisLabel:{formatter:v=>dfmt(v,{month:'short',day:'numeric',timeZone:'UTC'}), color:cs('--muted')}},
+  yAxis:{type:'value', axisLabel:{color:cs('--muted')}},
+  dataZoom:[{type:'inside'}],
+  series:[{type:'line', smooth:true, showSymbol:false, areaStyle:{opacity:.12}, data:dl.map(d=>d.n)}],
+  tooltip:{trigger:'axis', formatter:ps=>{ const d = dl[ps[0].dataIndex]; return `${esc(dfmt(d.k))}<br>${esc(t('k_patients'))}: <b>${nf(d.n)}</b>`; }}
+ });
+ bar('a2', mon.map(x=>({k:dfmt(x.k+'-01',{month:'short',year:'2-digit',timeZone:'UTC'}), v:x.n})), {h:0, fmt:nf});
+ bar('a3', wd.map(x=>({k:x.k, v:x.n})), {h:0, fmt:nf});
+ chart('a4', {
+  xAxis:{type:'category', data:bins.map((b,i)=>i%3?'':dec(b.x,1)+'d'), axisLabel:{color:cs('--muted')}},
+  yAxis:{type:'value', axisLabel:{color:cs('--muted')}},
+  series:[{type:'bar', data:bins.map(b=>b.n), itemStyle:{borderRadius:[4,4,0,0]},
+   label:{show:true, position:'top', fontSize:9, fontWeight:600, color:cs('--text'), formatter: p => p.value > 0 ? p.value : ''}}],
+  tooltip:{trigger:'axis', formatter:ps=>{ const b = bins[ps[0].dataIndex]; return `${dec(b.x,1)}d – ${dec(b.x+bw,1)}d<br>${esc(t('k_patients'))}: <b>${b.n}</b>`; }}
+ });
+ bar('a5', losByCond.slice(0,10).map(c=>({k:c.k,v:c.avgLos})), {h:1, fmt:v=>dec(v,1)+'d'});
+ chart('a6', {
+  tooltip:{position:'top', formatter:p=>`${esc(dfmt('2024-'+months[p.value[0]]+'-01',{month:'long',timeZone:'UTC'}))} · ${esc(['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][p.value[1]])}: <b>${p.value[2]}</b>`},
+  grid:{left:8,right:8,top:20,bottom:40,containLabel:true},
+  xAxis:{type:'category',data:months.map(m=>dfmt('2024-'+m+'-01',{month:'short',timeZone:'UTC'})), axisLabel:{color:cs('--muted')}},
+  yAxis:{type:'category',data:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], axisLabel:{color:cs('--muted')}},
+  visualMap:{min:0,max:mxWM||1,calculable:true,orient:'horizontal',left:'center',bottom:0,textStyle:{color:cs('--muted')}},
+  series:[{type:'heatmap', data:dataWM, label:{show:true, fontSize:9, fontWeight:600, color:'#fff', formatter:p=>p.value[2]||''}}]
+ });
+};
+
+pages.doctors = rows => {
+ const docs = group(rows, r => r.doc).sort((a,b)=>b.n-a.n);
+ const docsBill = docs.slice().sort((a,b)=>b.bill-a.bill);
+ V(`
+  <h2 class="sec">${esc(t('doctors'))}</h2>
+  <div class="kpis">
+   ${kcard(t('k_doc'), kpi(rows).nDoc, 'nf')}
+   ${kcard(t('k_patients'), kpi(rows).n, 'nf')}
+  </div>
+  <div class="grid">
+   ${pn(t('docvol'), '', 'd1', 's12', 'lg')}
+   ${pn(t('docbill'), '', 'd2', 's12', 'lg')}
+  </div>
+ `);
+ bar('d1', docs.slice(0,15).map(x=>({k:x.k,v:x.n})), {h:1, fmt:nf, click:n=>{S.f.doctor=n; buildFbar(); render();}});
+ bar('d2', docsBill.slice(0,15).map(x=>({k:x.k,v:x.bill})), {h:1});
+};
+
+pages.medications = rows => {
+ const meds = group(rows, r => r.med).sort((a,b)=>b.n-a.n);
+ const ctMC = crosstab(rows, r=>r.med, r=>r.cond);
+ const medList = meds.slice(0,10).map(m=>m.k);
+ const condList = group(rows, r=>r.cond).sort((a,b)=>b.n-a.n).slice(0,8).map(c=>c.k);
+ const data = []; let mx = 0;
+ medList.forEach((x,i)=>condList.forEach((y,j)=>{ const v = ctMC.get(x,y); if(v>mx) mx=v; data.push([i,j,v]); }));
+ const tests = group(rows, r=>r.test).map(x=>x.k);
+ const ctMT = crosstab(rows, r=>r.med, r=>r.test);
+ const dataMT = []; let mxMT = 0;
+ medList.forEach((x,i)=>tests.forEach((y,j)=>{ const v = ctMT.get(x,y); if(v>mxMT) mxMT=v; dataMT.push([i,j,v]); }));
+ V(`
+  <h2 class="sec">${esc(t('medications'))}</h2>
+  <div class="grid">
+   ${pn(t('medfreq'), '', 'me1', 's12', 'lg')}
+   ${pn(t('medcond'), '', 'me2', 's6', 'lg')}
+   ${pn(t('medtest'), '', 'me3', 's6', 'lg')}
+  </div>
+ `);
+ bar('me1', meds.slice(0,12).map(m=>({k:m.k,v:m.n})), {h:1, fmt:nf});
+ chart('me2', {
+  tooltip:{position:'top', formatter:p=>`${esc(medList[p.value[0]])} × ${esc(condList[p.value[1]])}: <b>${p.value[2]}</b>`},
+  grid:{left:8,right:8,top:20,bottom:60,containLabel:true},
+  xAxis:{type:'category',data:medList,axisLabel:{rotate:25,width:100,overflow:'truncate',color:cs('--muted')}},
+  yAxis:{type:'category',data:condList, axisLabel:{color:cs('--muted')}},
+  visualMap:{min:0,max:mx||1,calculable:true,orient:'horizontal',left:'center',bottom:0,textStyle:{color:cs('--muted')}},
+  series:[{type:'heatmap', data, label:{show:true, fontSize:10, fontWeight:600, color:'#fff'}}]
+ });
+ chart('me3', {
+  tooltip:{position:'top', formatter:p=>`${esc(medList[p.value[0]])} × ${esc(tests[p.value[1]])}: <b>${p.value[2]}</b>`},
+  grid:{left:8,right:8,top:20,bottom:60,containLabel:true},
+  xAxis:{type:'category',data:medList,axisLabel:{rotate:25,width:100,overflow:'truncate',color:cs('--muted')}},
+  yAxis:{type:'category',data:tests, axisLabel:{color:cs('--muted')}},
+  visualMap:{min:0,max:mxMT||1,calculable:true,orient:'horizontal',left:'center',bottom:0,textStyle:{color:cs('--muted')}},
+  series:[{type:'heatmap', data:dataMT, label:{show:true, fontSize:10, fontWeight:600, color:'#fff'}}]
+ });
+};
+
+pages.explorer = rows => {
+ const q = S.q.toLowerCase();
+ const sort = S.tc.sort || 'new';
+ const N = +S.tc.ps || 25;
+ let L = q ? rows.filter(r => (r.name+r.doc+r.hosp+r.cond+r.ins+r.med+r.test+r.room).toLowerCase().includes(q)) : rows.slice();
+ L.sort(sort==='high' ? (a,b)=>b.bill-a.bill : sort==='low' ? (a,b)=>a.bill-b.bill : sort==='old' ? (a,b)=>a.day<b.day?-1:1 : (a,b)=>a.day<b.day?1:-1);
+ const pg = Math.min(S.pg, Math.max(0, Math.ceil(L.length/N)-1));
+ V(`
+  <div class="pan">
+   <div class="tabbar" style="align-items:flex-end">
+    <div style="flex:1;min-width:220px">
+     <input id="q" class="pill" style="width:100%" placeholder="${esc(t('search'))}" value="${esc(S.q)}">
+    </div>
+    <button id="exp" class="pill" style="width:auto"><i class="bi bi-download"></i> ${esc(t('export'))}</button>
+   </div>
+   ${tabbar([['sort','sort',[['new',t('s_new')],['old',t('s_old')],['high',t('s_high')],['low',t('s_low')]]],['ps','ps',[['25','25'],['50','50'],['100','100']]]])}
+   <div style="overflow:auto;max-height:65vh">
+    <table class="tbl">
+     <thead><tr>
+      <th>${esc(t('name'))}</th><th>${esc(t('age'))}</th><th>${esc(t('gender'))}</th><th>${esc(t('cond'))}</th>
+      <th>${esc(t('hosp'))}</th><th>${esc(t('doctor'))}</th><th>${esc(t('date'))}</th><th>${esc(t('k_bill'))}</th>
+     </tr></thead>
+     <tbody>
+     ${L.slice(pg*N, pg*N+N).map((r,i)=>`<tr class="cl" data-i="${pg*N+i}" tabindex="0">
+      <td>${esc(r.name)}</td>
+      <td>${nf(r.age)}</td>
+      <td>${esc(r.gender)}</td>
+      <td>${esc(r.cond)}</td>
+      <td>${esc(r.hosp)}</td>
+      <td>${esc(r.doc)}</td>
+      <td>${esc(dfmt(r.day))}</td>
+      <td>${esc(money(r.bill))}</td>
+     </tr>`).join('')}
+     </tbody>
+    </table>
+   </div>
+   <div class="d-flex" style="display:flex;gap:8px;align-items:center;margin-top:12px">
+    <button class="ibtn" id="pv" ${pg?'':'disabled'} aria-label="prev"><i class="bi bi-chevron-left dir-icon"></i></button>
+    <span class="muted">${nf(pg+1)} / ${nf(Math.max(1,Math.ceil(L.length/N)))} · ${nf(L.length)} ${esc(t('rows'))}</span>
+    <button class="ibtn" id="nx" ${(pg+1)*N<L.length?'':'disabled'} aria-label="next"><i class="bi bi-chevron-right dir-icon"></i></button>
+   </div>
+  </div>
+ `);
+ let tm;
+ $('#q').oninput = e => { clearTimeout(tm); tm = setTimeout(()=>{ S.q = e.target.value; S.pg = 0; render(); const i = $('#q'); i.focus(); i.setSelectionRange(99,99); }, 250); };
+ $('#pv').onclick = () => { S.pg = pg-1; softTap(); render(); };
+ $('#nx').onclick = () => { S.pg = pg+1; softTap(); render(); };
+ $('#exp').onclick = () => exportCsv(L);
+ $('#view').querySelectorAll('tr.cl').forEach(tr => tr.onclick = () => {
+  const r = L[+tr.dataset.i];
+  Swal.fire({
+   title: esc(r.name),
+   html:`<div style="text-align:start;line-height:1.9;font-size:13px">${[
+    ['name', r.name],['age', r.age],['gender', r.gender],['blood', r.blood],['cond', r.cond],
+    ['date', dfmt(r.day) + ' → ' + dfmt(r.dis)],['los', isFinite(r.los)? r.los+'d' : '—'],
+    ['doctor', r.doc],['hosp', r.hosp],['ins', r.ins],['room', r.room],['atype', r.atype],
+    ['med', r.med],['test', r.test],['k_bill', money(r.bill)]
+   ].map(([k,v])=>`<div><b>${esc(t(k))}:</b> ${esc(v)}</div>`).join('')}</div>`
+  });
+  beep(720);
+ });
+ bindTabs();
+};
+
+pages.quality = () => {
+ const m = S.meta || {total:0, bad:[], extra:[]};
+ const rs = {};
+ (m.bad||[]).forEach(b => rs[b.why] = (rs[b.why]||0)+1);
+ const sc = m.total ? S.data.length/m.total : 0;
+ V(`
+  <h2 class="sec">${esc(t('quality'))}</h2>
+  <div class="kpis">
+   ${kcard(t('total'), m.total, 'nf')}
+   ${kcard(t('valid'), S.data.length, 'nf')}
+   ${kcard(t('invalid'), (m.bad||[]).length, 'nf')}
+   ${kcard(t('dups'), rs.dup||0, 'nf')}
+   ${kcard(t('score'), sc*100, 'dec')}
+  </div>
+  <div class="pan" style="margin-top:8px">
+   <h3>${esc(t('reasons'))}</h3>
+   <table class="tbl">
+    <thead><tr><th>${esc(t('sever'))}</th><th>${esc(t('total'))}</th></tr></thead>
+    <tbody>
+     ${Object.keys(rs).length ? Object.keys(rs).map(k=>`<tr><td>${esc(t('r_'+k))}</td><td>${nf(rs[k])}</td></tr>`).join('') : '<tr><td>—</td></tr>'}
+    </tbody>
+   </table>
+   ${m.extra && m.extra.length ? `<p class="muted" style="margin-top:8px">Extra columns: ${esc(m.extra.join(', '))}</p>` : ''}
+   <p class="muted" style="font-size:.78rem;margin-top:12px">${esc(t('method'))}</p>
+  </div>
+ `);
+};
+
+const INS_ICONS = {
+ Medical:'bi-heart-pulse', Hospital:'bi-hospital', Financial:'bi-cash-stack',
+ Insurance:'bi-shield-check', Admissions:'bi-calendar2-check', Demographics:'bi-people',
+ Doctors:'bi-person-badge', 'Data quality':'bi-clipboard-data', Info:'bi-info-circle'
+};
+pages.insights = rows => {
+ const insights = computeInsights(rows);
+ V(`
+  <h2 class="sec">${esc(t('insight_title'))}</h2>
+  <p class="hint" style="margin-bottom:10px">${esc(t('insight_hint'))}</p>
+  <div class="ins-grid">
+   ${insights.map(x => `<div class="ins-card ${x.type}">
+     <div class="ins-head"><i class="bi ${INS_ICONS[x.cat]||'bi-info-circle'}"></i> ${esc(x.cat)}</div>
+     <div class="ins-body">${x.text}</div>
+   </div>`).join('')}
+  </div>
+
+  <h2 class="sec">${esc(t('stats'))}</h2>
+  <div class="stats-grid">
+   ${statCards(rows)}
+  </div>
+
+  <h2 class="sec">${esc(t('corr'))} & ${esc(t('outliers'))}</h2>
+  <div class="grid">
+   <div class="pan s6">
+    <h3>${esc(t('corr'))}</h3>
+    ${corrBlock(rows)}
+   </div>
+   <div class="pan s6">
+    <h3>${esc(t('outliers'))}</h3>
+    ${outlierBlock(rows)}
+   </div>
+  </div>
+
+  <p class="muted" style="font-size:.75rem;margin-top:14px;max-width:80ch">${esc(t('method'))}</p>
+ `);
+};
+function computeInsights(rows){
+ const out = [];
+ const K = kpi(rows);
+ if(!K.n) return [{cat:'Info',type:'Info',text:esc(t('empty'))}];
+ const conds = group(rows, r=>r.cond).sort((a,b)=>b.n-a.n);
+ if(conds.length){ const top = conds[0]; out.push({cat:'Medical',type:'Info',text:esc(t('i_cond',{c:top.k, p:sh(top.n/K.n)}))}); }
+ const hosps = group(rows, r=>r.hosp).sort((a,b)=>b.n-a.n);
+ if(hosps.length) out.push({cat:'Hospital',type:'Info',text:esc(t('i_hosp',{h:hosps[0].k, n:nf(hosps[0].n)}))});
+ const billCond = conds.slice().sort((a,b)=>b.avgBill-a.avgBill);
+ if(billCond.length) out.push({cat:'Financial',type:'Info',text:esc(t('i_billcond',{c:billCond[0].k, v:money(billCond[0].avgBill)}))});
+ const billHosp = hosps.slice().sort((a,b)=>b.avgBill-a.avgBill);
+ if(billHosp.length) out.push({cat:'Financial',type:'Info',text:esc(t('i_billhosp',{h:billHosp[0].k, v:money(billHosp[0].avgBill)}))});
+ const ins = group(rows, r=>r.ins).sort((a,b)=>b.n-a.n);
+ if(ins.length){
+  out.push({cat:'Insurance',type:'Info',text:esc(t('i_ins',{i:ins[0].k, n:nf(ins[0].n)}))});
+  const topBill = ins.slice().sort((a,b)=>b.bill-a.bill)[0];
+  if(topBill) out.push({cat:'Insurance',type:'Info',text:esc(t('i_insbill',{i:topBill.k, v:money(topBill.bill)}))});
+ }
+ if(isFinite(K.los)) out.push({cat:'Admissions',type:'Info',text:esc(t('i_los',{v:dec(K.los,1)}))});
+ const losByCond = conds.filter(c=>c.losN>0).sort((a,b)=>b.avgLos-a.avgLos);
+ if(losByCond.length) out.push({cat:'Admissions',type:'Info',text:esc(t('i_loscond',{c:losByCond[0].k, v:dec(losByCond[0].avgLos,1)}))});
+ const ag = group(rows, r=>r.ag).sort((a,b)=>b.n-a.n);
+ if(ag.length) out.push({cat:'Demographics',type:'Info',text:esc(t('i_age',{g:ag[0].k, p:sh(ag[0].n/K.n)}))});
+ if(K.male || K.female) out.push({cat:'Demographics',type:'Info',text:esc(t('i_male',{p:sh(K.male/K.n), q:sh(K.female/K.n)}))});
+ const tests = group(rows, r=>r.test);
+ const tN = tests.find(x=>/normal/i.test(x.k)), tA = tests.find(x=>/abnormal/i.test(x.k)), tI = tests.find(x=>/inconclusive/i.test(x.k));
+ if(tN||tA||tI) out.push({cat:'Medical',type:'Info',text:esc(t('i_test',{a:nf(tN?tN.n:0), b:nf(tA?tA.n:0), c:nf(tI?tI.n:0)}))});
+ const bills = rows.map(r=>r.bill).filter(isFinite);
+ const cut = outlierCut(bills);
+ const hiOutliers = bills.filter(b=>b > cut.hi).length;
+ if(hiOutliers) out.push({cat:'Financial',type:'Attention',text:esc(t('i_outlier',{n:nf(hiOutliers)}))});
+ const longStays = rows.filter(r=>isFinite(r.los)&&r.los>7).length;
+ if(longStays) out.push({cat:'Admissions',type:'Info',text:esc(t('i_longstay',{n:nf(longStays)}))});
+ const meds = group(rows, r=>r.med).sort((a,b)=>b.n-a.n);
+ if(meds.length) out.push({cat:'Medical',type:'Info',text:esc(t('i_topmed',{m:meds[0].k, n:nf(meds[0].n)}))});
+ const docs = group(rows, r=>r.doc).sort((a,b)=>b.n-a.n);
+ if(docs.length) out.push({cat:'Doctors',type:'Info',text:esc(t('i_topdoc',{d:docs[0].k, n:nf(docs[0].n)}))});
+ if(S.meta){
+  const sc = S.meta.total ? S.data.length/S.meta.total : 1;
+  out.push({cat:'Data quality',type: sc>=0.95?'Info': sc>=0.85?'Attention':'Risk', text:esc(t('i_quality',{p:sh(sc)}))});
+  const dups = (S.meta.bad||[]).filter(b=>b.why==='dup').length;
+  if(dups) out.push({cat:'Data quality',type:'Attention',text:esc(t('i_dups',{n:nf(dups)}))});
+  const miss = (S.meta.bad||[]).filter(b=>b.why==='missing').length;
+  if(miss) out.push({cat:'Data quality',type:'Attention',text:esc(t('i_missing',{n:nf(miss)}))});
+ }
+ return out;
+}
+function statCards(rows){
+ const fields = [
+  {lab:'Age', icon:'bi-person', arr:rows.map(r=>r.age), fmt:x=>dec(x,1)},
+  {lab:'Billing', icon:'bi-cash', arr:rows.map(r=>r.bill), fmt:x=>money2(x)},
+  {lab:'LOS', icon:'bi-hourglass-split', arr:rows.map(r=>r.los), fmt:x=>dec(x,1)+'d'}
+ ];
+ return fields.map(({lab, icon, arr, fmt}) => {
+  const v = arr.filter(isFinite);
+  if(!v.length) return `<div class="stat-card"><div class="stat-title"><i class="bi ${icon}"></i> ${esc(lab)}</div><p class="muted">—</p></div>`;
+  const q1 = quantile(v,.25), q3 = quantile(v,.75);
+  const mean = v.reduce((s,x)=>s+x,0)/v.length;
+  const rowsHtml = [
+   [t('stat_n'), nf(v.length)],
+   [t('stat_mean'), fmt(mean)],
+   [t('stat_med'), fmt(median(v))],
+   [t('stat_sd'), fmt(stdev(v))],
+   [t('stat_min'), fmt(Math.min(...v))],
+   [t('stat_max'), fmt(Math.max(...v))],
+   [t('stat_q1'), fmt(q1)],
+   [t('stat_q3'), fmt(q3)],
+   [t('stat_iqr'), fmt(q3-q1)]
+  ].map(([k,val]) => `<span>${esc(k)}</span><b>${esc(val)}</b>`).join('');
+  return `<div class="stat-card">
+   <div class="stat-title"><i class="bi ${icon}"></i> ${esc(lab)}</div>
+   <div class="stat-rows">${rowsHtml}</div>
+  </div>`;
+ }).join('');
+}
+function corrBlock(rows){
+ const ageV = rows.map(r=>r.age), billV = rows.map(r=>r.bill);
+ const r1 = pearson(ageV, billV);
+ const losV = rows.map(r=>r.los), r2 = pearson(losV, billV);
+ return `<div class="corr-grid">
+  <div class="corr-item">
+   <div class="val">${esc(dec(r1,2))}</div>
+   <div class="lbl">${esc(t('corr_age'))}</div>
+  </div>
+  <div class="corr-item">
+   <div class="val">${esc(dec(r2,2))}</div>
+   <div class="lbl">${esc(t('corr_los'))}</div>
+  </div>
+ </div>
+ <div class="corr-note">${esc(t('corr_note'))}</div>`;
+}
+function outlierBlock(rows){
+ const bills = rows.map(r=>r.bill).filter(isFinite);
+ const c1 = outlierCut(bills);
+ const nHi = bills.filter(b=>b>c1.hi).length;
+ const loss = rows.map(r=>r.los).filter(isFinite);
+ const c2 = outlierCut(loss);
+ const nLong = loss.filter(l=>l>c2.hi).length;
+ return `<div class="out-grid">
+  <div class="out-item">
+   <div class="onum">${nf(nHi)}</div>
+   <div class="olab">${esc(t('k_bill'))}</div>
+   <div class="othr">${esc(t('above'))} ${esc(money(c1.hi))}</div>
+  </div>
+  <div class="out-item">
+   <div class="onum">${nf(nLong)}</div>
+   <div class="olab">${esc(t('los'))}</div>
+   <div class="othr">${esc(t('above'))} ${esc(dec(c2.hi,1))}d</div>
+  </div>
+ </div>
+ <div class="corr-note">${esc(t('sev_note'))}</div>`;
+}
+
+const PAGES = [
+ ['overview','bi-speedometer2'], ['patients','bi-people'], ['medical','bi-clipboard2-pulse'],
+ ['hospitals','bi-hospital'], ['financial','bi-cash-stack'], ['insurance','bi-shield-check'],
+ ['admissions','bi-calendar2-check'], ['doctors','bi-person-badge'], ['medications','bi-capsule'],
+ ['explorer','bi-table'], ['quality','bi-clipboard-data'], ['insights','bi-lightbulb']
+];
+function buildNav(){
+ $('#nav').innerHTML = PAGES.map(([k,i]) =>
+  `<a role="button" tabindex="0" data-p="${k}" class="${k===S.page?'on':''}"><i class="bi ${i}"></i> ${esc(t(k))}</a>`
+ ).join('');
+ $('#nav').querySelectorAll('a').forEach(a => {
+  const go = () => {
+   if(a.dataset.p === S.page) return;
+   navSound();
+   S.page = a.dataset.p; S.pg = 0;
+   buildNav();
+   render();
+  };
+  a.onclick = go;
+  a.onkeydown = e => { if(e.key==='Enter') go(); };
+ });
+ const on = document.querySelector('#nav a.on');
+ if(on) on.scrollIntoView({inline:'center',block:'nearest'});
+}
+
+/* ===== Theme picker — menu lives in #themeMenu (child of body) ===== */
+function buildThemePicker(){
+ const trigger = $('#themeTrigger');
+ const menu = $('#themeMenu');
+ if(!trigger || !menu) return;
+ const cur = S.set.theme;
+ const meta = THEME_META[cur] || THEME_META.healthcare;
+ const swatchEls = trigger.querySelectorAll('[data-swatch]');
+ swatchEls[0].style.background = meta.colors[0];
+ swatchEls[1].style.background = meta.colors[1];
+ trigger.querySelector('.theme-name').textContent = rtl() ? meta.ar : meta.name;
+ menu.innerHTML = `<div class="theme-menu-title">${esc(t('theme_menu'))}</div>` +
+  THEMES.map(k => {
+   const m = THEME_META[k];
+   const isOn = k === cur;
+   return `<button class="theme-opt ${isOn?'on':''}" type="button" data-v="${k}" role="option" aria-selected="${isOn}">
+     <span class="swatches"><i style="background:${m.colors[0]}"></i><i style="background:${m.colors[1]}"></i></span>
+     <span>${esc(rtl()?m.ar:m.name)}</span>
+     <i class="bi bi-check2 check"></i>
+   </button>`;
+  }).join('');
+ menu.querySelectorAll('.theme-opt').forEach(b => {
+  b.addEventListener('click', e => {
+   e.stopPropagation();
+   const newTheme = b.dataset.v;
+   if(newTheme === S.set.theme){ closeThemePicker(); return; }
+   S.set.theme = newTheme; save();
+   buildThemePicker();
+   closeThemePicker();
+   softTap();
+   render();
+  });
+ });
+}
+function positionThemeMenu(){
+ const trigger = $('#themeTrigger');
+ const menu = $('#themeMenu');
+ if(!trigger || !menu) return;
+ const r = trigger.getBoundingClientRect();
+ const mw = Math.min(260, window.innerWidth - 24);
+ menu.style.minWidth = mw + 'px';
+ menu.style.top = (r.bottom + 8) + 'px';
+ if(rtl()){
+  const rightPos = Math.max(12, window.innerWidth - r.right);
+  menu.style.right = rightPos + 'px';
+  menu.style.left = 'auto';
+ } else {
+  let leftPos = r.left;
+  if(leftPos + mw > window.innerWidth - 12) leftPos = window.innerWidth - mw - 12;
+  if(leftPos < 12) leftPos = 12;
+  menu.style.left = leftPos + 'px';
+  menu.style.right = 'auto';
+ }
+}
+function openThemePicker(){
+ const menu = $('#themeMenu');
+ const trigger = $('#themeTrigger');
+ if(!menu || !trigger) return;
+ positionThemeMenu();
+ menu.classList.add('open');
+ trigger.setAttribute('aria-expanded','true');
+ $('#themePicker').classList.add('open');
+}
+function closeThemePicker(){
+ const menu = $('#themeMenu');
+ const trigger = $('#themeTrigger');
+ if(menu) menu.classList.remove('open');
+ if(trigger) trigger.setAttribute('aria-expanded','false');
+ const pk = $('#themePicker'); if(pk) pk.classList.remove('open');
+}
+
+/* Trigger button — direct handler, no delegation */
+document.addEventListener('DOMContentLoaded', () => {
+ const trigger = $('#themeTrigger');
+ if(trigger){
+  trigger.addEventListener('click', e => {
+   e.stopPropagation();
+   e.preventDefault();
+   const menu = $('#themeMenu');
+   if(!menu) return;
+   if(menu.classList.contains('open')) closeThemePicker();
+   else { openThemePicker(); softTap(); }
+  });
+ }
+});
+
+/* Close on outside click */
+document.addEventListener('click', e => {
+ const menu = $('#themeMenu');
+ const trigger = $('#themeTrigger');
+ if(!menu || !menu.classList.contains('open')) return;
+ if(trigger && trigger.contains(e.target)) return;
+ if(menu.contains(e.target)) return;
+ closeThemePicker();
+});
+
+/* Close on Escape, reposition on resize/scroll */
+document.addEventListener('keydown', e => {
+ if(e.key === 'Escape'){
+  const menu = $('#themeMenu');
+  if(menu && menu.classList.contains('open')) closeThemePicker();
+ }
+});
+window.addEventListener('resize', () => {
+ const menu = $('#themeMenu');
+ if(menu && menu.classList.contains('open')) positionThemeMenu();
+});
+window.addEventListener('scroll', () => {
+ const menu = $('#themeMenu');
+ if(menu && menu.classList.contains('open')) positionThemeMenu();
+}, true);
+
+function buildFbar(){
+ const P = $('#fbar');
+ if(!S.data.length){ P.innerHTML = ''; return; }
+ const u = k => [...new Set(S.data.map(r=>r[k]).filter(Boolean))].sort();
+ const on = (k,v) => String(S.f[k] ?? '') === String(v);
+ const card = (ti, body) => `<details class="fc" open><summary>${esc(ti)}<i class="bi bi-chevron-down"></i></summary><div class="fb">${body}</div></details>`;
+ const list = (k, vals, lab) => card(t(k), `<div class="sl">${vals.map(v => `
+  <button class="opt" data-k="${k}" data-v="${esc(v)}" aria-pressed="${on(k,v)}">
+   <i class="bi ${on(k,v)?'bi-check-square-fill':'bi-square'}"></i> ${esc(lab?lab(v):v)}
+  </button>`).join('')}</div>`);
+ const inp = (k,ty,pl) => `<input class="pill" type="${ty}" data-f="${k}" value="${esc(S.f[k]??'')}" placeholder="${esc(pl)}" aria-label="${esc(pl)}" ${ty==='number'?'min="0" inputmode="decimal"':''}>`;
+ const two = (ti,a,b,ty,pa,pb) => card(ti, `<div class="two">${inp(a,ty,pa)}${inp(b,ty,pb)}</div>`);
+ P.innerHTML =
+  `<div class="ph"><b>${esc(t('filters'))}</b><span id="fcount"></span>
+   <button id="clr" class="ibtn" title="${esc(t('clear'))}" aria-label="${esc(t('clear'))}"><i class="bi bi-eraser"></i></button>
+   <button id="fclose" class="ibtn" type="button" aria-label="${esc(t('close'))}" title="${esc(t('close'))}"><i class="bi bi-x-lg"></i></button></div>`
+  + two(t('date'),'from','to','date',t('from'),t('to'))
+  + list('gender', u('gender'))
+  + list('cond', u('cond').slice(0,500))
+  + list('ag', AGES.map(a=>a[0]))
+  + list('hosp', u('hosp').slice(0,500))
+  + list('ins', u('ins'))
+  + list('atype', u('atype'))
+  + list('med', u('med').slice(0,500))
+  + list('test', u('test'))
+  + list('doctor', u('doc').slice(0,500))
+  + list('blood', u('blood'))
+  + two(t('k_bill'),'minbill','maxbill','number',t('minbill'),t('maxbill'))
+  + two(t('los'),'minlos','maxlos','number',t('minlos'),t('maxlos'));
+ P.querySelectorAll('[data-f]').forEach(e => e.onchange = () => { S.f[e.dataset.f] = e.value; S.pg = 0; softTap(); render(); });
+ P.querySelectorAll('.opt').forEach(b => b.onclick = () => { const k = b.dataset.k; S.f[k] = on(k,b.dataset.v) ? '' : b.dataset.v; S.pg = 0; buildFbar(); softTap(); render(); });
+ $('#clr').onclick = resetF;
+ $('#fclose').onclick = () => fpane(false);
+ chips();
+}
+function chips(){
+ if(!$('#fcount')) return;
+ const n = Object.keys(S.f).filter(k => S.f[k] !== '' && S.f[k] != null).length;
+ const e = $('#fcount'); if(e) e.textContent = n ? nf(n) : '';
+}
+function resetF(){
+ Object.keys(S.f).forEach(k => S.f[k] = '');
+ buildFbar(); render();
+ toast('info', t('clear'));
+ beep(520);
+}
+function fIsOpen(){
+ const p = $('#fbar');
+ return innerWidth < 900 ? p.classList.contains('show') : !p.classList.contains('off');
+}
+function fpane(open){
+ const p = $('#fbar');
+ if(open && !S.data.length) return;
+ if(innerWidth < 900){ p.classList.toggle('show', open); document.body.classList.toggle('fopen', open); }
+ else { p.classList.toggle('off', !open); }
+ setTimeout(() => CH.forEach(c => c.resize()), 80);
+}
+function i18nStatic(){
+ document.documentElement.lang = S.set.lang;
+ document.documentElement.dir = rtl() ? 'rtl' : 'ltr';
+ document.documentElement.dataset.theme = S.set.theme;
+ document.documentElement.dataset.mode = S.set.mode;
+ $('#lang').innerHTML = `<i class="bi bi-translate"></i><span>${rtl()?'English':'عربي'}</span>`;
+ $('#snd').innerHTML = `<i class="bi ${S.set.sound?'bi-volume-up':'bi-volume-mute'}"></i><span>${esc(t('sound_ttl'))}</span>`;
+ $('#mode').innerHTML = `<i class="bi ${S.set.mode==='dark'?'bi-sun':'bi-moon-stars'}"></i><span>${esc(t('mode_ttl'))}</span>`;
+ $('#pageTitle').textContent = t(S.page);
+ $('#openf').innerHTML = `<i class="bi bi-folder2-open"></i><span>${esc(t('loaddata'))}</span>`;
+ $('#ftog').innerHTML = `<i class="bi bi-funnel"></i><span>${esc(t('filters'))}</span>`;
+ $('#rst').innerHTML = `<i class="bi bi-arrow-counterclockwise"></i><span>${esc(t('clear'))}</span>`;
+ $('#prt').innerHTML = `<i class="bi bi-printer"></i><span>${esc(rtl()?'طباعة':'Print')}</span>`;
+ buildThemePicker();
+ const st = $('#dsStatus');
+ if(S.data.length){
+  const days = S.data.map(r=>r.day).filter(Boolean).sort();
+  st.textContent = `${S.name} · ${nf(S.data.length)} · ${dfmt(days[0])} – ${dfmt(days[days.length-1])} · ${t('score')} ${sh(S.meta.total ? S.data.length/S.meta.total : 1)}`;
+ } else st.textContent = '';
+ const mt = document.querySelector('meta[name=theme-color]');
+ if(mt) mt.content = S.set.mode==='dark' ? '#0a121e' : '#eef2f6';
+ document.querySelectorAll('.rb button').forEach(b => { const s = b.querySelector('span'); if(s) b.title = s.textContent; });
+}
+function uploadUI(){
+ V(`<div class="hero">
+  <span class="orb o1"></span><span class="orb o2"></span>
+  <svg class="hlogo" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="#0b6fb8"/><path d="M28 12h8v16h16v8H36v16h-8V36H12v-8h16z" fill="#fff"/></svg>
+  <h2>${esc(t('wel_t'))}</h2>
+  <p>${esc(t('wel_s'))}</p>
+  <button id="ld" class="cta"><i class="bi bi-cloud-arrow-down"></i><span>${esc(t('loaddata'))}</span></button>
+  <div id="steps"></div>
+  <div class="or">${esc(t('or'))}</div>
+  <div class="drop" id="dz">
+   <p class="muted" style="margin:0 0 .6rem">${esc(t('dropsub'))}</p>
+   <label class="pill" style="display:inline-flex;align-items:center;cursor:pointer;width:auto">${esc(t('browse'))}<input type="file" id="fi" accept=".csv" hidden></label>
+  </div>
+ </div>`);
+ $('#ld').onclick = loadRemote;
+ bindDrop('#dz');
+}
+const stepsUI = k => { const s = $('#steps'); if(!s) return Promise.resolve(); s.innerHTML = `<div class="stp"><i class="bi bi-arrow-repeat spin"></i> ${esc(t(k))}</div>`; return new Promise(r=>setTimeout(r,420)); };
+async function loadRemote(){
+ const ld = $('#ld'); if(!ld) return;
+ beep(660,.1); ld.disabled = true;
+ try{
+  await stepsUI('dl');
+  let txt = null;
+  try{ const r = await fetch(CONFIG.csvFile + '?v=' + Date.now()); if(r.ok) txt = await r.text(); }catch(e){}
+  if(!txt){ try{ txt = await xhr(CONFIG.csvFile); }catch(e){} }
+  if(!txt) throw 0;
+  await stepsUI('parse'); await stepsUI('an');
+  const ok = await ingest(txt, CONFIG.csvFile);
+  if(!ok){ ld.disabled = false; const s = $('#steps'); if(s) s.innerHTML = ''; }
+ }catch(e){
+  ld.disabled = false;
+  const s = $('#steps'); if(s) s.innerHTML = '';
+  showError(t('nofile'));
+  beep(220,.3);
+ }
+}
+function xhr(u){
+ return new Promise((res,rej)=>{
+  try{ const x = new XMLHttpRequest(); x.open('GET',u);
+   x.onload = () => (x.status===200 || (x.status===0 && x.responseText)) ? res(x.responseText) : rej();
+   x.onerror = rej; x.send();
+  }catch(e){ rej(e); }
+ });
+}
+function bindDrop(sel){
+ const dz = $(sel); if(!dz) return;
+ const inp = dz.querySelector('#fi') || $('#fi');
+ if(inp) inp.onchange = e => handleFile(e.target.files[0]);
+ dz.ondragover = e => { e.preventDefault(); dz.classList.add('over'); };
+ dz.ondragleave = () => dz.classList.remove('over');
+ dz.ondrop = e => { e.preventDefault(); dz.classList.remove('over'); handleFile(e.dataTransfer.files[0]); };
+}
+function exportCsv(rows){
+ const cell = v => { v = String(v ?? ''); if(/^[=+\-@]/.test(v)) v = "'"+v; return /[",\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; };
+ const head = REQ.join(',');
+ const out = [head].concat(rows.map(r => [r.name,r.age,r.gender,r.blood,r.cond,r.day,r.doc,r.hosp,r.ins,r.bill,r.room,r.atype, r.dis?isoDay(r.dis):'',r.med,r.test].map(cell).join(',')));
+ const a = document.createElement('a');
+ a.href = URL.createObjectURL(new Blob([out.join('\n')],{type:'text/csv'}));
+ a.download = 'healthcare-filtered.csv'; a.click();
+ beep(880,.15); toast('success', t('exported'));
+}
+function render(){
+ CH.splice(0).forEach(c => { try{ c.dispose(); }catch(e){} });
+ i18nStatic();
+ if(!S.data.length){ $('#fbar').innerHTML = ''; return uploadUI(); }
+ const rows = filt();
+ if(!rows.length && !['quality','insights'].includes(S.page)) return V(emptyPage());
+ try{ pages[S.page](rows); chips(); }
+ catch(e){ console.error(e); showError(t('badfile')); }
+}
+
+$('#openf').onclick = () => $('#fileIn').click();
+$('#fileIn').onchange = e => { handleFile(e.target.files[0]); e.target.value = ''; };
+$('#rst').onclick = resetF;
+$('#ftog').onclick = () => fpane(!fIsOpen());
+$('#fback').onclick = () => fpane(false);
+$('#lang').onclick = () => { S.set.lang = rtl() ? 'en' : 'ar'; save(); buildNav(); buildFbar(); render(); toast('info', rtl()?'English':'عربي'); };
+$('#mode').onclick = () => { S.set.mode = S.set.mode === 'dark' ? 'light' : 'dark'; save(); softTap(); render(); };
+$('#snd').onclick = () => { S.set.sound = !S.set.sound; save(); i18nStatic(); beep(); };
+$('#prt').onclick = () => window.print();
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && fIsOpen() && innerWidth < 900) fpane(false); });
+addEventListener('resize', () => { if(innerWidth >= 900){ $('#fbar').classList.remove('show'); document.body.classList.remove('fopen'); } });
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => { if(S.data.length && e.dataTransfer.files[0]){ e.preventDefault(); handleFile(e.dataTransfer.files[0]); } });
+document.addEventListener('click', () => { if(ac && ac.state === 'suspended') ac.resume(); }, {once:true});
+
+(async function init(){
+ try{
+  buildNav(); i18nStatic(); buildFbar();
+  render();
+ }catch(e){ console.error('INIT ERROR:', e); try{ render(); }catch(_){} }
+ finally{ setTimeout(hideBoot, 300); }
+})();
+</script>
+</body>
+</html>
