@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0e1a">
+<title>Data Analytics Portfolio — 3 Intelligence Dashboards</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%233b82f6'/%3E%3Cpath d='M14 44l12-16 10 10 14-20v26H14z' fill='%23fff'/%3E%3C/svg%3E">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Arabic:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root{
+ --bg:#0a0e1a;
+ --bg-2:#0f1422;
+ --surface:rgba(255,255,255,.035);
+ --surface-2:rgba(255,255,255,.06);
+ --surface-3:rgba(255,255,255,.09);
+ --border:rgba(255,255,255,.08);
+ --border-2:rgba(255,255,255,.14);
+ --text:#f8fafc;
+ --text-2:#cbd5e1;
+ --text-muted:#94a3b8;
+ --text-faint:#64748b;
+ --shadow-sm:0 1px 2px rgba(0,0,0,.3);
+ --shadow:0 8px 32px -8px rgba(0,0,0,.6);
+ --shadow-lg:0 24px 64px -16px rgba(0,0,0,.75);
+ --primary:#3b82f6;
+ --primary-2:#60a5fa;
+ --radius:20px;
+ --radius-sm:12px;
+ --radius-lg:28px;
+ --font:'Inter','Noto Sans Arabic',system-ui,-apple-system,sans-serif;
+ --mono:'JetBrains Mono',monospace;
+ --ease:cubic-bezier(.2,.8,.2,1);
+ --ease-out:cubic-bezier(.16,1,.3,1);
+
+ /* Project accents */
+ --sales:#f2c811;
+ --sales-2:#ffb020;
+ --health:#0b8ed8;
+ --health-2:#0e8a7d;
+ --telecom:#e11d2e;
+ --telecom-2:#a50f1e;
+}
+
+html[data-theme=light]{
+ --bg:#f7f9fc;
+ --bg-2:#eef2f7;
+ --surface:#ffffff;
+ --surface-2:#f8fafc;
+ --surface-3:#f1f5f9;
+ --border:rgba(15,23,42,.08);
+ --border-2:rgba(15,23,42,.14);
+ --text:#0f172a;
+ --text-2:#334155;
+ --text-muted:#64748b;
+ --text-faint:#94a3b8;
+ --shadow-sm:0 1px 2px rgba(15,23,42,.05);
+ --shadow:0 8px 32px -8px rgba(15,23,42,.12);
+ --shadow-lg:0 24px 64px -16px rgba(15,23,42,.18);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+ font:15px/1.6 var(--font);
+ background:var(--bg);
+ color:var(--text);
+ min-height:100vh;
+ overflow-x:hidden;
+ -webkit-font-smoothing:antialiased;
+ transition:background .3s,color .3s;
+ position:relative;
+}
+
+/* ============================================================
+   BACKGROUND ORBS
+   ============================================================ */
+.orb{
+ position:fixed;
+ border-radius:50%;
+ filter:blur(80px);
+ opacity:.35;
+ pointer-events:none;
+ z-index:0;
+ transition:opacity .5s;
+}
+html[data-theme=light] .orb{opacity:.25}
+.orb.o1{width:520px;height:520px;background:var(--health);top:-200px;left:-150px;animation:float1 18s ease-in-out infinite}
+.orb.o2{width:460px;height:460px;background:var(--telecom);bottom:-180px;right:-120px;animation:float2 22s ease-in-out infinite}
+.orb.o3{width:380px;height:380px;background:var(--sales);top:40%;left:50%;transform:translate(-50%,-50%);animation:float3 26s ease-in-out infinite;opacity:.15}
+@keyframes float1{50%{transform:translate(80px,60px) scale(1.15)}}
+@keyframes float2{50%{transform:translate(-60px,-80px) scale(1.1)}}
+@keyframes float3{50%{transform:translate(-50%,-50%) scale(1.2)}}
+
+.grid-bg{
+ position:fixed;
+ inset:0;
+ z-index:0;
+ pointer-events:none;
+ background-image:
+  linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+ background-size:60px 60px;
+ mask-image:radial-gradient(circle at 50% 50%,black 0%,transparent 90%);
+ -webkit-mask-image:radial-gradient(circle at 50% 50%,black 0%,transparent 90%);
+}
+html[data-theme=light] .grid-bg{
+ background-image:
+  linear-gradient(rgba(15,23,42,.04) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(15,23,42,.04) 1px,transparent 1px);
+}
+
+/* ============================================================
+   NAV
+   ============================================================ */
+.nav{
+ position:fixed;top:16px;left:16px;right:16px;
+ z-index:100;
+ display:flex;align-items:center;gap:12px;
+ padding:10px 18px;
+ background:color-mix(in srgb,var(--bg) 70%,transparent);
+ backdrop-filter:blur(20px);
+ -webkit-backdrop-filter:blur(20px);
+ border:1px solid var(--border);
+ border-radius:999px;
+ box-shadow:var(--shadow);
+ max-width:1200px;
+ margin:0 auto;
+}
+.nav-brand{
+ display:flex;align-items:center;gap:10px;
+ font-weight:700;font-size:15px;
+ flex:1;min-width:0;
+}
+.nav-logo{
+ width:34px;height:34px;flex:none;
+ background:linear-gradient(135deg,var(--primary),#8b5cf6);
+ border-radius:10px;
+ display:grid;place-items:center;
+ color:#fff;font-size:17px;
+ box-shadow:0 6px 16px -4px rgba(59,130,246,.5);
+}
+.nav-brand span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-brand b{color:var(--primary-2)}
+.nav-actions{display:flex;align-items:center;gap:6px}
+.nav-btn{
+ display:flex;align-items:center;justify-content:center;gap:6px;
+ min-width:38px;height:38px;padding:0 12px;
+ border:1px solid var(--border);
+ background:var(--surface);
+ color:var(--text);
+ border-radius:999px;
+ font:inherit;font-size:12.5px;font-weight:600;
+ cursor:pointer;
+ transition:all .2s var(--ease);
+ white-space:nowrap;
+ text-decoration:none;
+}
+.nav-btn i{font-size:15px}
+.nav-btn:hover{border-color:var(--primary);color:var(--primary-2);transform:translateY(-1px);background:color-mix(in srgb,var(--primary) 8%,var(--surface))}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.wrap{
+ position:relative;z-index:1;
+ max-width:1200px;
+ margin:0 auto;
+ padding:0 24px;
+}
+
+.hero{
+ padding:140px 0 60px;
+ text-align:center;
+}
+.hero-badge{
+ display:inline-flex;align-items:center;gap:8px;
+ padding:7px 16px;
+ border:1px solid var(--border);
+ background:var(--surface);
+ border-radius:999px;
+ font-size:12px;font-weight:600;
+ color:var(--text-muted);
+ margin-bottom:24px;
+ animation:heroIn .6s var(--ease-out) both;
+}
+.hero-badge::before{
+ content:'';
+ width:7px;height:7px;
+ border-radius:50%;
+ background:#10b981;
+ box-shadow:0 0 0 4px rgba(16,185,129,.18);
+ animation:pulse 2s infinite;
+}
+@keyframes pulse{
+ 0%,100%{box-shadow:0 0 0 4px rgba(16,185,129,.18)}
+ 50%{box-shadow:0 0 0 8px rgba(16,185,129,0)}
+}
+
+.hero h1{
+ font-size:clamp(2.2rem,6vw,4.2rem);
+ font-weight:800;
+ line-height:1.05;
+ letter-spacing:-.03em;
+ margin-bottom:20px;
+ animation:heroIn .7s var(--ease-out) .1s both;
+}
+.hero h1 .grad{
+ background:linear-gradient(135deg,var(--primary-2) 0%,#a855f7 50%,#ec4899 100%);
+ -webkit-background-clip:text;
+ background-clip:text;
+ color:transparent;
+}
+.hero p.lead{
+ font-size:clamp(1rem,1.5vw,1.15rem);
+ color:var(--text-muted);
+ max-width:640px;
+ margin:0 auto 32px;
+ line-height:1.65;
+ animation:heroIn .7s var(--ease-out) .2s both;
+}
+@keyframes heroIn{from{opacity:0;transform:translateY(20px)}}
+
+.hero-meta{
+ display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
+ margin-bottom:40px;
+ animation:heroIn .7s var(--ease-out) .3s both;
+}
+.tag{
+ display:inline-flex;align-items:center;gap:6px;
+ padding:6px 14px;
+ background:var(--surface);
+ border:1px solid var(--border);
+ border-radius:999px;
+ font-size:12.5px;font-weight:600;
+ color:var(--text-2);
+ transition:all .2s;
+}
+.tag i{color:var(--primary-2);font-size:14px}
+.tag:hover{transform:translateY(-2px);border-color:var(--primary);color:var(--text)}
+
+/* ============================================================
+   SECTION HEADER
+   ============================================================ */
+.section-head{
+ text-align:center;
+ margin-bottom:44px;
+}
+.section-head .kicker{
+ display:inline-block;
+ font-size:11px;
+ font-weight:700;
+ text-transform:uppercase;
+ letter-spacing:.14em;
+ color:var(--primary-2);
+ margin-bottom:12px;
+}
+.section-head h2{
+ font-size:clamp(1.7rem,3.6vw,2.6rem);
+ font-weight:800;
+ letter-spacing:-.025em;
+ line-height:1.15;
+ margin-bottom:10px;
+}
+.section-head p{
+ color:var(--text-muted);
+ max-width:560px;
+ margin:0 auto;
+ font-size:15px;
+}
+
+/* ============================================================
+   PROJECTS GRID
+   ============================================================ */
+.projects{
+ padding:40px 0 100px;
+}
+.proj-grid{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
+ gap:24px;
+}
+.proj{
+ position:relative;
+ display:flex;
+ flex-direction:column;
+ background:var(--surface);
+ border:1px solid var(--border);
+ border-radius:var(--radius);
+ overflow:hidden;
+ text-decoration:none;
+ color:inherit;
+ transition:all .35s var(--ease);
+ isolation:isolate;
+}
+.proj::before{
+ content:'';
+ position:absolute;
+ inset:0;
+ border-radius:inherit;
+ padding:1px;
+ background:linear-gradient(135deg,var(--acc-1),var(--acc-2));
+ -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+ -webkit-mask-composite:xor;
+ mask-composite:exclude;
+ opacity:0;
+ transition:opacity .35s;
+ pointer-events:none;
+ z-index:2;
+}
+.proj:hover::before{opacity:1}
+.proj:hover{
+ transform:translateY(-8px);
+ box-shadow:0 32px 64px -20px color-mix(in srgb,var(--acc-1) 40%,transparent);
+ background:var(--surface-2);
+}
+.proj-glow{
+ position:absolute;
+ top:-40%;right:-30%;
+ width:340px;height:340px;
+ background:radial-gradient(circle,color-mix(in srgb,var(--acc-1) 35%,transparent),transparent 70%);
+ filter:blur(30px);
+ opacity:.5;
+ transition:opacity .35s;
+ pointer-events:none;
+ z-index:0;
+}
+.proj:hover .proj-glow{opacity:.85}
+
+.proj-head{
+ position:relative;z-index:1;
+ padding:26px 26px 18px;
+ display:flex;align-items:flex-start;gap:16px;
+}
+.proj-ic{
+ width:56px;height:56px;flex:none;
+ border-radius:16px;
+ display:grid;place-items:center;
+ font-size:26px;color:#fff;
+ background:linear-gradient(135deg,var(--acc-1),var(--acc-2));
+ box-shadow:0 12px 28px -10px color-mix(in srgb,var(--acc-1) 70%,transparent);
+ transition:transform .35s var(--ease);
+}
+.proj:hover .proj-ic{transform:scale(1.1) rotate(-6deg)}
+.proj-head-txt{min-width:0;flex:1}
+.proj-cat{
+ font-size:10.5px;font-weight:700;
+ text-transform:uppercase;
+ letter-spacing:.12em;
+ color:var(--acc-1);
+ margin-bottom:5px;
+}
+.proj-title{
+ font-size:19px;font-weight:700;
+ letter-spacing:-.02em;
+ line-height:1.25;
+}
+
+.proj-body{
+ position:relative;z-index:1;
+ padding:0 26px;
+ flex:1;
+ display:flex;flex-direction:column;gap:14px;
+}
+.proj-desc{
+ font-size:13.5px;
+ color:var(--text-muted);
+ line-height:1.6;
+}
+.proj-features{
+ display:flex;flex-wrap:wrap;gap:6px;
+}
+.feat{
+ display:inline-flex;align-items:center;gap:5px;
+ padding:4px 10px;
+ background:color-mix(in srgb,var(--acc-1) 12%,transparent);
+ border:1px solid color-mix(in srgb,var(--acc-1) 28%,transparent);
+ border-radius:999px;
+ font-size:11px;font-weight:600;
+ color:var(--acc-1);
+ white-space:nowrap;
+}
+.feat i{font-size:12px}
+
+.proj-metrics{
+ display:grid;grid-template-columns:repeat(3,1fr);
+ gap:10px;
+ padding:14px;
+ background:var(--surface-2);
+ border:1px solid var(--border);
+ border-radius:14px;
+}
+.pm{text-align:center}
+.pm-v{
+ font-size:16px;font-weight:700;
+ letter-spacing:-.02em;
+ color:var(--text);
+ font-variant-numeric:tabular-nums;
+}
+.pm-l{
+ font-size:9.5px;font-weight:600;
+ color:var(--text-faint);
+ text-transform:uppercase;
+ letter-spacing:.06em;
+ margin-top:2px;
+}
+
+.proj-foot{
+ position:relative;z-index:1;
+ padding:20px 26px 26px;
+ display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.proj-stack{
+ display:flex;gap:6px;flex-wrap:wrap;
+}
+.stack-dot{
+ width:24px;height:24px;
+ border-radius:6px;
+ display:grid;place-items:center;
+ background:var(--surface-3);
+ border:1px solid var(--border);
+ font-size:11px;
+ color:var(--text-2);
+ transition:all .2s;
+}
+.stack-dot:hover{transform:translateY(-2px) scale(1.1);border-color:var(--acc-1);color:var(--acc-1)}
+.proj-cta{
+ display:inline-flex;align-items:center;gap:8px;
+ padding:9px 18px;
+ border-radius:999px;
+ background:linear-gradient(135deg,var(--acc-1),var(--acc-2));
+ color:#fff;
+ font-size:12.5px;font-weight:700;
+ letter-spacing:.01em;
+ box-shadow:0 8px 20px -6px color-mix(in srgb,var(--acc-1) 70%,transparent);
+ transition:all .25s var(--ease);
+ white-space:nowrap;
+}
+.proj-cta i{font-size:15px;transition:transform .25s var(--ease)}
+.proj:hover .proj-cta{transform:translateY(-2px);box-shadow:0 14px 32px -8px color-mix(in srgb,var(--acc-1) 80%,transparent)}
+.proj:hover .proj-cta i{transform:translateX(4px)}
+[dir=rtl] .proj:hover .proj-cta i{transform:translateX(-4px) scaleX(-1)}
+
+/* Project-specific accents */
+.proj.sales{--acc-1:var(--sales);--acc-2:var(--sales-2)}
+.proj.health{--acc-1:var(--health);--acc-2:var(--health-2)}
+.proj.telecom{--acc-1:var(--telecom);--acc-2:var(--telecom-2)}
+
+/* ============================================================
+   FEATURES STRIP
+   ============================================================ */
+.features{
+ padding:60px 0 100px;
+}
+.feat-grid{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+ gap:16px;
+}
+.fc{
+ padding:26px 22px;
+ background:var(--surface);
+ border:1px solid var(--border);
+ border-radius:var(--radius);
+ transition:all .3s var(--ease);
+ position:relative;overflow:hidden;
+}
+.fc::before{
+ content:'';
+ position:absolute;top:0;left:0;right:0;height:2px;
+ background:linear-gradient(90deg,var(--primary),#8b5cf6);
+ transform:scaleX(0);transform-origin:left;
+ transition:transform .4s var(--ease);
+}
+.fc:hover{transform:translateY(-6px);box-shadow:var(--shadow);border-color:var(--border-2)}
+.fc:hover::before{transform:scaleX(1)}
+.fc-ic{
+ width:44px;height:44px;
+ border-radius:12px;
+ display:grid;place-items:center;
+ font-size:20px;
+ background:color-mix(in srgb,var(--primary) 14%,transparent);
+ color:var(--primary-2);
+ margin-bottom:14px;
+}
+.fc h4{font-size:15px;font-weight:700;margin-bottom:6px;letter-spacing:-.01em}
+.fc p{font-size:13px;color:var(--text-muted);line-height:1.6}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer{
+ margin-top:40px;
+ padding:32px 0;
+ border-top:1px solid var(--border);
+ text-align:center;
+ color:var(--text-muted);
+ font-size:12.5px;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-width:900px){
+ .nav{top:12px;left:12px;right:12px;padding:8px 12px}
+ .nav-brand span{display:none}
+ .nav-btn span{display:none}
+ .nav-btn{padding:0;min-width:38px}
+ .hero{padding:120px 0 40px}
+ .hero h1{font-size:clamp(1.9rem,8vw,2.6rem)}
+ .hero p.lead{font-size:14.5px}
+ .proj-head{padding:22px 22px 14px}
+ .proj-ic{width:48px;height:48px;font-size:22px}
+ .proj-title{font-size:17px}
+ .proj-body{padding:0 22px}
+ .proj-foot{padding:16px 22px 22px;flex-direction:column;align-items:stretch}
+ .proj-cta{justify-content:center}
+ .proj-stack{justify-content:center}
+}
+@media(max-width:520px){
+ .wrap{padding:0 18px}
+ .hero{padding:110px 0 32px}
+ .proj-grid{gap:18px;grid-template-columns:1fr}
+ .proj-metrics{padding:12px;gap:6px}
+ .pm-v{font-size:14px}
+ .pm-l{font-size:9px}
+ .feat-grid{grid-template-columns:1fr}
+}
+
+@media(prefers-reduced-motion:reduce){
+ *{animation:none!important;transition:none!important}
+ .orb{animation:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="orb o1"></div>
+<div class="orb o2"></div>
+<div class="orb o3"></div>
+<div class="grid-bg"></div>
+
+<!-- ============ NAV ============ -->
+<nav class="nav">
+ <div class="nav-brand">
+  <div class="nav-logo"><i class="bi bi-bar-chart-fill"></i></div>
+  <span>Data Analytics <b>Portfolio</b></span>
+ </div>
+ <div class="nav-actions">
+  <button class="nav-btn" id="btnTheme" title="Theme"><i class="bi bi-sun-fill"></i></button>
+  <button class="nav-btn" id="btnLang" title="Language"><i class="bi bi-translate"></i><span id="langLabel">عربي</span></button>
+ </div>
+</nav>
+
+<div class="wrap">
+
+ <!-- ============ HERO ============ -->
+ <section class="hero">
+  <div class="hero-badge" id="heroBadge">Portfolio</div>
+  <h1 id="heroTitle">
+   Turning data into<br><span class="grad">decisions that matter</span>
+  </h1>
+  <p class="lead" id="heroLead">
+   A collection of full-stack, client-side BI dashboards built with vanilla JavaScript, Apache ECharts, and Papa Parse. Every metric is computed dynamically from raw CSV — no backend, no build step.
+  </p>
+  <div class="hero-meta" id="heroMeta">
+   <span class="tag"><i class="bi bi-braces"></i> Vanilla JS</span>
+   <span class="tag"><i class="bi bi-graph-up"></i> Apache ECharts</span>
+   <span class="tag"><i class="bi bi-filetype-csv"></i> Papa Parse</span>
+   <span class="tag"><i class="bi bi-bootstrap-fill"></i> Bootstrap Icons</span>
+   <span class="tag"><i class="bi bi-palette2"></i> SweetAlert2</span>
+   <span class="tag"><i class="bi bi-globe2"></i> EN / AR + RTL</span>
+  </div>
+ </section>
+
+ <!-- ============ PROJECTS ============ -->
+ <section class="projects">
+  <div class="section-head">
+   <span class="kicker" id="projKicker">Featured Work</span>
+   <h2 id="projHeadTitle">Three intelligence dashboards</h2>
+   <p id="projHeadSub">Each project solves a different business question — sales performance, healthcare operations, and telecom churn — using the same rigorous, client-side analytics stack.</p>
+  </div>
+
+  <div class="proj-grid">
+
+   <!-- SALES -->
+   <a class="proj sales" href="https://fci-awso.github.io/Data-Analytics-Portfolio/Sales-Intelligence/" target="_blank" rel="noopener">
+    <div class="proj-glow"></div>
+    <div class="proj-head">
+     <div class="proj-ic"><i class="bi bi-graph-up-arrow"></i></div>
+     <div class="proj-head-txt">
+      <div class="proj-cat" data-i18n="catSales">Sales · Business Intelligence</div>
+      <div class="proj-title" data-i18n="titleSales">Sales Intelligence</div>
+     </div>
+    </div>
+    <div class="proj-body">
+     <p class="proj-desc" data-i18n="descSales">
+      Executive revenue analytics: category performance, top customers, Pareto concentration, time trends, and statistical anomaly detection with rolling 7-day baselines.
+     </p>
+     <div class="proj-features">
+      <span class="feat"><i class="bi bi-cash-coin"></i> <span data-i18n="fSales1">Revenue KPIs</span></span>
+      <span class="feat"><i class="bi bi-people"></i> <span data-i18n="fSales2">Customer Pareto</span></span>
+      <span class="feat"><i class="bi bi-activity"></i> <span data-i18n="fSales3">Anomaly Detection</span></span>
+     </div>
+     <div class="proj-metrics">
+      <div class="pm"><div class="pm-v">10+</div><div class="pm-l" data-i18n="pmCharts">Charts</div></div>
+      <div class="pm"><div class="pm-v">8</div><div class="pm-l" data-i18n="pmKpis">KPIs</div></div>
+      <div class="pm"><div class="pm-v">∞</div><div class="pm-l" data-i18n="pmRows">Rows</div></div>
+     </div>
+    </div>
+    <div class="proj-foot">
+     <div class="proj-stack">
+      <span class="stack-dot" title="JavaScript"><i class="bi bi-braces"></i></span>
+      <span class="stack-dot" title="ECharts"><i class="bi bi-graph-up"></i></span>
+      <span class="stack-dot" title="Papa Parse"><i class="bi bi-filetype-csv"></i></span>
+     </div>
+     <div class="proj-cta"><span data-i18n="viewProject">View Project</span><i class="bi bi-arrow-right"></i></div>
+    </div>
+   </a>
+
+   <!-- HEALTHCARE -->
+   <a class="proj health" href="https://fci-awso.github.io/Data-Analytics-Portfolio/Healthcare-Intelligence/" target="_blank" rel="noopener">
+    <div class="proj-glow"></div>
+    <div class="proj-head">
+     <div class="proj-ic"><i class="bi bi-heart-pulse-fill"></i></div>
+     <div class="proj-head-txt">
+      <div class="proj-cat" data-i18n="catHealth">Healthcare · Clinical Analytics</div>
+      <div class="proj-title" data-i18n="titleHealth">Healthcare Intelligence</div>
+     </div>
+    </div>
+    <div class="proj-body">
+     <p class="proj-desc" data-i18n="descHealth">
+      Hospital operations and patient analytics: billing patterns, length-of-stay distributions, condition × hospital matrices, insurance mix, and IQR-based outlier detection.
+     </p>
+     <div class="proj-features">
+      <span class="feat"><i class="bi bi-hospital"></i> <span data-i18n="fHealth1">Hospital Ops</span></span>
+      <span class="feat"><i class="bi bi-clipboard2-pulse"></i> <span data-i18n="fHealth2">Clinical Analysis</span></span>
+      <span class="feat"><i class="bi bi-shield-check"></i> <span data-i18n="fHealth3">Insurance Mix</span></span>
+     </div>
+     <div class="proj-metrics">
+      <div class="pm"><div class="pm-v">22+</div><div class="pm-l" data-i18n="pmCharts">Charts</div></div>
+      <div class="pm"><div class="pm-v">25+</div><div class="pm-l" data-i18n="pmKpis">KPIs</div></div>
+      <div class="pm"><div class="pm-v">10</div><div class="pm-l" data-i18n="pmPages">Pages</div></div>
+     </div>
+    </div>
+    <div class="proj-foot">
+     <div class="proj-stack">
+      <span class="stack-dot" title="JavaScript"><i class="bi bi-braces"></i></span>
+      <span class="stack-dot" title="ECharts"><i class="bi bi-graph-up"></i></span>
+      <span class="stack-dot" title="Papa Parse"><i class="bi bi-filetype-csv"></i></span>
+     </div>
+     <div class="proj-cta"><span data-i18n="viewProject">View Project</span><i class="bi bi-arrow-right"></i></div>
+    </div>
+   </a>
+
+   <!-- TELECOM -->
+   <a class="proj telecom" href="https://fci-awso.github.io/Data-Analytics-Portfolio/Telecom-Customer-Intelligence/" target="_blank" rel="noopener">
+    <div class="proj-glow"></div>
+    <div class="proj-head">
+     <div class="proj-ic"><i class="bi bi-broadcast-pin"></i></div>
+     <div class="proj-head-txt">
+      <div class="proj-cat" data-i18n="catTelecom">Telecom · Customer Intelligence</div>
+      <div class="proj-title" data-i18n="titleTelecom">Telecom Customer Intelligence</div>
+     </div>
+    </div>
+    <div class="proj-body">
+     <p class="proj-desc" data-i18n="descTelecom">
+      Churn intelligence and retention strategy: rule-based Value & Risk scores, 5-segment customer matrix, revenue-at-risk, and a Value vs Risk scatter of every customer.
+     </p>
+     <div class="proj-features">
+      <span class="feat"><i class="bi bi-graph-down-arrow"></i> <span data-i18n="fTele1">Churn Analysis</span></span>
+      <span class="feat"><i class="bi bi-diagram-3"></i> <span data-i18n="fTele2">Segmentation</span></span>
+      <span class="feat"><i class="bi bi-shield-exclamation"></i> <span data-i18n="fTele3">Risk Scoring</span></span>
+     </div>
+     <div class="proj-metrics">
+      <div class="pm"><div class="pm-v">18+</div><div class="pm-l" data-i18n="pmCharts">Charts</div></div>
+      <div class="pm"><div class="pm-v">20+</div><div class="pm-l" data-i18n="pmKpis">KPIs</div></div>
+      <div class="pm"><div class="pm-v">5</div><div class="pm-l" data-i18n="pmSegments">Segments</div></div>
+     </div>
+    </div>
+    <div class="proj-foot">
+     <div class="proj-stack">
+      <span class="stack-dot" title="JavaScript"><i class="bi bi-braces"></i></span>
+      <span class="stack-dot" title="ECharts"><i class="bi bi-graph-up"></i></span>
+      <span class="stack-dot" title="Papa Parse"><i class="bi bi-filetype-csv"></i></span>
+     </div>
+     <div class="proj-cta"><span data-i18n="viewProject">View Project</span><i class="bi bi-arrow-right"></i></div>
+    </div>
+   </a>
+
+  </div>
+ </section>
+
+ <!-- ============ FEATURES ============ -->
+ <section class="features">
+  <div class="section-head">
+   <span class="kicker" id="featKicker">What every project shares</span>
+   <h2 id="featHeadTitle">Production-grade analytics — no backend</h2>
+   <p id="featHeadSub">Every dashboard runs entirely in the browser. Upload a CSV and get instant KPIs, interactive charts, and business insights.</p>
+  </div>
+  <div class="feat-grid">
+   <div class="fc">
+    <div class="fc-ic"><i class="bi bi-cloud-slash"></i></div>
+    <h4 data-i18n="fc1T">100% Client-Side</h4>
+    <p data-i18n="fc1B">No server, no build step, no npm. Just open index.html — everything runs in the browser.</p>
+   </div>
+   <div class="fc">
+    <div class="fc-ic"><i class="bi bi-upload"></i></div>
+    <h4 data-i18n="fc2T">Dynamic CSV Upload</h4>
+    <p data-i18n="fc2B">Drag & drop any compatible CSV. The dashboard recalculates every KPI, chart, and insight instantly.</p>
+   </div>
+   <div class="fc">
+    <div class="fc-ic"><i class="bi bi-translate"></i></div>
+    <h4 data-i18n="fc3T">Full EN / AR + RTL</h4>
+    <p data-i18n="fc3B">Complete bilingual experience with proper right-to-left layout — including chart labels and legends.</p>
+   </div>
+   <div class="fc">
+    <div class="fc-ic"><i class="bi bi-palette2"></i></div>
+    <h4 data-i18n="fc4T">Multi-Theme System</h4>
+    <p data-i18n="fc4B">Four to five themes per dashboard, persisted in localStorage, adapting charts and UI in real time.</p>
+   </div>
+   <div class="fc">
+    <div class="fc-ic"><i class="bi bi-lightbulb"></i></div>
+    <h4 data-i18n="fc5T">Insight Engine</h4>
+    <p data-i18n="fc5B">Deterministic analytics generate prioritized business insights with recommendations — not fabricated ML.</p>
+   </div>
+   <div class="fc">
+    <div class="fc-ic"><i class="bi bi-phone"></i></div>
+    <h4 data-i18n="fc6T">Mobile-First</h4>
+    <p data-i18n="fc6B">Every dashboard has been hand-tuned for mobile — drawers, offcanvas filters, and responsive charts.</p>
+   </div>
+  </div>
+ </section>
+
+ <!-- ============ FOOTER ============ -->
+ <footer class="footer">
+  <div id="footLine">Data Analytics Portfolio</div>
+ </footer>
+
+</div>
+
+<script>
+/* ============================================================
+   I18N — bilingual support (EN/AR) with RTL
+   ============================================================ */
+const I18N = {
+ en:{
+  heroBadge:'Portfolio',
+  heroTitle:'Turning data into<br><span class="grad">decisions that matter</span>',
+  heroLead:'A collection of full-stack, client-side BI dashboards built with vanilla JavaScript, Apache ECharts, and Papa Parse. Every metric is computed dynamically from raw CSV — no backend, no build step.',
+  projKicker:'Featured Work',
+  projHeadTitle:'Three intelligence dashboards',
+  projHeadSub:'Each project solves a different business question — sales performance, healthcare operations, and telecom churn — using the same rigorous, client-side analytics stack.',
+  catSales:'Sales · Business Intelligence',
+  titleSales:'Sales Intelligence',
+  descSales:'Executive revenue analytics: category performance, top customers, Pareto concentration, time trends, and statistical anomaly detection with rolling 7-day baselines.',
+  fSales1:'Revenue KPIs', fSales2:'Customer Pareto', fSales3:'Anomaly Detection',
+  catHealth:'Healthcare · Clinical Analytics',
+  titleHealth:'Healthcare Intelligence',
+  descHealth:'Hospital operations and patient analytics: billing patterns, length-of-stay distributions, condition × hospital matrices, insurance mix, and IQR-based outlier detection.',
+  fHealth1:'Hospital Ops', fHealth2:'Clinical Analysis', fHealth3:'Insurance Mix',
+  catTelecom:'Telecom · Customer Intelligence',
+  titleTelecom:'Telecom Customer Intelligence',
+  descTelecom:'Churn intelligence and retention strategy: rule-based Value & Risk scores, 5-segment customer matrix, revenue-at-risk, and a Value vs Risk scatter of every customer.',
+  fTele1:'Churn Analysis', fTele2:'Segmentation', fTele3:'Risk Scoring',
+  pmCharts:'Charts', pmKpis:'KPIs', pmRows:'Rows', pmPages:'Pages', pmSegments:'Segments',
+  viewProject:'View Project',
+  featKicker:'What every project shares',
+  featHeadTitle:'Production-grade analytics — no backend',
+  featHeadSub:'Every dashboard runs entirely in the browser. Upload a CSV and get instant KPIs, interactive charts, and business insights.',
+  fc1T:'100% Client-Side', fc1B:'No server, no build step, no npm. Just open index.html — everything runs in the browser.',
+  fc2T:'Dynamic CSV Upload', fc2B:'Drag & drop any compatible CSV. The dashboard recalculates every KPI, chart, and insight instantly.',
+  fc3T:'Full EN / AR + RTL', fc3B:'Complete bilingual experience with proper right-to-left layout — including chart labels and legends.',
+  fc4T:'Multi-Theme System', fc4B:'Four to five themes per dashboard, persisted in localStorage, adapting charts and UI in real time.',
+  fc5T:'Insight Engine', fc5B:'Deterministic analytics generate prioritized business insights with recommendations — not fabricated ML.',
+  fc6T:'Mobile-First', fc6B:'Every dashboard has been hand-tuned for mobile — drawers, offcanvas filters, and responsive charts.',
+  footLine:'Data Analytics Portfolio',
+  langLabel:'عربي'
+ },
+ ar:{
+  heroBadge:'بورتفوليو',
+  heroTitle:'نحوّل البيانات إلى<br><span class="grad">قرارات تصنع الفرق</span>',
+  heroLead:'مجموعة من لوحات ذكاء الأعمال المتكاملة التي تعمل بالكامل من داخل المتصفح باستخدام JavaScript وECharts وPapa Parse. كل المؤشرات تُحسب ديناميكيًا من ملف CSV — بدون خادم ولا خطوات بناء.',
+  projKicker:'أعمال مختارة',
+  projHeadTitle:'ثلاث لوحات ذكاء أعمال',
+  projHeadSub:'كل مشروع يحل سؤالًا تجاريًا مختلفًا — أداء المبيعات، عمليات الرعاية الصحية، وتسرب عملاء الاتصالات — بنفس المنهجية الصارمة والتحليل من داخل المتصفح.',
+  catSales:'المبيعات · ذكاء الأعمال',
+  titleSales:'ذكاء المبيعات',
+  descSales:'تحليلات الإيرادات التنفيذية: أداء الفئات، أكبر العملاء، تركيز باريتو، اتجاهات الزمن، وكشف الشذوذ الإحصائي بناءً على خط أساس متحرك لـ 7 أيام.',
+  fSales1:'مؤشرات الإيراد', fSales2:'باريتو العملاء', fSales3:'كشف الشذوذ',
+  catHealth:'الرعاية الصحية · تحليلات سريرية',
+  titleHealth:'ذكاء الرعاية الصحية',
+  descHealth:'عمليات المستشفيات وتحليلات المرضى: أنماط الفواتير، توزيع مدة الإقامة، مصفوفات الحالة × المستشفى، مزيج التأمين، وكشف القيم الشاذة بقاعدة IQR.',
+  fHealth1:'عمليات المستشفيات', fHealth2:'تحليل سريري', fHealth3:'مزيج التأمين',
+  catTelecom:'الاتصالات · ذكاء العملاء',
+  titleTelecom:'ذكاء عملاء الاتصالات',
+  descTelecom:'ذكاء التسرب واستراتيجية الاحتفاظ: درجات القيمة والخطورة المبنية على قواعد، مصفوفة 5 شرائح عملاء، الإيراد المعرض للخطر، ومخطط تناثر لكل عميل.',
+  fTele1:'تحليل التسرب', fTele2:'تقسيم العملاء', fTele3:'قياس الخطورة',
+  pmCharts:'مخططات', pmKpis:'مؤشرات', pmRows:'صفوف', pmPages:'صفحات', pmSegments:'شرائح',
+  viewProject:'استعرض المشروع',
+  featKicker:'ما تشترك فيه كل المشاريع',
+  featHeadTitle:'تحليلات احترافية — بدون خادم',
+  featHeadSub:'كل لوحة تعمل بالكامل داخل المتصفح. ارفع ملف CSV واحصل على مؤشرات فورية ومخططات تفاعلية ورؤى تجارية.',
+  fc1T:'تعمل بالكامل في المتصفح', fc1B:'بدون خادم أو خطوات بناء أو npm. افتح index.html مباشرة — كل شيء يعمل في المتصفح.',
+  fc2T:'رفع CSV ديناميكي', fc2B:'اسحب وأفلت أي ملف متوافق. تُعاد كل المؤشرات والمخططات والرؤى فورًا.',
+  fc3T:'دعم كامل EN / AR + RTL', fc3B:'تجربة ثنائية اللغة كاملة مع تخطيط من اليمين لليسار — بما يشمل عناوين ووسوم المخططات.',
+  fc4T:'نظام متعدد المظاهر', fc4B:'من 4 إلى 5 مظاهر لكل لوحة، محفوظة في localStorage، تُطبّق على المخططات والواجهة فورًا.',
+  fc5T:'محرك الرؤى', fc5B:'تحليلات حتمية تولّد رؤى تجارية مرتبة حسب الأولوية مع توصيات — بدون نماذج ذكاء اصطناعي ملفقة.',
+  fc6T:'مصمّمة للجوال أولًا', fc6B:'كل لوحة مضبوطة بعناية للجوال — أدراج جانبية، فلاتر منبثقة، ومخططات متجاوبة.',
+  footLine:'بورتفوليو تحليل البيانات',
+  langLabel:'English'
+ }
+};
+
+const S = Object.assign({ theme:'dark', lang:'en' }, JSON.parse(localStorage.dap||'{}'));
+const save = () => localStorage.dap = JSON.stringify(S);
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const t = k => (I18N[S.lang] && I18N[S.lang][k]) || I18N.en[k] || k;
+const rtl = () => S.lang === 'ar';
+const YEAR = new Date().getFullYear();
+
+/* ---------- Apply translations ---------- */
+function applyLang(){
+ document.documentElement.lang = S.lang;
+ document.documentElement.dir = rtl() ? 'rtl' : 'ltr';
+ $$('[data-i18n]').forEach(el => {
+  const k = el.dataset.i18n;
+  const v = t(k);
+  if(v != null) el.innerHTML = v;
+ });
+ // Hero pieces with HTML content
+ $('#heroBadge').textContent = `${t('heroBadge')} · ${YEAR}`;
+ $('#heroTitle').innerHTML = t('heroTitle');
+ $('#heroLead').textContent = t('heroLead');
+ $('#projKicker').textContent = t('projKicker');
+ $('#projHeadTitle').textContent = t('projHeadTitle');
+ $('#projHeadSub').textContent = t('projHeadSub');
+ $('#featKicker').textContent = t('featKicker');
+ $('#featHeadTitle').textContent = t('featHeadTitle');
+ $('#featHeadSub').textContent = t('featHeadSub');
+ $('#footLine').textContent = `${t('footLine')} · ${YEAR}`;
+ $('#langLabel').textContent = t('langLabel');
+}
+
+/* ---------- Apply theme ---------- */
+function applyTheme(){
+ document.documentElement.dataset.theme = S.theme;
+ const mt = document.querySelector('meta[name=theme-color]');
+ if(mt) mt.content = S.theme === 'dark' ? '#0a0e1a' : '#f7f9fc';
+ const btn = $('#btnTheme');
+ if(btn) btn.innerHTML = S.theme === 'dark'
+  ? '<i class="bi bi-sun-fill"></i>'
+  : '<i class="bi bi-moon-stars-fill"></i>';
+}
+
+/* ---------- Wire buttons ---------- */
+$('#btnTheme').addEventListener('click', () => {
+ S.theme = S.theme === 'dark' ? 'light' : 'dark';
+ save(); applyTheme();
+});
+$('#btnLang').addEventListener('click', () => {
+ S.lang = S.lang === 'en' ? 'ar' : 'en';
+ save(); applyLang();
+});
+
+/* ---------- Reveal on scroll (subtle) ---------- */
+if('IntersectionObserver' in window){
+ const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+   if(e.isIntersecting){
+    e.target.style.opacity = '1';
+    e.target.style.transform = 'translateY(0)';
+    io.unobserve(e.target);
+   }
+  });
+ }, { threshold:.12 });
+ $$('.proj, .fc, .section-head').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(24px)';
+  el.style.transition = 'opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1)';
+  io.observe(el);
+ });
+}
+
+/* ---------- Boot ---------- */
+applyTheme();
+applyLang();
+</script>
+</body>
+</html>
