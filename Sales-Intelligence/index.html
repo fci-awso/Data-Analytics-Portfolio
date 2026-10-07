@@ -532,6 +532,18 @@ function uploadUI(){V(`<div class="hero"><span class="orb o1"></span><span class
  $('#ld').onclick=loadRemote;bindDrop('#dz');const pk=$('#pk');if(pk)pk.onclick=pickCsv}
 (async function init(){try{buildNav();i18nStatic();buildFbar();
  if(location.protocol==='file:'){try{const f=await savedFile(false);if(f){await ingest(await f.text(),f.name);return}}catch(e){}}
- render()}catch(e){console.error(e);try{render()}catch(_){}}finally{hideBoot()}})();
+ render();
+ /* Auto-load dataset on page load (falls back to the manual upload screen if not found) */
+ try{
+  setBoot(rtl()?'جارٍ تحميل البيانات…':'Loading dataset…');
+  let txt=null;
+  for(const u of['sale.csv','data/sale.csv']){try{const r=await fetch(u+'?v='+Date.now());if(r.ok){txt=await r.text();break}}catch(e){}}
+  if(!txt){try{txt=await xhr('sale.csv')}catch(e){}}
+  if(txt){
+   setBoot(rtl()?'جارٍ قراءة السجلات…':'Parsing records…');
+   await ingest(txt,'sale.csv');
+  }
+ }catch(e){console.error('AUTO-LOAD ERROR:',e)}
+ }catch(e){console.error(e);try{render()}catch(_){}}finally{hideBoot()}})();
 </script>
 </body></html>
