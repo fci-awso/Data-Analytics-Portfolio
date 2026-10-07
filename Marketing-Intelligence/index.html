@@ -1,0 +1,1850 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="marketing" data-mode="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a121e">
+<title>MarketingPulse Intelligence</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%238b5cf6'/%3E%3Cpath d='M18 40l8-12 8 8 12-16v22H18z' fill='%23fff'/%3E%3Ccircle cx='46' cy='18' r='4' fill='%23f472b6'/%3E%3C/svg%3E">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+ --top:#fff;--rib:#f7f5fb;--bg:#f5f3f9;--surf:#fff;--text:#15121e;--muted:#5c5870;--line:#e4e0ec;
+ --a:#7c3aed;--up:#0b8a5b;--dn:#d64545;--r:16px;--sh:0 1px 2px rgba(21,18,30,.05),0 10px 30px -14px rgba(21,18,30,.22);
+ --y:#ec4899;
+ --c1:#7c3aed;--c2:#ec4899;--c3:#0ea5e9;--c4:#f59e0b;--c5:#10b981;--c6:#6366f1;
+ --font:'Inter','Noto Sans Arabic',system-ui,sans-serif;--ease:cubic-bezier(.2,.8,.2,1)
+}
+html[data-mode=dark]{--top:#0f0d18;--rib:#151221;--bg:#0a0814;--surf:#131020;--text:#f1eef8;--muted:#9d97b3;--line:#2a253b;--up:#34d399;--dn:#f87171;color-scheme:dark}
+html[data-mode=dark] .swal2-popup{background:var(--surf);color:var(--text)}
+html[data-mode=dark] .swal2-title,html[data-mode=dark] .swal2-html-container{color:var(--text)}
+[data-theme=executive]{--a:#0f172a;--c1:#0f172a;--c2:#334155;--c3:#0ea5e9;--c4:#f59e0b;--c5:#10b981;--c6:#6366f1;--y:#f59e0b}
+[data-theme=clinical]{--a:#0e7490;--c1:#0e7490;--c2:#0d9488;--c3:#0ea5e9;--c4:#6366f1;--c5:#f43f5e;--c6:#64748b;--y:#f43f5e}
+[data-theme=highcontrast]{--a:#000;--c1:#000;--c2:#c00;--c3:#06c;--c4:#060;--c5:#909;--c6:#666;--y:#c00}
+[data-theme=teal]{--a:#0d9488;--c1:#0d9488;--c2:#0e7490;--c3:#0369a1;--c4:#7c3aed;--c5:#db2777;--c6:#65a30d;--y:#65a30d}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;font:13px var(--font);background:radial-gradient(900px 500px at 85% -10%,color-mix(in srgb,var(--a) 14%,transparent),transparent),radial-gradient(700px 400px at -5% 110%,color-mix(in srgb,var(--y) 12%,transparent),transparent),var(--bg);color:var(--text);overflow:hidden}
+.muted{color:var(--muted)}
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+.title{display:flex;align-items:center;gap:8px;background:transparent;border:0;padding:10px 16px 2px;min-width:0}
+.title svg{width:26px;height:26px;border-radius:7px;flex:none}
+.title b{font-weight:600;white-space:nowrap}
+.title h1{font-size:13px;font-weight:400;margin:0;color:var(--muted);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ribbon{display:flex;gap:2px;align-items:stretch;padding:5px 8px;margin:6px 12px;border:1px solid var(--line);border-radius:18px;background:color-mix(in srgb,var(--surf) 78%,transparent);backdrop-filter:blur(14px);box-shadow:var(--sh);overflow-x:auto;overflow-y:hidden;scrollbar-width:none;position:relative}
+.ribbon::-webkit-scrollbar{display:none}
+.rb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:56px;padding:4px 8px;border:0;background:none;color:var(--text);font:inherit;font-size:11px;cursor:pointer;border-radius:12px;white-space:nowrap;transition:transform .2s var(--ease),background .2s}
+.rb i{font-size:19px;transition:transform .25s var(--ease)}
+.rb:hover{background:color-mix(in srgb,var(--a) 12%,transparent);transform:translateY(-2px)}
+.rb:hover i{transform:scale(1.18) rotate(-6deg);color:var(--a)}
+.rb:active{transform:scale(.93)}
+.rsep{width:1px;background:var(--line);margin:6px}
+.theme-picker{position:relative;display:flex;align-items:stretch}
+.theme-trigger{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:64px;padding:4px 8px;border:0;background:none;color:var(--text);font:inherit;font-size:11px;cursor:pointer;border-radius:12px;white-space:nowrap;transition:background .2s,transform .2s var(--ease)}
+.theme-trigger:hover{background:color-mix(in srgb,var(--a) 12%,transparent);transform:translateY(-2px)}
+.theme-trigger .swatches{display:inline-flex;gap:2px}
+.theme-trigger .swatches i{width:14px;height:14px;border-radius:4px;display:block;border:1px solid rgba(0,0,0,.1);box-shadow:0 1px 2px rgba(0,0,0,.15);transition:transform .25s var(--ease)}
+.theme-trigger .caret{font-size:9px;color:var(--muted);margin-top:-2px;transition:transform .25s var(--ease)}
+.theme-picker.open .caret{transform:rotate(180deg)}
+#themeMenu{position:fixed;top:0;left:0;min-width:240px;max-width:calc(100vw - 24px);background:var(--surf);border:1px solid var(--line);border-radius:14px;box-shadow:0 16px 40px -12px rgba(0,0,0,.28);padding:6px;z-index:500;opacity:0;visibility:hidden;transform:translateY(-8px) scale(.96);transform-origin:top;transition:opacity .2s var(--ease),transform .2s var(--ease),visibility 0s .2s;pointer-events:none;display:none}
+#themeMenu.open{opacity:1;visibility:visible;transform:none;pointer-events:auto;display:block;transition:opacity .2s var(--ease),transform .2s var(--ease),visibility 0s}
+.theme-menu-title{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600;padding:8px 10px 4px}
+.theme-opt{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border:0;background:none;color:var(--text);font:inherit;font-size:12.5px;border-radius:10px;cursor:pointer;text-align:start;transition:background .15s,transform .15s}
+.theme-opt:hover{background:color-mix(in srgb,var(--a) 10%,transparent);transform:translateX(2px)}
+[dir=rtl] .theme-opt:hover{transform:translateX(-2px)}
+.theme-opt.on{background:color-mix(in srgb,var(--a) 14%,transparent);font-weight:600}
+.theme-opt .swatches{display:inline-flex;gap:3px;flex:none}
+.theme-opt .swatches i{width:16px;height:16px;border-radius:5px;display:block;border:1px solid rgba(0,0,0,.12)}
+.theme-opt .check{margin-inline-start:auto;color:var(--a);opacity:0;transition:opacity .2s}
+.theme-opt.on .check{opacity:1}
+.body{flex:1;display:flex;min-height:0;padding:0 12px}
+.center{flex:1;display:flex;flex-direction:column;min-width:0}
+#view{flex:1;overflow:auto;padding:8px 4px 12px;overscroll-behavior:contain}
+#nav{display:flex;overflow-x:auto;margin:0 12px 8px;padding:5px;gap:4px;border:1px solid var(--line);border-radius:18px;background:color-mix(in srgb,var(--surf) 78%,transparent);backdrop-filter:blur(14px);box-shadow:var(--sh);scrollbar-width:none}
+#nav::-webkit-scrollbar{display:none}
+#nav a{padding:7px 16px;border:0;border-radius:999px;white-space:nowrap;cursor:pointer;color:var(--muted);transition:background .25s,color .2s,transform .2s;display:flex;align-items:center;gap:6px;font-size:12.5px}
+#nav a:hover{background:color-mix(in srgb,var(--a) 12%,transparent);color:var(--text);transform:translateY(-1px)}
+#nav a.on{background:linear-gradient(135deg,var(--a),color-mix(in srgb,var(--a) 65%,#fff));color:#fff;box-shadow:0 6px 16px -6px color-mix(in srgb,var(--a) 70%,transparent)}
+#fbar{width:290px;flex:none;background:var(--surf);border:1px solid var(--line);border-radius:var(--r);margin-inline-start:8px;margin-bottom:8px;overflow:auto;box-shadow:var(--sh)}
+#fbar:empty,#fbar.off{display:none}
+.ph{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surf);z-index:1;border-radius:var(--r) var(--r) 0 0}
+.ph b{flex:1;font-size:14px;font-weight:600}
+#fcount:not(:empty){background:var(--y);color:#fff;border-radius:9px;padding:0 7px;font-size:11px;min-width:18px;text-align:center}
+.fc{border:0;margin:4px 8px;border-radius:12px;background:color-mix(in srgb,var(--rib) 55%,transparent);flex-shrink:0}
+.fc summary{list-style:none;cursor:pointer;padding:8px 12px;font-weight:600;display:flex;justify-content:space-between;align-items:center;border-radius:12px}
+.fc summary::-webkit-details-marker{display:none}
+.fc[open] summary i{transform:rotate(180deg)}
+.fc summary i{transition:transform .3s var(--ease)}
+.fb{padding:0 12px 10px}
+.sl{display:flex;flex-direction:column;max-height:180px;overflow:auto}
+.opt{border:0;background:none;text-align:start;padding:5px 8px;color:var(--text);font:inherit;cursor:pointer;display:flex;gap:8px;align-items:center;border-radius:10px;transition:background .15s,transform .15s}
+.opt:hover{background:color-mix(in srgb,var(--a) 10%,transparent);transform:translateX(3px)}
+[dir=rtl] .opt:hover{transform:translateX(-3px)}
+.opt[aria-pressed=true]{font-weight:600}
+.opt i{color:var(--a);transition:transform .25s var(--ease)}
+.opt[aria-pressed=true] i{transform:scale(1.15)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.ibtn,.pill{height:36px;border-radius:999px;border:1px solid var(--line);background:var(--surf);color:var(--text);font:inherit;padding:0 14px;min-width:0;transition:border-color .2s,box-shadow .2s,transform .15s}
+.pill{width:100%}
+.ibtn{width:36px;padding:0;cursor:pointer}
+.ibtn:hover,.pill:hover{border-color:var(--a);transform:translateY(-1px)}
+.ibtn:active{transform:scale(.92)}
+.pill:focus{outline:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--a) 20%,transparent)}
+.tabbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.fld{display:flex;flex-direction:column;gap:2px;min-width:0;max-width:100%}
+.fld>span{font-size:11px;color:var(--muted)}
+.seg{display:inline-flex;border:0;border-radius:999px;padding:3px;background:color-mix(in srgb,var(--text) 8%,transparent);gap:2px;max-width:100%;overflow-x:auto;scrollbar-width:none}
+.seg::-webkit-scrollbar{display:none}
+.seg button{border:0;border-radius:999px;background:none;color:var(--text);font:inherit;padding:6px 16px;cursor:pointer;flex:none;white-space:nowrap;transition:background .3s,color .2s,transform .2s,box-shadow .3s}
+.seg button:hover{transform:translateY(-1px)}
+.seg button.on{background:linear-gradient(135deg,var(--a),color-mix(in srgb,var(--a) 65%,#fff));color:#fff;box-shadow:0 4px 12px -3px color-mix(in srgb,var(--a) 60%,transparent)}
+.hl{margin:2px 0 10px}
+.hl h2{font-size:18px;font-weight:600;margin:0 0 2px;letter-spacing:-.01em}
+.hl p{color:var(--muted);margin:0}
+.sec{font-size:14px;font-weight:600;margin:14px 0 6px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-bottom:8px}
+.kpi{position:relative;overflow:hidden;display:flex;flex-direction:column;background:var(--surf);border:1px solid color-mix(in srgb,var(--line) 70%,transparent);border-radius:var(--r);padding:12px 14px;box-shadow:var(--sh);transition:transform .3s var(--ease),box-shadow .3s,border-color .2s;animation:rise .55s var(--ease) both}
+.kpi:before{content:"";position:absolute;inset-inline:0;top:0;height:3px;background:linear-gradient(90deg,var(--a),var(--y));transform:scaleX(.25);transform-origin:left;transition:transform .5s var(--ease)}
+[dir=rtl] .kpi:before{transform-origin:right}
+.kpi:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--a) 50%,transparent);box-shadow:0 14px 34px -14px color-mix(in srgb,var(--a) 45%,transparent)}
+.kpi:hover:before{transform:scaleX(1)}
+.kpi .v{order:1;font-size:26px;font-weight:300;line-height:1.2;letter-spacing:-.02em}
+.kpi .l{order:2;color:var(--muted);font-weight:600;font-size:12px}
+.kpi .sub{order:3;font-size:11px;color:var(--muted)}
+.kpi .chg{order:4;font-size:12px;font-weight:600}
+.kpi .help{order:5;font-size:11px;color:var(--muted);margin:4px 0 0}
+.kpi svg{order:6;width:100%;height:24px;margin-top:4px}
+.kpi svg path{fill:none;stroke:var(--a);stroke-width:1.5}
+.chg.up,.up{color:var(--up)}
+.chg.dn,.dn{color:var(--dn)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:8px}
+.grid>*{min-width:0}
+.s12{grid-column:span 12}
+.s8{grid-column:span 8}
+.s6{grid-column:span 6}
+.s4{grid-column:span 4}
+.pan{background:var(--surf);border:1px solid color-mix(in srgb,var(--line) 70%,transparent);border-radius:var(--r);padding:10px 14px;min-width:0;box-shadow:var(--sh);transition:transform .3s var(--ease),box-shadow .3s,border-color .2s;animation:rise .55s var(--ease) both;overflow:hidden}
+.pan:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--a) 50%,transparent);box-shadow:0 14px 34px -14px color-mix(in srgb,var(--a) 45%,transparent)}
+.pan h3{font-size:12px;font-weight:600;margin:0}
+.hint{font-size:11px;color:var(--muted);margin:1px 0 4px}
+.ch{height:290px}
+.ch.lg{height:340px}
+@keyframes rise{from{opacity:0;transform:translateY(16px) scale(.98)}}
+.tbl{width:100%;font-size:12px;border-collapse:collapse}
+.tbl th{background:transparent;color:var(--muted);font-weight:600;text-align:start;border-bottom:1px solid var(--line);padding:6px 8px;white-space:nowrap;position:sticky;top:0;background:var(--surf);z-index:1}
+.tbl td{padding:5px 8px;border-bottom:1px solid var(--line)}
+.tbl tr.cl{cursor:pointer;transition:background .15s}
+.tbl tr.cl:hover{background:var(--rib)}
+.drop{border:2px dashed var(--line);padding:3rem 1rem;text-align:center;background:var(--surf);max-width:620px;margin:3rem auto;border-radius:18px}
+.drop.over{border-color:var(--a);background:color-mix(in srgb,var(--a) 8%,transparent)}
+.status{background:transparent;border:0;padding:2px 16px;font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#boot{position:fixed;inset:0;background:var(--bg);display:grid;place-items:center;z-index:99;text-align:center;transition:opacity .4s}
+#boot b{font-size:1.5rem;font-weight:300}
+.bar{width:200px;height:3px;background:var(--line);margin:1rem auto .5rem;overflow:hidden;border-radius:2px}
+.bar i{display:block;height:100%;width:40%;background:linear-gradient(90deg,var(--a),var(--y));animation:sl 1s infinite alternate ease-in-out}
+@keyframes sl{to{margin-inline-start:60%}}
+[dir=rtl] .dir-icon{transform:scaleX(-1)}
+#view>*{animation:fi .2s ease}
+@keyframes fi{from{opacity:0}}
+:focus-visible{outline:2px solid var(--a);outline-offset:1px}
+*::-webkit-scrollbar{width:8px;height:8px}
+*::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--text) 22%,transparent);border-radius:9px}
+.swal2-popup{border-radius:22px!important}
+.swal2-confirm{border-radius:999px!important}
+.swal2-cancel{border-radius:999px!important}
+.hero{position:relative;text-align:center;max-width:640px;margin:5vh auto;padding:2.6rem 1.4rem;border-radius:28px;background:color-mix(in srgb,var(--surf) 82%,transparent);border:1px solid var(--line);box-shadow:var(--sh);overflow:hidden;animation:rise .7s var(--ease) both}
+.hero>*{position:relative}
+.hero h2{font-size:clamp(1.5rem,4vw,2.1rem);font-weight:600;margin:.9rem 0 .4rem;background:linear-gradient(90deg,var(--text),var(--a));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);max-width:44ch;margin:0 auto 1.4rem}
+.hlogo{width:68px;height:68px;animation:float 4s ease-in-out infinite}
+.orb{position:absolute;border-radius:50%;filter:blur(40px);opacity:.5;animation:float 7s ease-in-out infinite}
+.o1{width:220px;height:220px;background:var(--a);top:-70px;inset-inline-start:-60px}
+.o2{width:200px;height:200px;background:var(--y);bottom:-70px;inset-inline-end:-50px;animation-delay:-3s}
+@keyframes float{50%{transform:translateY(-10px)}}
+.cta{display:inline-flex;align-items:center;gap:.6rem;border:0;border-radius:999px;padding:.95rem 2rem;font:inherit;font-size:1.05rem;font-weight:600;color:#fff;background:linear-gradient(135deg,var(--a),color-mix(in srgb,var(--a) 65%,#000));cursor:pointer;box-shadow:0 10px 28px -8px color-mix(in srgb,var(--a) 80%,transparent);transition:transform .25s var(--ease),box-shadow .25s}
+.cta:hover{transform:translateY(-3px) scale(1.04)}
+.cta:active{transform:scale(.96)}
+.cta:disabled{opacity:.75;cursor:wait}
+.stp{margin-top:1rem;color:var(--muted);animation:rise .3s both}
+.spin{display:inline-block;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.or{color:var(--muted);margin:1.3rem 0 .7rem;font-size:.85rem}
+.hero .drop{border-radius:18px;margin:0 auto;padding:1.2rem;background:transparent;max-width:none}
+.hero .drop.over{background:color-mix(in srgb,var(--a) 10%,transparent)}
+#fclose{flex:none}
+#fback{display:none;position:fixed;inset:0;z-index:39;background:rgba(0,0,0,.42)}
+.chip{display:inline-flex;align-items:center;gap:4px;background:color-mix(in srgb,var(--a) 15%,transparent);border:1px solid color-mix(in srgb,var(--a) 40%,transparent);border-radius:999px;padding:3px 10px;font-size:11px;cursor:pointer;color:var(--text);margin:2px}
+.chip:hover{background:color-mix(in srgb,var(--a) 25%,transparent)}
+.ins-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px;margin-bottom:6px}
+.ins-card{background:var(--surf);border:1px solid color-mix(in srgb,var(--line) 70%,transparent);border-inline-start:4px solid var(--a);border-radius:14px;padding:12px 14px;box-shadow:var(--sh);animation:rise .5s var(--ease) both;transition:transform .25s var(--ease),box-shadow .25s}
+.ins-card:hover{transform:translateY(-2px);box-shadow:0 12px 28px -14px color-mix(in srgb,var(--a) 40%,transparent)}
+.ins-card.Risk,.ins-card.Warning,.ins-card.Critical{border-inline-start-color:var(--dn)}
+.ins-card.Positive,.ins-card.Opportunity{border-inline-start-color:var(--up)}
+.ins-card.Info{border-inline-start-color:var(--a)}
+.ins-head{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.ins-head i{color:var(--a);font-size:14px}
+.ins-card.Risk .ins-head i,.ins-card.Warning .ins-head i,.ins-card.Critical .ins-head i{color:var(--dn)}
+.ins-card.Positive .ins-head i,.ins-card.Opportunity .ins-head i{color:var(--up)}
+.ins-body{font-size:13px;line-height:1.55;color:var(--text)}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-bottom:6px}
+.stat-card{background:var(--surf);border:1px solid color-mix(in srgb,var(--line) 70%,transparent);border-radius:14px;padding:14px;box-shadow:var(--sh);animation:rise .5s var(--ease) both}
+.stat-title{font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px;color:var(--text)}
+.stat-title i{color:var(--a);font-size:15px}
+.stat-rows{display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-size:12px;align-items:center}
+.stat-rows>span{color:var(--muted)}
+.stat-rows>b{font-weight:600;text-align:end;color:var(--text);font-variant-numeric:tabular-nums}
+.seg-card{padding:14px;border-radius:14px;background:var(--surf);border:1px solid color-mix(in srgb,var(--line) 70%,transparent);box-shadow:var(--sh);display:flex;flex-direction:column;gap:6px;transition:transform .3s var(--ease)}
+.seg-card:hover{transform:translateY(-3px)}
+.seg-card .seg-name{font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px}
+.seg-card .seg-name .dot{width:10px;height:10px;border-radius:50%}
+.seg-card .seg-count{font-size:22px;font-weight:300;letter-spacing:-.02em}
+.seg-card .seg-desc{font-size:11px;color:var(--muted);line-height:1.4}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media(max-width:900px){
+ .title{padding:8px 12px 0}
+ .ribbon,#nav{margin:6px 8px}
+ .body{padding:0 8px}
+ #view{padding:6px 0 10px}
+ .kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+ .kpi{padding:9px 10px;min-width:0}
+ .kpi .v{font-size:clamp(18px,5.6vw,26px)}
+ .pan{padding:8px 10px}
+ .ch{height:250px}.ch.lg{height:300px}
+ .s8,.s6,.s4{grid-column:span 12}
+ #fbar{position:fixed;top:0;bottom:0;inset-inline-end:0;margin:0;width:88%;max-width:340px;border-radius:0;border-width:0;border-inline-start:1px solid var(--line);z-index:40;visibility:hidden;transform:translateX(100%);transition:transform .25s var(--ease),visibility 0s .25s}
+ [dir=rtl] #fbar{transform:translateX(-100%)}
+ #fbar.show{transform:none!important;visibility:visible}
+ #fbar.off{display:block}
+ #themeMenu{min-width:0;max-width:none}
+ body.fopen #fback{display:block}
+}
+@media print{.ribbon,#nav,#fbar,.tabbar,.title,.status{display:none}body{overflow:visible}#view{overflow:visible}}
+</style>
+</head>
+<body>
+<div id="boot"><div><b>MarketingPulse</b><div class="bar"><i></i></div><small id="bootMsg">Loading…</small></div></div>
+<div id="app">
+ <div class="title">
+  <svg viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#7c3aed"/><path d="M18 40l8-12 8 8 12-16v22H18z" fill="#fff"/><circle cx="46" cy="18" r="4" fill="#f472b6"/></svg>
+  <b>MarketingPulse Intelligence</b><span class="muted">|</span><h1 id="pageTitle"></h1>
+ </div>
+ <div class="ribbon" role="toolbar">
+  <button id="openf" class="rb"></button>
+  <button id="ftog" class="rb"></button>
+  <button id="rst" class="rb"></button>
+  <span class="rsep"></span>
+  <div class="theme-picker" id="themePicker">
+   <button class="theme-trigger" id="themeTrigger" type="button">
+    <span class="swatches"><i data-swatch></i><i data-swatch></i></span>
+    <span class="theme-name"></span>
+    <i class="bi bi-chevron-down caret"></i>
+   </button>
+  </div>
+  <button id="mode" class="rb"></button>
+  <button id="lang" class="rb"></button>
+  <button id="snd" class="rb"></button>
+  <span class="rsep"></span>
+  <button id="prt" class="rb"></button>
+ </div>
+ <div class="body">
+  <div class="center">
+   <section id="view" aria-live="polite"></section>
+   <nav id="nav" aria-label="Sections"></nav>
+  </div>
+  <aside id="fbar" aria-label="Filters"></aside>
+ </div>
+ <footer class="status"><span id="dsStatus"></span></footer>
+</div>
+<div id="themeMenu" role="listbox"></div>
+<input type="file" id="fileIn" accept=".csv" hidden>
+<div id="fback"></div>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+/* ============ i18n ============ */
+const I18N = {
+ en:{
+  overview:'Executive Overview', customers:'Customer Intelligence', campaigns:'Campaign Performance',
+  channels:'Channel & Platform', strategy:'Marketing Strategy', explorer:'Data Explorer',
+  loaddata:'Load data', wel_t:'MarketingPulse Intelligence', wel_s:'Digital Marketing Campaign Performance & Customer Intelligence. Upload your cleaned digital_marketing_campaign_dataset.csv to begin.',
+  or:'or', dropsub:'Drag & drop a CSV here, or browse', browse:'Browse CSV file',
+  dl:'Downloading…', parse:'Reading rows…', an:'Building your dashboard…',
+  nofile:'Could not find digital_marketing_campaign_dataset.csv next to this page. Choose the file manually.',
+  empty:'No data matches the selected filters.', badfile:'Unable to process this CSV. Verify it contains all required columns.',
+  missing:'Missing columns: {c}', loaded:'Dataset loaded: {n} records', loadedttl:'Dataset successfully loaded',
+  replaceT:'Replace current dataset?', replaceB:'Current: {a} records. New: {b} records.', replace:'Replace & analyze', cancel:'Cancel',
+  total:'Total records', valid:'Valid records', invalid:'Invalid records', dups:'Duplicate records',
+  score:'Data quality score', reasons:'Rejected rows by reason',
+  r_missing:'Missing values', r_number:'Invalid numeric values', r_conv:'Invalid Conversion', r_dup:'Duplicate records',
+  filters:'Filters', all:'All', from:'From', to:'To', clear:'Clear filters', close:'Close',
+  gender:'Gender', age:'Age group', income:'Income', channel:'Campaign channel', ctype:'Campaign type',
+  platform:'Advertising platform', tool:'Advertising tool', conversion:'Converted',
+  minspend:'Min AdSpend', maxspend:'Max AdSpend', minage:'Min age', maxage:'Max age',
+  minincome:'Min income', maxincome:'Max income', minvisits:'Min visits', maxvisits:'Max visits',
+  minpurch:'Min purchases', maxpurch:'Max purchases', minloyal:'Min loyalty', maxloyal:'Max loyalty',
+  k_customers:'Total Customers', k_records:'Total Records', k_spend:'Total Spend', k_avgspend:'Avg Spend',
+  k_conv:'Conversions', k_convrate:'Conversion Rate', k_ctr:'Avg CTR', k_cpa:'CPA',
+  k_emailopen:'Email Opens', k_emailclick:'Email Clicks', k_ctor:'Email CTOR',
+  k_visits:'Avg Visits', k_pages:'Avg Pages/Visit', k_time:'Avg Time on Site', k_social:'Avg Social Shares',
+  k_income:'Avg Income', k_purch:'Avg Purchases', k_loyal:'Avg Loyalty Points',
+  k_engage:'Avg Engagement', k_hv:'High-Value Customers', k_he:'High-Engagement Customers',
+  k_roas:'ROAS', k_roas_na:'Not available — no revenue field in dataset',
+  vol:'Campaign volume over time', volhint:'Records and spend over time.',
+  bychannel:'Conversion by channel', bychannelhint:'Which channels convert best.',
+  byctype:'Campaign type performance', byctypehint:'Spend, CTR, conversion across campaign types.',
+  spendconv:'AdSpend vs ConversionRate', spendconvhint:'Are higher spends producing better conversions?',
+  engageconv:'Engagement vs Conversion', engageconvhint:'Do engaged customers convert more?',
+  byplatform:'Platform performance', byplatformhint:'Spend, CTR, conversion by advertising platform.',
+  genderd:'Gender', aged:'Age groups', incomed:'Income distribution',
+  purloy:'Purchases vs Loyalty Points', visconv:'Website visits vs Conversion',
+  valueMatrix:'Customer Value Matrix', valueMatrixhint:'Engagement vs Previous Purchases.',
+  segDist:'Segment distribution', segProf:'Segment profile', segTable:'Segment comparison',
+  radar:'Segment profile radar',
+  channelRank:'Channel ranking', channelScore:'Internal Performance Score',
+  correlation:'Correlation heatmap', correlationhint:'Relationships between key numeric metrics.',
+  exec_brief:'Dynamic Executive Brief', exec_brief_hint:'Auto-generated from current data.',
+  mgmt:'What should management do?', mgmt_hint:'Data-driven observations — not medical advice.',
+  recommendation:'Recommended action', priority:'Priority', evidence:'Evidence',
+  seg:'Segment', customers:'customers', avgIncome:'Avg income', avgPurch:'Avg purchases',
+  engagement:'Engagement', convRate:'Conv. rate', prefChannel:'Preferred channel', prefType:'Preferred type',
+  rec:'Recommendation',
+  seg_HV:'High Value', seg_HE:'Highly Engaged', seg_POT:'Potential', seg_LE:'Low Engagement', seg_LV:'Low Value',
+  seg_HV_desc:'High purchases + high loyalty + high engagement',
+  seg_HE_desc:'Strong digital engagement, moderate purchase history',
+  seg_POT_desc:'Good engagement but limited purchase history',
+  seg_LE_desc:'Low interaction across channels',
+  seg_LV_desc:'Low purchase history and low loyalty',
+  crit_Star:'Star', crit_Eff:'Efficient', crit_Exp:'Expensive', crit_Under:'Underperforming',
+  act_Scale:'Scale', act_Maintain:'Maintain', act_Optimize:'Optimize', act_Test:'Test', act_Review:'Review',
+  act_Retarget:'Retarget', act_Upsell:'Upsell', act_Retain:'Retain', act_Reengage:'Re-engage',
+  m_kmeans:'Segmentation methodology', m_engagement:'Engagement Score', m_score:'Internal Performance Score',
+  method:'Methodology: All metrics computed from the loaded CSV. K-Means clustering with normalized features. Unsupported metrics (Revenue, ROAS) are not calculated — they require a revenue field not present in this dataset. Engagement Score = mean of z-scores for WebsiteVisits, PagesPerVisit, TimeOnSite, SocialShares, EmailOpens, EmailClicks.',
+  search:'Search…', export:'Export filtered CSV', exported:'Export completed', rows:'rows',
+  s_new:'Newest', s_old:'Oldest', s_high:'High income', s_low:'Low income', ps:'Rows', sort:'Sort',
+  custid:'Customer ID', agec:'Age', genderc:'Gender', incomec:'Income', segc:'Segment', engagec:'Engagement',
+  purchc:'Purchases', loyalc:'Loyalty', convc:'Converted', channelc:'Channel', ctypec:'Campaign',
+  spendc:'AdSpend', ctrc:'CTR', cprate:'Conv. rate', platformc:'Platform',
+  stats:'Statistical summary', stat_field:'Field', stat_n:'Count', stat_mean:'Mean', stat_med:'Median',
+  stat_min:'Min', stat_max:'Max', stat_sd:'Std dev', stat_q1:'Q1', stat_q3:'Q3', stat_iqr:'IQR',
+  outliers:'Statistical outliers',
+  quality:'Data Quality', dcOverview:'Dataset Overview',
+  dcFileName:'File name', dcFileSize:'File size', dcRows:'Rows', dcCols:'Columns',
+  dcLoadedAt:'Loaded', dcStatus:'Status', dcStatusOk:'Validated',
+  dcMissing:'Missing values', dcDupIds:'Duplicate IDs', dcInvalidNum:'Invalid numeric', dcScore:'Quality score',
+  theme_menu:'Choose theme', above:'above', below:'below',
+  yes:'Yes', no:'No', sound_ttl:'Sound', mode_ttl:'Mode',
+  i_conv:'Overall conversion rate is {p}.',
+  i_bestchannel:'Channel "{c}" has the highest conversion ({p}).',
+  i_worstchannel:'Channel "{c}" has the lowest conversion ({p}).',
+  i_bestctype:'Campaign type "{c}" leads with conversion rate {p}.',
+  i_highspend:'Channel "{c}" consumes {p} of total spend but converts at only {q}.',
+  i_hvseg:'High-Value segment: {n} customers with avg {p} purchases.',
+  i_hvlowengage:'{n} high-value customers show low engagement — retention opportunity.',
+  i_engagednonconv:'{n} customers are highly engaged but not converting — messaging mismatch.',
+  i_emailweak:'Email CTOR is {p} — below 20%, suggesting subject/CTA optimization opportunity.',
+  i_emailstrong:'Email CTOR is {p} — strong engagement.',
+  i_ctr:'Average CTR is {p}.',
+  i_spend:'Total campaign spend: {v}.',
+  i_rec:'Total records: {n}. Unique customers: {u}.',
+  i_quality:'Data quality score: {p}.',
+  i_dups:'{n} duplicate records detected.',
+  i_missing:'{n} records contain missing values.',
+  i_cpa:'Average CPA is {v}.',
+  i_bestplatform:'Platform "{p}" leads with conversion rate {q}.'
+ },
+ ar:{
+  overview:'النظرة التنفيذية', customers:'ذكاء العملاء', campaigns:'أداء الحملات',
+  channels:'القنوات والمنصات', strategy:'استراتيجية التسويق', explorer:'مستكشف البيانات',
+  loaddata:'تحميل البيانات', wel_t:'MarketingPulse Intelligence', wel_s:'تحليلات أداء الحملات التسويقية وذكاء العملاء. ارفع ملف digital_marketing_campaign_dataset.csv للبدء.',
+  or:'أو', dropsub:'اسحب ملف CSV هنا أو تصفح', browse:'تصفح ملف CSV',
+  dl:'جارٍ التنزيل…', parse:'جارٍ قراءة الصفوف…', an:'جارٍ بناء اللوحة…',
+  nofile:'لم يتم العثور على ملف البيانات بجانب الصفحة. اختر الملف يدويًا.',
+  empty:'لا توجد بيانات مطابقة للفلاتر.', badfile:'تعذّرت معالجة هذا الملف. تأكد من وجود جميع الأعمدة المطلوبة.',
+  missing:'أعمدة مفقودة: {c}', loaded:'تم تحميل البيانات: {n} سجل', loadedttl:'تم تحميل البيانات بنجاح',
+  replaceT:'استبدال مجموعة البيانات؟', replaceB:'الحالية: {a}. الجديد: {b}.', replace:'استبدل وحلل', cancel:'إلغاء',
+  total:'إجمالي السجلات', valid:'سجلات صالحة', invalid:'سجلات غير صالحة', dups:'سجلات مكررة',
+  score:'درجة جودة البيانات', reasons:'الصفوف المرفوضة حسب السبب',
+  r_missing:'قيم مفقودة', r_number:'أرقام غير صالحة', r_conv:'قيمة التحويل غير صالحة', r_dup:'سجلات مكررة',
+  filters:'الفلاتر', all:'الكل', from:'من', to:'إلى', clear:'مسح الفلاتر', close:'إغلاق',
+  gender:'الجنس', age:'الفئة العمرية', income:'الدخل', channel:'قناة الحملة', ctype:'نوع الحملة',
+  platform:'المنصة الإعلانية', tool:'أداة الإعلان', conversion:'تم التحويل',
+  minspend:'أقل إنفاق', maxspend:'أعلى إنفاق', minage:'أقل عمر', maxage:'أعلى عمر',
+  minincome:'أقل دخل', maxincome:'أعلى دخل', minvisits:'أقل زيارات', maxvisits:'أعلى زيارات',
+  minpurch:'أقل مشتريات', maxpurch:'أعلى مشتريات', minloyal:'أقل نقاط ولاء', maxloyal:'أعلى نقاط ولاء',
+  k_customers:'إجمالي العملاء', k_records:'إجمالي السجلات', k_spend:'إجمالي الإنفاق', k_avgspend:'متوسط الإنفاق',
+  k_conv:'التحويلات', k_convrate:'معدل التحويل', k_ctr:'متوسط CTR', k_cpa:'تكلفة الاكتساب',
+  k_emailopen:'فتحات البريد', k_emailclick:'نقرات البريد', k_ctor:'معدل النقر للفتح',
+  k_visits:'متوسط الزيارات', k_pages:'متوسط الصفحات', k_time:'متوسط الوقت', k_social:'متوسط المشاركات',
+  k_income:'متوسط الدخل', k_purch:'متوسط المشتريات', k_loyal:'متوسط نقاط الولاء',
+  k_engage:'متوسط التفاعل', k_hv:'عملاء القيمة العالية', k_he:'العملاء عاليو التفاعل',
+  k_roas:'ROAS', k_roas_na:'غير متاح — لا يوجد حقل إيراد في البيانات',
+  vol:'حجم الحملات عبر الزمن', volhint:'السجلات والإنفاق عبر الزمن.',
+  bychannel:'التحويل حسب القناة', bychannelhint:'أي القنوات تحقق تحويلًا أفضل.',
+  byctype:'أداء نوع الحملة', byctypehint:'الإنفاق وCTR والتحويل.',
+  spendconv:'الإنفاق مقابل معدل التحويل', spendconvhint:'هل الإنفاق الأعلى يحقق تحويلًا أفضل؟',
+  engageconv:'التفاعل مقابل التحويل', engageconvhint:'هل العملاء المتفاعلون يحوّلون أكثر؟',
+  byplatform:'أداء المنصات', byplatformhint:'الإنفاق وCTR والتحويل حسب المنصة.',
+  genderd:'الجنس', aged:'الفئات العمرية', incomed:'توزيع الدخل',
+  purloy:'المشتريات مقابل نقاط الولاء', visconv:'زيارات الموقع مقابل التحويل',
+  valueMatrix:'مصفوفة قيمة العميل', valueMatrixhint:'التفاعل مقابل المشتريات السابقة.',
+  segDist:'توزيع الشرائح', segProf:'ملف الشريحة', segTable:'مقارنة الشرائح',
+  radar:'رادار الشرائح', channelRank:'ترتيب القنوات', channelScore:'درجة الأداء الداخلية',
+  correlation:'خريطة الارتباط', correlationhint:'العلاقات بين المتغيرات الرقمية.',
+  exec_brief:'الملخص التنفيذي الديناميكي', exec_brief_hint:'مولّد تلقائيًا من البيانات الحالية.',
+  mgmt:'ما الذي يجب أن تفعله الإدارة؟', mgmt_hint:'ملاحظات مدعومة بالبيانات.',
+  recommendation:'الإجراء الموصى به', priority:'الأولوية', evidence:'الدليل',
+  seg:'الشريحة', customers:'عميل', avgIncome:'متوسط الدخل', avgPurch:'متوسط المشتريات',
+  engagement:'التفاعل', convRate:'معدل التحويل', prefChannel:'القناة المفضلة', prefType:'النوع المفضل',
+  rec:'التوصية',
+  seg_HV:'قيمة عالية', seg_HE:'متفاعلون', seg_POT:'محتملون', seg_LE:'تفاعل منخفض', seg_LV:'قيمة منخفضة',
+  seg_HV_desc:'مشتريات وولاء وتفاعل مرتفع', seg_HE_desc:'تفاعل رقمي قوي ومشتريات متوسطة',
+  seg_POT_desc:'تفاعل جيد ومشتريات محدودة', seg_LE_desc:'تفاعل منخفض عبر القنوات',
+  seg_LV_desc:'مشتريات وولاء منخفضان',
+  crit_Star:'نجم', crit_Eff:'كفؤ', crit_Exp:'مكلف', crit_Under:'ضعيف',
+  act_Scale:'توسيع', act_Maintain:'استمرار', act_Optimize:'تحسين', act_Test:'اختبار', act_Review:'مراجعة',
+  act_Retarget:'إعادة استهداف', act_Upsell:'بيع إضافي', act_Retain:'احتفاظ', act_Reengage:'إعادة تفاعل',
+  m_kmeans:'منهجية التقسيم', m_engagement:'درجة التفاعل', m_score:'درجة الأداء الداخلية',
+  method:'المنهجية: جميع المؤشرات محسوبة من ملف CSV. تجميع K-Means بخصائص مُوحّدة. المؤشرات غير المدعومة (الإيراد، ROAS) لا تُحسب — تتطلب حقل إيراد غير موجود. درجة التفاعل = متوسط z-scores لـ WebsiteVisits وPagesPerVisit وTimeOnSite وSocialShares وEmailOpens وEmailClicks.',
+  search:'بحث…', export:'تصدير CSV المفلتر', exported:'اكتمل التصدير', rows:'صف',
+  s_new:'الأحدث', s_old:'الأقدم', s_high:'أعلى دخل', s_low:'أدنى دخل', ps:'الصفوف', sort:'ترتيب',
+  custid:'معرّف العميل', agec:'العمر', genderc:'الجنس', incomec:'الدخل', segc:'الشريحة', engagec:'التفاعل',
+  purchc:'المشتريات', loyalc:'الولاء', convc:'محوّل', channelc:'القناة', ctypec:'الحملة',
+  spendc:'الإنفاق', ctrc:'CTR', cprate:'معدل التحويل', platformc:'المنصة',
+  stats:'الملخص الإحصائي', stat_field:'الحقل', stat_n:'العدد', stat_mean:'المتوسط', stat_med:'الوسيط',
+  stat_min:'الأدنى', stat_max:'الأعلى', stat_sd:'الانحراف المعياري', stat_q1:'الربع 1', stat_q3:'الربع 3', stat_iqr:'المدى الربيعي',
+  outliers:'القيم الشاذة',
+  quality:'جودة البيانات', dcOverview:'نظرة عامة على البيانات',
+  dcFileName:'اسم الملف', dcFileSize:'حجم الملف', dcRows:'الصفوف', dcCols:'الأعمدة',
+  dcLoadedAt:'تم التحميل', dcStatus:'الحالة', dcStatusOk:'تم التحقق',
+  dcMissing:'قيم مفقودة', dcDupIds:'معرّفات مكررة', dcInvalidNum:'أرقام غير صالحة', dcScore:'درجة الجودة',
+  theme_menu:'اختر المظهر', above:'أعلى من', below:'أقل من',
+  yes:'نعم', no:'لا', sound_ttl:'الصوت', mode_ttl:'الوضع',
+  i_conv:'معدل التحويل الإجمالي: {p}.',
+  i_bestchannel:'القناة "{c}" الأعلى في التحويل ({p}).',
+  i_worstchannel:'القناة "{c}" الأدنى في التحويل ({p}).',
+  i_bestctype:'نوع الحملة "{c}" الأعلى بمعدل تحويل {p}.',
+  i_highspend:'القناة "{c}" تستهلك {p} من الإنفاق وتحوّل بـ {q} فقط.',
+  i_hvseg:'شريحة القيمة العالية: {n} عميل بمتوسط {p} مشترى.',
+  i_hvlowengage:'{n} عميل ذو قيمة عالية بتفاعل منخفض — فرصة احتفاظ.',
+  i_engagednonconv:'{n} عميل عالي التفاعل غير محوّل — عدم توافق الرسالة.',
+  i_emailweak:'معدل النقر للفتح {p} — أقل من 20%، فرصة تحسين.',
+  i_emailstrong:'معدل النقر للفتح {p} — تفاعل قوي.',
+  i_ctr:'متوسط CTR: {p}.',
+  i_spend:'إجمالي الإنفاق: {v}.',
+  i_rec:'إجمالي السجلات: {n}. عملاء فريدون: {u}.',
+  i_quality:'درجة جودة البيانات: {p}.',
+  i_dups:'{n} سجل مكرر.',
+  i_missing:'{n} سجل بقيم مفقودة.',
+  i_cpa:'متوسط تكلفة الاكتساب: {v}.',
+  i_bestplatform:'المنصة "{p}" الأعلى بمعدل تحويل {q}.'
+ }
+};
+const THEMES = ['marketing','executive','clinical','teal','highcontrast'];
+const THEME_META = {
+ marketing:{name:'Marketing', ar:'تسويقي', colors:['#7c3aed','#ec4899']},
+ executive:{name:'Executive', ar:'تنفيذي', colors:['#0f172a','#f59e0b']},
+ clinical:{name:'Clinical', ar:'سريري', colors:['#0e7490','#0d9488']},
+ teal:{name:'Teal', ar:'فيروزي', colors:['#0d9488','#0e7490']},
+ highcontrast:{name:'High Contrast', ar:'تباين عالٍ', colors:['#000000','#cc0000']}
+};
+</script>
+<script>
+/* ============ Config + State ============ */
+const CONFIG = { csvFile:'digital_marketing_campaign_dataset.csv', currency:'USD', maxTop:12, kmeans_k:5, kmeans_iters:15 };
+const REQ = ['CustomerID','Age','Gender','Income','CampaignChannel','CampaignType','AdSpend','ClickThroughRate','ConversionRate',
+ 'WebsiteVisits','PagesPerVisit','TimeOnSite','SocialShares','EmailOpens','EmailClicks','PreviousPurchases','LoyaltyPoints',
+ 'AdvertisingPlatform','AdvertisingTool','Conversion'];
+const AGES = [['18–24',18,24],['25–34',25,34],['35–44',35,44],['45–54',45,54],['55–64',55,64],['65+',65,200]];
+const ageGroup = a => (AGES.find(g => a>=g[1] && a<=g[2]) || AGES[5])[0];
+const num = x => { const v = parseFloat(x); return isFinite(v) ? v : NaN; };
+const $ = s => document.querySelector(s);
+
+const S = {
+ raw:[], data:[], bad:[], name:'', page:'overview', q:'', pg:0,
+ f:{gender:'',ag:'',channel:'',ctype:'',platform:'',tool:'',conv:'',minspend:'',maxspend:'',minage:'',maxage:'',
+    minincome:'',maxincome:'',minvisits:'',maxvisits:'',minpurch:'',maxpurch:'',minloyal:'',maxloyal:''},
+ meta:null,
+ cache:{channelStats:null, ctypeStats:null, platformStats:null, toolStats:null, segments:null, correlations:null, percentiles:null},
+ tc:{sort:'new', ps:'25'},
+ set:Object.assign({lang:'en',theme:'marketing',mode:'dark',sound:true,vol:.5}, JSON.parse(localStorage.mpi1||'{}'))
+};
+const save = () => localStorage.mpi1 = JSON.stringify(S.set);
+const t = (k,p) => { let s = (I18N[S.set.lang][k] ?? I18N.en[k] ?? k); if(p) for(const x in p) s = s.replace('{'+x+'}', p[x]); return s; };
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rtl = () => S.set.lang === 'ar';
+const loc = () => rtl() ? 'ar-EG' : 'en-US';
+const nf = (v,o) => isFinite(v) ? new Intl.NumberFormat(loc(),o).format(v) : '—';
+const money = v => !isFinite(v) ? '—' : nf(v,{style:'currency',currency:CONFIG.currency,notation:Math.abs(v)>=1e4?'compact':'standard',maximumFractionDigits:Math.abs(v)>=1e4?2:0});
+const money2 = v => !isFinite(v) ? '—' : nf(v,{style:'currency',currency:CONFIG.currency,maximumFractionDigits:2});
+const pct = (v,d=1) => !isFinite(v) ? '—' : nf(v,{style:'percent',maximumFractionDigits:d});
+const pctRaw = (v,d=1) => !isFinite(v) ? '—' : (v*100).toFixed(d)+'%';
+const dec = (v,d=1) => isFinite(v) ? nf(v,{maximumFractionDigits:d}) : '—';
+const intf = v => isFinite(v) ? nf(v,{maximumFractionDigits:0}) : '—';
+
+let ac;
+function beep(f=660,d=.12,g=1){
+ if(!S.set.sound) return;
+ try{
+  ac = ac || new (window.AudioContext||window.webkitAudioContext)(); ac.resume();
+  const o = ac.createOscillator(), n = ac.createGain();
+  o.frequency.value = f; n.gain.value = Math.max(.002,.12*g*S.set.vol);
+  o.connect(n); n.connect(ac.destination); o.start();
+  n.gain.exponentialRampToValueAtTime(.0005, ac.currentTime+d); o.stop(ac.currentTime+d);
+ }catch(e){}
+}
+function navSound(){ if(!S.set.sound) return; beep(720,.06,.8); setTimeout(()=>beep(1080,.09,.7), 70); }
+function softTap(){ if(!S.set.sound) return; beep(880,.04,.5); }
+const chime = () => [523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.28),i*110));
+const toast = (icon,title) => Swal.fire({toast:true,position:rtl()?'top-start':'top-end',icon,title,showConfirmButton:false,timer:2600});
+const showError = m => { beep(220,.25); return Swal.fire({icon:'error',text:m}); };
+
+/* ============ ECharts ============ */
+const CH = [];
+const cs = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const pal = () => [1,2,3,4,5,6].map(i=>cs('--c'+i));
+function chart(id,opt){
+ const el = document.getElementById(id); if(!el) return;
+ const c = echarts.init(el);
+ const tx = cs('--muted'), ln = cs('--line');
+ const yp = rtl()?'right':'left';
+ [].concat(opt.xAxis||[], opt.yAxis||[]).forEach(a => {
+  if(!a) return;
+  a.axisLabel = Object.assign({color:tx, fontSize:10, hideOverlap:true}, a.axisLabel);
+  a.axisLine = Object.assign({lineStyle:{color:ln}}, a.axisLine);
+  a.splitLine = Object.assign({lineStyle:{color:ln, type:'dashed'}}, a.splitLine);
+ });
+ [].concat(opt.yAxis||[]).forEach(y => { if(y && y.type==='value' && !y.position) y.position = yp; });
+ const o = Object.assign({
+  textStyle:{fontFamily:cs('--font'),color:tx, fontSize:11},
+  color:pal(),
+  animationDuration:600,
+  grid:{left:10,right:16,top:34,bottom:12,containLabel:true}
+ }, opt);
+ o.tooltip = Object.assign({
+  trigger:'axis', confine:true,
+  backgroundColor:cs('--surf'), borderColor:ln, textStyle:{color:cs('--text')},
+  valueFormatter:v=>typeof v==='number' ? nf(v,{maximumFractionDigits:2}) : v
+ }, opt.tooltip||{});
+ if(o.legend) o.legend.textStyle = Object.assign({color:tx, fontSize:10}, o.legend.textStyle||{});
+ c.setOption(o);
+ CH.push(c);
+ return c;
+}
+window.addEventListener('resize', () => CH.forEach(c => c.resize()));
+
+/* ============ Analytics ============ */
+const median = arr => { const a = arr.filter(isFinite).slice().sort((x,y)=>x-y); if(!a.length) return NaN; const h = a.length>>1; return a.length % 2 ? a[h] : (a[h-1]+a[h])/2; };
+const quantile = (a,q) => { const s = a.filter(isFinite).slice().sort((x,y)=>x-y); if(!s.length) return NaN; const p = (s.length-1)*q, lo = Math.floor(p), hi = Math.ceil(p); return s[lo] + (s[hi]-s[lo])*(p-lo); };
+const stdev = a => { const v = a.filter(isFinite); if(v.length<2) return NaN; const m = v.reduce((x,y)=>x+y,0)/v.length; return Math.sqrt(v.reduce((s,x)=>s+(x-m)**2,0)/(v.length-1)); };
+const pearson = (xs,ys) => { const pairs = xs.map((x,i)=>[x,ys[i]]).filter(([x,y])=>isFinite(x)&&isFinite(y)); if(pairs.length<3) return NaN; const n = pairs.length; const mx = pairs.reduce((s,p)=>s+p[0],0)/n; const my = pairs.reduce((s,p)=>s+p[1],0)/n; let num=0,dx=0,dy=0; for(const [x,y] of pairs){ num += (x-mx)*(y-my); dx += (x-mx)**2; dy += (y-my)**2; } return dx*dy ? num/Math.sqrt(dx*dy) : NaN; };
+const mean = arr => { const v = arr.filter(isFinite); return v.length ? v.reduce((s,x)=>s+x,0)/v.length : NaN; };
+const safeDiv = (a,b) => b>0 ? a/b : NaN;
+
+function group(rows, keyFn){
+ const m = new Map();
+ for(const r of rows){
+  const k = keyFn(r); if(k==null || k==='') continue;
+  let g = m.get(k);
+  if(!g){ g = {k, n:0, spend:0, conv:0, ctr:0, cr:0, visits:0, purchases:0, loyalty:0, engage:0, emailOpens:0, emailClicks:0}; m.set(k,g); }
+  g.n++;
+  if(isFinite(r.spend)) g.spend += r.spend;
+  if(r.conv === 1) g.conv++;
+  if(isFinite(r.ctr)) g.ctr += r.ctr;
+  if(isFinite(r.cr)) g.cr += r.cr;
+  if(isFinite(r.visits)) g.visits += r.visits;
+  if(isFinite(r.purchases)) g.purchases += r.purchases;
+  if(isFinite(r.loyalty)) g.loyalty += r.loyalty;
+  if(isFinite(r.engage)) g.engage += r.engage;
+  if(isFinite(r.emailOpens)) g.emailOpens += r.emailOpens;
+  if(isFinite(r.emailClicks)) g.emailClicks += r.emailClicks;
+ }
+ return [...m.values()].map(g=>({
+  ...g,
+  avgSpend: g.n ? g.spend/g.n : 0,
+  convRate: g.n ? g.conv/g.n : 0,
+  avgCtr: g.n ? g.ctr/g.n : 0,
+  avgCr: g.n ? g.cr/g.n : 0,
+  avgVisits: g.n ? g.visits/g.n : 0,
+  avgPurchases: g.n ? g.purchases/g.n : 0,
+  avgLoyalty: g.n ? g.loyalty/g.n : 0,
+  avgEngage: g.n ? g.engage/g.n : 0,
+  avgEmailOpens: g.n ? g.emailOpens/g.n : 0,
+  avgEmailClicks: g.n ? g.emailClicks/g.n : 0,
+  cpa: g.conv > 0 ? g.spend/g.conv : NaN
+ }));
+}
+
+/* K-Means clustering (simplified) */
+function kmeans(points, k, iters){
+ if(points.length < k) return [];
+ const dims = points[0].length;
+ // init: k-means++ style (spread initial centroids)
+ const centroids = [points[Math.floor(Math.random()*points.length)].slice()];
+ while(centroids.length < k){
+  const dists = points.map(p => Math.min(...centroids.map(c => euclid(p,c))));
+  const sum = dists.reduce((a,b)=>a+b,0);
+  let r = Math.random()*sum, idx = 0;
+  for(let i=0;i<dists.length;i++){ r -= dists[i]; if(r <= 0){ idx = i; break; } }
+  centroids.push(points[idx].slice());
+ }
+ let assign = new Array(points.length).fill(0);
+ for(let it=0; it<iters; it++){
+  let changed = false;
+  for(let i=0;i<points.length;i++){
+   let best = 0, bestD = Infinity;
+   for(let j=0;j<k;j++){ const d = euclid(points[i], centroids[j]); if(d < bestD){ bestD = d; best = j; } }
+   if(assign[i] !== best){ assign[i] = best; changed = true; }
+  }
+  // update centroids
+  for(let j=0;j<k;j++){
+   const members = points.filter((_,i)=>assign[i]===j);
+   if(!members.length) continue;
+   for(let d=0; d<dims; d++) centroids[j][d] = members.reduce((s,p)=>s+p[d],0)/members.length;
+  }
+  if(!changed) break;
+ }
+ return assign;
+}
+const euclid = (a,b) => { let s=0; for(let i=0;i<a.length;i++) s += (a[i]-b[i])**2; return Math.sqrt(s); };
+
+/* Normalize to z-score */
+function zNormalize(values){
+ const v = values.filter(isFinite);
+ const m = mean(v); const sd = stdev(v);
+ return values.map(x => isFinite(x) && sd>0 ? (x-m)/sd : 0);
+}
+
+/* Segment naming */
+function nameSegment(profile){
+ // profile: {avgPurch, avgLoyal, avgEngage, n, total}
+ const pu = profile.avgPurch, lo = profile.avgLoyal, en = profile.avgEngage;
+ if(pu > 3 && lo > 500 && en > 0) return 'seg_HV';
+ if(en > 0.5 && pu > 1.5 && pu <= 3) return 'seg_HE';
+ if(en > 0 && pu <= 1.5) return 'seg_POT';
+ if(en <= -0.3 && pu > 1) return 'seg_LE';
+ return 'seg_LV';
+}
+
+function recomputeCache(rows){
+ S.cache.channelStats = group(rows, r => r.channel);
+ S.cache.ctypeStats = group(rows, r => r.ctype);
+ S.cache.platformStats = group(rows, r => r.platform);
+ S.cache.toolStats = group(rows, r => r.tool);
+ S.cache.percentiles = {
+  purchases: quantile(rows.map(r=>r.purchases).filter(isFinite), 0.75),
+  loyalty: quantile(rows.map(r=>r.loyalty).filter(isFinite), 0.75),
+  engage: quantile(rows.map(r=>r.engage).filter(isFinite), 0.75)
+ };
+ // Segmentation
+ if(rows.length >= 20){
+  const features = rows.map(r => [
+   isFinite(r.purchases) ? r.purchases : 0,
+   isFinite(r.loyalty) ? r.loyalty : 0,
+   isFinite(r.engage) ? r.engage : 0,
+   isFinite(r.visits) ? Math.log1p(r.visits) : 0
+  ]);
+  const norm = [];
+  for(let d=0; d<4; d++){
+   const col = features.map(f=>f[d]);
+   const z = zNormalize(col);
+   z.forEach((v,i)=>{ if(!norm[i]) norm[i]=[]; norm[i][d]=v; });
+  }
+  const assign = kmeans(norm, CONFIG.kmeans_k, CONFIG.kmeans_iters);
+  // profile clusters
+  const clusters = {};
+  assign.forEach((c,i) => {
+   if(!clusters[c]) clusters[c] = {n:0, sumPurch:0, sumLoyal:0, sumEngage:0, members:[]};
+   const r = rows[i];
+   clusters[c].n++;
+   clusters[c].sumPurch += r.purchases || 0;
+   clusters[c].sumLoyal += r.loyalty || 0;
+   clusters[c].sumEngage += r.engage || 0;
+   clusters[c].members.push(i);
+  });
+  const profiles = Object.keys(clusters).map(k => {
+   const c = clusters[k];
+   return {
+    id: +k, n: c.n,
+    avgPurch: c.sumPurch/c.n,
+    avgLoyal: c.sumLoyal/c.n,
+    avgEngage: c.sumEngage/c.n,
+    members: c.members
+   };
+  });
+  // Assign names using rank-based logic to guarantee uniqueness
+  const sorted = profiles.slice().sort((a,b) => (b.avgPurch + b.avgLoyal/1000 + b.avgEngage) - (a.avgPurch + a.avgLoyal/1000 + a.avgEngage));
+  const names = ['seg_HV','seg_HE','seg_POT','seg_LE','seg_LV','seg_LV','seg_LV','seg_LV'];
+  sorted.forEach((p, i) => { p.name = names[i] || 'seg_LV'; });
+  // Build segment stats
+  S.cache.segments = profiles;
+  // Assign segment to each row (by index)
+  rows.forEach((r, i) => {
+   const clusterId = assign[i];
+   const prof = profiles.find(p => p.id === clusterId);
+   r._seg = prof ? prof.name : 'seg_LV';
+   r._segId = clusterId;
+  });
+  // Segment summary
+  const segSummary = {};
+  rows.forEach(r => {
+   const s = r._seg;
+   if(!segSummary[s]) segSummary[s] = {n:0, sumSpend:0, sumPurch:0, sumLoyal:0, sumEngage:0, sumConv:0, sumIncome:0, channels:{}, ctypes:{}};
+   const g = segSummary[s];
+   g.n++;
+   g.sumSpend += r.spend || 0;
+   g.sumPurch += r.purchases || 0;
+   g.sumLoyal += r.loyalty || 0;
+   g.sumEngage += r.engage || 0;
+   g.sumConv += r.conv || 0;
+   g.sumIncome += r.income || 0;
+   g.channels[r.channel] = (g.channels[r.channel] || 0) + 1;
+   g.ctypes[r.ctype] = (g.ctypes[r.ctype] || 0) + 1;
+  });
+  S.cache.segSummary = Object.entries(segSummary).map(([k,v])=>({
+   name: k, n: v.n,
+   spend: v.sumSpend, avgSpend: v.n ? v.sumSpend/v.n : 0,
+   avgPurch: v.n ? v.sumPurch/v.n : 0,
+   avgLoyal: v.n ? v.sumLoyal/v.n : 0,
+   avgEngage: v.n ? v.sumEngage/v.n : 0,
+   convRate: v.n ? v.sumConv/v.n : 0,
+   avgIncome: v.n ? v.sumIncome/v.n : 0,
+   preferredChannel: Object.entries(v.channels).sort((a,b)=>b[1]-a[1])[0]?.[0] || '—',
+   preferredType: Object.entries(v.ctypes).sort((a,b)=>b[1]-a[1])[0]?.[0] || '—'
+  }));
+ } else { S.cache.segments = null; S.cache.segSummary = null; }
+ // Correlations
+ const numFields = ['spend','ctr','cr','visits','pagesPerVisit','timeOnSite','social','emailOpens','emailClicks','purchases','loyalty','engage'];
+ const labels = ['AdSpend','CTR','ConvRate','Visits','Pages','Time','Social','EmOpen','EmClick','Purchases','Loyalty','Engage'];
+ const corr = [];
+ numFields.forEach((f,i)=>{
+  corr[i] = [];
+  numFields.forEach((g,j)=>{
+   if(i > j){ corr[i][j] = corr[j][i]; return; }
+   const xs = rows.map(r=>r[f]), ys = rows.map(r=>r[g]);
+   corr[i][j] = pearson(xs, ys);
+  });
+ });
+ S.cache.correlations = {labels, matrix: corr};
+}
+
+function kpi(rows){
+ const n = rows.length;
+ let spend=0, conv=0, ctr=0, cr=0, visits=0, pv=0, time=0, social=0, emailOpen=0, emailClick=0;
+ let income=0, purch=0, loyalty=0, engage=0, incomeN=0;
+ const customers = new Set();
+ let hv=0, he=0;
+ const spendArr = [], convArr = [];
+ for(const r of rows){
+  if(isFinite(r.spend)){ spend += r.spend; spendArr.push(r.spend); }
+  if(r.conv === 1){ conv++; convArr.push(1); } else convArr.push(0);
+  if(isFinite(r.ctr)) ctr += r.ctr;
+  if(isFinite(r.cr)) cr += r.cr;
+  if(isFinite(r.visits)) visits += r.visits;
+  if(isFinite(r.pagesPerVisit)) pv += r.pagesPerVisit;
+  if(isFinite(r.timeOnSite)) time += r.timeOnSite;
+  if(isFinite(r.social)) social += r.social;
+  if(isFinite(r.emailOpens)) emailOpen += r.emailOpens;
+  if(isFinite(r.emailClicks)) emailClick += r.emailClicks;
+  if(isFinite(r.income)){ income += r.income; incomeN++; }
+  if(isFinite(r.purchases)) purch += r.purchases;
+  if(isFinite(r.loyalty)) loyalty += r.loyalty;
+  if(isFinite(r.engage)) engage += r.engage;
+  customers.add(r.cid);
+  if(r._seg === 'seg_HV') hv++;
+  if(r._seg === 'seg_HE') he++;
+ }
+ const convRate = n ? conv/n : 0;
+ const cpa = conv > 0 ? spend/conv : NaN;
+ const ctor = emailOpen > 0 ? emailClick/emailOpen : NaN;
+ return {
+  n, spend, conv, convRate, cpa,
+  avgSpend: n ? spend/n : 0,
+  avgCtr: n ? ctr/n : 0,
+  avgCr: n ? cr/n : 0,
+  avgVisits: n ? visits/n : 0,
+  avgPages: n ? pv/n : 0,
+  avgTime: n ? time/n : 0,
+  avgSocial: n ? social/n : 0,
+  emailOpen, emailClick, ctor,
+  avgIncome: incomeN ? income/incomeN : 0,
+  avgPurch: n ? purch/n : 0,
+  avgLoyalty: n ? loyalty/n : 0,
+  avgEngage: n ? engage/n : 0,
+  nCust: customers.size,
+  hv, he,
+  spendArr
+ };
+}
+const growth = (a,b) => (isFinite(a) && isFinite(b) && b>0) ? (a-b)/b*100 : null;
+function outlierCut(arr){
+ const a = arr.filter(isFinite);
+ if(a.length < 4) return {lo:-Infinity, hi:Infinity};
+ const q1 = quantile(a,.25), q3 = quantile(a,.75), iqr = q3-q1;
+ return {lo: q1 - 1.5*iqr, hi: q3 + 1.5*iqr};
+}
+
+function normalize(raw){
+ const rows = [], bad = [], seen = new Set();
+ raw.forEach((r,i) => {
+  const cid = String(r.CustomerID ?? '').trim();
+  const o = {
+   cid: cid || `row_${i}`,
+   age: num(r.Age),
+   gender: String(r.Gender ?? '').trim() || 'Unknown',
+   income: num(r.Income),
+   channel: String(r.CampaignChannel ?? '').trim() || 'Unknown',
+   ctype: String(r.CampaignType ?? '').trim() || 'Unknown',
+   spend: num(r.AdSpend),
+   ctr: num(r.ClickThroughRate),
+   cr: num(r.ConversionRate),
+   visits: num(r.WebsiteVisits),
+   pagesPerVisit: num(r.PagesPerVisit),
+   timeOnSite: num(r.TimeOnSite),
+   social: num(r.SocialShares),
+   emailOpens: num(r.EmailOpens),
+   emailClicks: num(r.EmailClicks),
+   purchases: num(r.PreviousPurchases),
+   loyalty: num(r.LoyaltyPoints),
+   platform: String(r.AdvertisingPlatform ?? '').trim() || 'Unknown',
+   tool: String(r.AdvertisingTool ?? '').trim() || 'Unknown',
+   conv: (String(r.Conversion).trim().toLowerCase() === 'yes' || String(r.Conversion).trim() === '1') ? 1 : 0,
+   ag: ''
+  };
+  o.ag = isFinite(o.age) ? ageGroup(o.age) : '';
+  let why = null;
+  if(!cid) why = 'missing';
+  else if([o.spend, o.ctr, o.cr, o.visits].some(isNaN)) why = 'number';
+  else if(seen.has(cid)) why = 'dup';
+  seen.add(cid);
+  if(why) bad.push({row:i+2, why});
+  else rows.push(o);
+ });
+ // Engagement score
+ if(rows.length >= 5){
+  const fields = ['visits','pagesPerVisit','timeOnSite','social','emailOpens','emailClicks'];
+  const zs = fields.map(f => zNormalize(rows.map(r => r[f])));
+  rows.forEach((r, i) => {
+   r.engage = fields.reduce((s,_,j) => s + zs[j][i], 0) / fields.length;
+  });
+ } else {
+  rows.forEach(r => r.engage = 0);
+ }
+ return {rows, bad};
+}
+
+function filt(){
+ const f = S.f, n = v => v===''||v==null ? null : +v;
+ const mS = n(f.minspend), xS = n(f.maxspend), mA = n(f.minage), xA = n(f.maxage);
+ const mI = n(f.minincome), xI = n(f.maxincome), mV = n(f.minvisits), xV = n(f.maxvisits);
+ const mP = n(f.minpurch), xP = n(f.maxpurch), mL = n(f.minloyal), xL = n(f.maxloyal);
+ return S.data.filter(r =>
+  (!f.gender || r.gender === f.gender) &&
+  (!f.ag || r.ag === f.ag) &&
+  (!f.channel || r.channel === f.channel) &&
+  (!f.ctype || r.ctype === f.ctype) &&
+  (!f.platform || r.platform === f.platform) &&
+  (!f.tool || r.tool === f.tool) &&
+  (!f.conv || String(r.conv) === f.conv) &&
+  (mS==null || r.spend >= mS) && (xS==null || r.spend <= xS) &&
+  (mA==null || r.age >= mA) && (xA==null || r.age <= xA) &&
+  (mI==null || r.income >= mI) && (xI==null || r.income <= xI) &&
+  (mV==null || r.visits >= mV) && (xV==null || r.visits <= xV) &&
+  (mP==null || r.purchases >= mP) && (xP==null || r.purchases <= xP) &&
+  (mL==null || r.loyalty >= mL) && (xL==null || r.loyalty <= xL)
+ );
+}
+
+const setBoot = m => { const e = $('#bootMsg'); if(e) e.textContent = m; };
+const hideBoot = () => { const b = $('#boot'); if(b){ b.style.opacity = 0; setTimeout(()=>b.remove(), 400); } };
+
+function ingest(text, name){
+ return new Promise(res => {
+  Papa.parse(text, {header:true, skipEmptyLines:true, complete: async r => {
+   try{
+    const fields = r.meta.fields || [];
+    const miss = REQ.filter(c => !fields.includes(c));
+    if(miss.length){ await showError(t('missing',{c:miss.join(', ')})); return res(false); }
+    const n = normalize(r.data);
+    if(!n.rows.length){ await showError(t('badfile')); return res(false); }
+    if(S.data.length){
+     const ok = await Swal.fire({icon:'question', title:t('replaceT'), text:t('replaceB',{a:nf(S.data.length), b:nf(n.rows.length)}), showCancelButton:true, confirmButtonText:t('replace'), cancelButtonText:t('cancel')});
+     if(!ok.isConfirmed) return res(false);
+    }
+    S.data = n.rows;
+    S.bad = n.bad;
+    S.name = name;
+    S.meta = { total:r.data.length, bad:n.bad, extra:fields.filter(c=>!REQ.includes(c)) };
+    Object.keys(S.f).forEach(k => S.f[k] = '');
+    recomputeCache(S.data);
+    buildFbar(); buildNav(); render(); chime();
+    Swal.fire({icon:'success', title:t('loadedttl'), text:t('loaded',{n:nf(n.rows.length)}), timer:2400, showConfirmButton:false});
+    res(true);
+   }catch(e){ console.error(e); showError(t('badfile')); res(false); }
+  }, error: e => { console.error(e); showError(t('badfile')); res(false); } });
+ });
+}
+async function handleFile(f){
+ if(!f) return;
+ if(!/\.csv$/i.test(f.name) || f.size > 100*1048576) return showError(t('badfile'));
+ Swal.fire({title:f.name, html:esc((f.size/1048576).toFixed(2))+' MB', didOpen:()=>Swal.showLoading(), allowOutsideClick:false, showConfirmButton:false});
+ const text = await f.text();
+ Swal.close();
+ await ingest(text, f.name);
+}
+
+const V = h => $('#view').innerHTML = h;
+const emptyPage = () => `<div class="pan muted" style="text-align:center;padding:3rem 1rem">${esc(t('empty'))}<div style="margin-top:12px"><button class="pill" onclick="resetF()">${esc(t('clear'))}</button></div></div>`;
+const pn = (title, hint, id, cls='s6', h='') =>
+ `<div class="pan ${cls}"><h3>${esc(title)}</h3>${hint?`<p class="hint">${esc(hint)}</p>`:''}<div id="${id}" class="ch ${h}"></div></div>`;
+const tabbar = defs => `<div class="tabbar">${defs.map(([k,l,opts]) =>
+ `<div class="fld"><span>${esc(l)}</span><div class="seg" role="group" data-tc="${k}">${opts.map(([v,lb]) =>
+  `<button type="button" data-v="${v}" class="${String(S.tc[k])===String(v)?'on':''}">${esc(lb)}</button>`
+ ).join('')}</div></div>`).join('')}</div>`;
+const bindTabs = () => document.querySelectorAll('.seg[data-tc]').forEach(g => g.querySelectorAll('button').forEach(b => b.onclick = () => { S.tc[g.dataset.tc] = b.dataset.v; softTap(); render(); }));
+
+function countUp(){
+ if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+ document.querySelectorAll('.kpi .v[data-v]').forEach(el => {
+  const to = +el.dataset.v, fmt = el.dataset.f || 'nf', t0 = performance.now();
+  const f = fmt === 'money' ? money : fmt === 'dec' ? dec : fmt === 'pct' ? v => pct(v) : fmt === 'int' ? intf : nf;
+  const st = n => { const p = Math.min(1, (n - t0)/700); el.textContent = f(to*(1 - Math.pow(1 - p, 3))); if(p < 1) requestAnimationFrame(st); };
+  requestAnimationFrame(st);
+ });
+}
+const KFMT = { money: v => money(v), money2: v => money2(v), dec: v => dec(v), pct: v => pct(v), nf: v => nf(v), int: v => intf(v), sec: v => dec(v,0)+'s' };
+const kcard = (label, value, fmtKey, sub='', help='', sparkSvg=null, chg=null) => {
+ const cls = chg == null ? '' : (chg >= 0 ? 'up' : 'dn');
+ return `<div class="kpi">
+  <div class="l">${esc(label)}</div>
+  <div class="v" data-v="${value}" data-f="${fmtKey}">${esc(KFMT[fmtKey]?KFMT[fmtKey](value):nf(value))}</div>
+  ${sub?`<div class="sub">${esc(sub)}</div>`:''}
+  ${chg==null?'':`<div class="chg ${cls}"><i class="bi ${chg>=0?'bi-arrow-up-right':'bi-arrow-down-right'}"></i> ${esc(pctRaw(chg/100))}</div>`}
+  ${help?`<p class="help">${esc(help)}</p>`:''}
+  ${sparkSvg||''}
+ </div>`;
+};
+function spark(arr){
+ if(!arr || arr.length < 2) return '';
+ const step = Math.max(1, Math.ceil(arr.length/40));
+ const p = arr.filter((_,i) => i%step === 0);
+ const mn = Math.min(...p), mx = Math.max(...p);
+ return `<svg viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true"><path d="${p.map((v,i) =>
+  (i?'L':'M') + (i/(p.length-1)*100).toFixed(1) + ' ' + (26 - (mx===mn?.5:(v-mn)/(mx-mn))*24).toFixed(1)).join('')}"/></svg>`;
+}
+
+function bar(id, data, opt={}){
+ const fmt = opt.fmt || money;
+ const h = opt.h;
+ const c = chart(id, {
+  grid: h ? {left:8, right:20, top:24, bottom:8, containLabel:true}
+          : {left:8, right:16, top:34, bottom:8, containLabel:true},
+  xAxis: h ? {type:'value',axisLabel:{formatter:v=>fmt(v)}} 
+           : {type:'category',data:data.map(d=>d.k),axisLabel:{rotate:data.length>6?30:0,width:100,overflow:'truncate'}},
+  yAxis: h ? {type:'category',inverse:true,data:data.map(d=>d.k),axisLabel:{width:120,overflow:'truncate'}} 
+           : {type:'value',axisLabel:{formatter:v=>fmt(v)}},
+  series:[{
+   type:'bar', barMaxWidth:26,
+   itemStyle:{borderRadius: h ? [0,4,4,0] : [4,4,0,0]},
+   label:{show:true, position:'top', distance:4, formatter: p => fmt(p.value), fontSize:10, fontWeight:600, color:cs('--text')},
+   data:data.map(d=>d.v)
+  }],
+  tooltip:{trigger:'axis',valueFormatter:v=>fmt(v)}
+ });
+ if(c && opt.click) c.on('click', p => opt.click(p.name));
+ return c;
+}
+
+function pie(id, data, opt={}){
+ const c = chart(id, {
+  tooltip:{trigger:'item', formatter: p => `${esc(p.name)}<br><b>${nf(p.value)}</b> · <b>${p.percent.toFixed(1)}%</b>`},
+  legend:{bottom:0, type:'scroll', itemWidth:10, itemHeight:10},
+  series:[{
+   type:'pie',
+   radius: opt.radius || ['40%','60%'],
+   center: opt.center || ['50%','44%'],
+   avoidLabelOverlap: true,
+   minAngle: 4,
+   label:{show:true, formatter: p => `${p.name}\n${p.percent.toFixed(1)}%`, fontSize:9, lineHeight:12, color: cs('--text'), fontWeight:600},
+   labelLine:{show:true, length:6, length2:8, lineStyle:{color:cs('--line')}},
+   itemStyle:{borderRadius:6, borderColor:cs('--surf'), borderWidth:2},
+   data: data.map(d => ({name:d.k, value:d.v}))
+  }]
+ });
+ if(c && opt.click) c.on('click', p => opt.click(p.name));
+ return c;
+}
+
+/* ============ Pages ============ */
+const pages = {};
+
+/* --- Executive Overview --- */
+pages.overview = rows => {
+ const K = kpi(rows);
+ const chan = S.cache.channelStats || [];
+ const ctype = S.cache.ctypeStats || [];
+ const plat = S.cache.platformStats || [];
+ const insights = computeInsights(rows);
+
+ // Monthly trend
+ const monthMap = {};
+ rows.forEach(r => {
+  const m = r.day ? r.day.slice(0,7) : null;
+ });
+ const dl = []; // no date column in this dataset — skip time trend
+ const chanConvSorted = chan.slice().sort((a,b)=>b.convRate-a.convRate);
+ const spendByChannel = chan.slice().sort((a,b)=>b.spend-a.spend).map(c=>({k:c.k, v:c.spend}));
+ const convByChannel = chanConvSorted.map(c=>({k:c.k, v:c.convRate*100}));
+ const ctypeChart = ctype.map(c => ({k:c.k, v:c.convRate*100}));
+ const platChart = plat.slice().sort((a,b)=>b.convRate-a.convRate).map(c=>({k:c.k, v:c.convRate*100}));
+
+ // Scatter: spend vs conversion
+ const spendConvPts = rows.slice(0, 3000).map(r => [r.spend, (r.cr||0)*100, r.engage]);
+
+ V(`
+  <div class="hl"><h2>${esc(rtl() ? `${intf(K.n)} سجل · ${money(K.spend)} إنفاق · ${pct(K.convRate)} معدل تحويل` : `${intf(K.n)} records · ${money(K.spend)} spend · ${pct(K.convRate)} conversion`)}</h2>
+  <p>${esc(t('exec_brief_hint'))}</p></div>
+
+  <h2 class="sec">${esc(t('overview'))}</h2>
+  <div class="kpis">
+   ${kcard(t('k_customers'), K.nCust, 'int')}
+   ${kcard(t('k_records'), K.n, 'int')}
+   ${kcard(t('k_spend'), K.spend, 'money')}
+   ${kcard(t('k_conv'), K.conv, 'int')}
+   ${kcard(t('k_convrate'), K.convRate*100, 'dec', '', '', null)}
+   ${kcard(t('k_ctr'), K.avgCtr*100, 'dec')}
+   ${kcard(t('k_cpa'), K.cpa, 'money2')}
+   ${kcard(t('k_ctor'), K.ctor*100, 'dec')}
+   ${kcard(t('k_engage'), K.avgEngage, 'dec')}
+   ${kcard(t('k_loyal'), K.avgLoyalty, 'dec')}
+   ${kcard(t('k_roas'), 0, 'nf', '', t('k_roas_na'))}
+  </div>
+
+  <h2 class="sec">${esc(t('exec_brief'))}</h2>
+  <div class="ins-grid">
+   ${insights.slice(0,6).map(x => `<div class="ins-card ${x.pri}">
+     <div class="ins-head"><i class="bi ${x.icon}"></i> ${esc(x.cat)}</div>
+     <div class="ins-body">${x.text}</div>
+   </div>`).join('')}
+  </div>
+
+  <h2 class="sec">${esc(t('overview'))} — ${esc(t('segDist'))}</h2>
+  <div class="grid">
+   ${pn(t('bychannel'), t('bychannelhint'), 'ov_chan', 's6', 'lg')}
+   ${pn(t('byctype'), t('byctypehint'), 'ov_ctype', 's6', 'lg')}
+   ${pn(t('spendconv'), t('spendconvhint'), 'ov_scatter', 's6', 'lg')}
+   ${pn(t('engageconv'), t('engageconvhint'), 'ov_engage', 's6', 'lg')}
+   ${pn(t('byplatform'), t('byplatformhint'), 'ov_plat', 's12', 'lg')}
+  </div>
+ `);
+
+ chart('ov_chan', {
+  tooltip:{trigger:'axis', axisPointer:{type:'shadow'}, formatter: ps => { const c = chanConvSorted[ps[0].dataIndex]; return `<b>${esc(c.k)}</b><br>Conv rate: <b>${pct(c.convRate)}</b><br>Customers: ${intf(c.n)}<br>Spend: ${money(c.spend)}<br>Avg CTR: ${pct(c.avgCtr)}<br>CPA: ${isFinite(c.cpa)?money2(c.cpa):'—'}`; }},
+  grid:{left:8,right:20,top:24,bottom:8,containLabel:true},
+  xAxis:{type:'value', axisLabel:{formatter:v=>v+'%'}},
+  yAxis:{type:'category', inverse:true, data: chanConvSorted.map(c=>c.k), axisLabel:{width:120, overflow:'truncate'}},
+  series:[{type:'bar', barMaxWidth:24, itemStyle:{borderRadius:[0,4,4,0]}, label:{show:true, position:'top', distance:4, formatter:p=>p.value.toFixed(1)+'%', fontSize:10, fontWeight:600, color:cs('--text')},
+   data: chanConvSorted.map(c=> +(c.convRate*100).toFixed(2))}]
+ });
+ chart('ov_ctype', {
+  tooltip:{trigger:'axis', axisPointer:{type:'shadow'}, formatter: ps => { const c = ctype[ps[0].dataIndex]; return `<b>${esc(c.k)}</b><br>Conv rate: <b>${pct(c.convRate)}</b><br>Customers: ${intf(c.n)}<br>Spend: ${money(c.spend)}<br>Avg CTR: ${pct(c.avgCtr)}`; }},
+  grid:{left:8,right:20,top:24,bottom:8,containLabel:true},
+  xAxis:{type:'value', axisLabel:{formatter:v=>v+'%'}},
+  yAxis:{type:'category', inverse:true, data: ctype.map(c=>c.k), axisLabel:{width:120, overflow:'truncate'}},
+  series:[{type:'bar', barMaxWidth:24, itemStyle:{borderRadius:[0,4,4,0]}, label:{show:true, position:'top', distance:4, formatter:p=>p.value.toFixed(1)+'%', fontSize:10, fontWeight:600, color:cs('--text')},
+   data: ctype.map(c=> +(c.convRate*100).toFixed(2))}]
+ });
+ chart('ov_scatter', {
+  tooltip:{trigger:'item', formatter: p => `AdSpend: <b>${money(p.value[0])}</b><br>Conv Rate: <b>${p.value[1].toFixed(2)}%</b><br>Engagement: ${p.value[2].toFixed(2)}`},
+  xAxis:{type:'value', name:'AdSpend', nameLocation:'middle', nameGap:26, axisLabel:{formatter:v=>money(v)}},
+  yAxis:{type:'value', name:'ConversionRate (%)', nameLocation:'middle', nameGap:38, axisLabel:{formatter:v=>v+'%'}},
+  series:[{type:'scatter', symbolSize:6, itemStyle:{opacity:.55}, data: spendConvPts}]
+ });
+ chart('ov_engage', {
+  tooltip:{trigger:'item', formatter: p => `Engagement: <b>${p.value[0].toFixed(2)}</b><br>Converted: ${p.value[1]?'Yes':'No'}<br>Spend: ${money(p.value[2])}`},
+  xAxis:{type:'value', name:'Engagement Score', nameLocation:'middle', nameGap:26},
+  yAxis:{type:'value', name:'Converted', min:0, max:1, axisLabel:{formatter:v=>v==='1'?'Yes':'No'}},
+  series:[{type:'scatter', symbolSize:6, itemStyle:{opacity:.5}, data: rows.slice(0,3000).map(r => [r.engage, r.conv, r.spend])}]
+ });
+ chart('ov_plat', {
+  tooltip:{trigger:'axis', axisPointer:{type:'shadow'}, formatter: ps => { const c = platChart[ps[0].dataIndex]; return `<b>${esc(c.k)}</b><br>Conv rate: <b>${c.v.toFixed(2)}%</b>`; }},
+  grid:{left:8,right:20,top:24,bottom:40,containLabel:true},
+  xAxis:{type:'category', data: platChart.map(c=>c.k), axisLabel:{rotate:25, interval:0}},
+  yAxis:{type:'value', axisLabel:{formatter:v=>v+'%'}},
+  series:[{type:'bar', barMaxWidth:36, itemStyle:{borderRadius:[4,4,0,0]}, label:{show:true, position:'top', distance:4, formatter:p=>p.value.toFixed(1)+'%', fontSize:10, fontWeight:600, color:cs('--text')},
+   data: platChart.map(c=>+c.v.toFixed(2))}]
+ });
+ countUp();
+};
+
+/* --- Customer Intelligence --- */
+pages.customers = rows => {
+ const K = kpi(rows);
+ const ag = group(rows, r => r.ag);
+ const agOrder = AGES.map(a=>a[0]);
+ const genderG = group(rows, r => r.gender);
+ const segSum = S.cache.segSummary || [];
+ const segColors = {seg_HV:'#7c3aed', seg_HE:'#ec4899', seg_POT:'#0ea5e9', seg_LE:'#f59e0b', seg_LV:'#64748b'};
+
+ V(`
+  <h2 class="sec">${esc(t('customers'))}</h2>
+  <div class="kpis">
+   ${kcard(t('k_customers'), K.nCust, 'int')}
+   ${kcard(t('k_age'), K.avgCtr*0+0, 'nf')}
+   ${kcard(t('k_income'), K.avgIncome, 'money2')}
+   ${kcard(t('k_purch'), K.avgPurch, 'dec')}
+   ${kcard(t('k_loyal'), K.avgLoyalty, 'dec')}
+   ${kcard(t('k_engage'), K.avgEngage, 'dec')}
+   ${kcard(t('k_convrate'), K.convRate*100, 'dec')}
+  </div>
+
+  <h2 class="sec">${esc(t('segProf'))}</h2>
+  <div class="grid">
+   ${pn(t('genderd'), '', 'cu_gen', 's4', 'lg')}
+   ${pn(t('aged'), '', 'cu_age', 's4', 'lg')}
+   ${pn(t('incomed'), '', 'cu_inc', 's4', 'lg')}
+   ${pn(t('purloy'), '', 'cu_pl', 's6', 'lg')}
+   ${pn(t('visconv'), '', 'cu_vc', 's6', 'lg')}
+  </div>
+
+  <h2 class="sec">${esc(t('segDist'))}</h2>
+  <div class="grid">
+   ${pn(t('segDist'), '', 'cu_seg_donut', 's6', 'lg')}
+   ${pn(t('radar'), '', 'cu_radar', 's6', 'lg')}
+   ${pn(t('valueMatrix'), t('valueMatrixhint'), 'cu_scatter', 's12', 'lg')}
+  </div>
+
+  <h2 class="sec">${esc(t('segTable'))}</h2>
+  <div class="pan s12" style="margin-top:8px">
+   <table class="tbl">
+    <thead><tr>
+     <th>${esc(t('seg'))}</th>
+     <th>${esc(t('customers'))}</th>
+     <th>${esc(t('avgIncome'))}</th>
+     <th>${esc(t('avgPurch'))}</th>
+     <th>${esc(t('engagement'))}</th>
+     <th>${esc(t('convRate'))}</th>
+     <th>${esc(t('prefChannel'))}</th>
+    </tr></thead>
+    <tbody>
+     ${segSum.map(s => `<tr>
+      <td><b style="color:${segColors[s.name]}">● </b>${esc(t(s.name))}</td>
+      <td>${intf(s.n)}</td>
+      <td>${money2(s.avgIncome)}</td>
+      <td>${dec(s.avgPurch)}</td>
+      <td>${dec(s.avgEngage,2)}</td>
+      <td>${pct(s.convRate)}</td>
+      <td>${esc(s.preferredChannel)}</td>
+     </tr>`).join('')}
+    </tbody>
+   </table>
+  </div>
+ `);
+
+ pie('cu_gen', genderG.map(g=>({k:g.k, v:g.n})));
+ bar('cu_age', agOrder.map(k => ({k, v:(ag.find(x=>x.k===k)||{n:0}).n})), {h:0, fmt:intf});
+ // Income distribution histogram
+ const incomes = rows.map(r=>r.income).filter(isFinite);
+ const binCount = 10;
+ const imin = incomes.length ? Math.min(...incomes) : 0, imax = incomes.length ? Math.max(...incomes) : 1;
+ const ibw = (imax - imin)/binCount || 1;
+ const ibins = Array.from({length:binCount}, (_,i)=>({x:imin+i*ibw, n:0}));
+ incomes.forEach(v => { const i = Math.min(binCount-1, Math.max(0, Math.floor((v-imin)/ibw))); ibins[i].n++; });
+ chart('cu_inc', {
+  grid:{left:8,right:16,top:24,bottom:40,containLabel:true},
+  xAxis:{type:'category', data:ibins.map((b,i)=>i%2? '':money(b.x)), axisLabel:{rotate:25, fontSize:9, interval:0, hideOverlap:true}},
+  yAxis:{type:'value'},
+  tooltip:{trigger:'axis', formatter: ps => { const b = ibins[ps[0].dataIndex]; return `${money(b.x)} – ${money(b.x+ibw)}<br>Customers: ${b.n}`; }},
+  series:[{type:'bar', data:ibins.map(b=>b.n), itemStyle:{borderRadius:[4,4,0,0]}, label:{show:true, position:'top', distance:4, fontSize:9, fontWeight:600, color:cs('--text'), formatter:p=>p.value>0?p.value:''}}]
+ });
+ chart('cu_pl', {
+  tooltip:{trigger:'item', formatter: p => `Purchases: ${p.value[0]}<br>Loyalty: ${p.value[1]}<br>Engagement: ${p.value[2].toFixed(2)}`},
+  xAxis:{type:'value', name:'Previous Purchases', nameLocation:'middle', nameGap:26},
+  yAxis:{type:'value', name:'Loyalty Points', nameLocation:'middle', nameGap:38},
+  series:[{type:'scatter', symbolSize:6, itemStyle:{opacity:.55}, data: rows.slice(0,3000).map(r => [r.purchases, r.loyalty, r.engage])}]
+ });
+ chart('cu_vc', {
+  tooltip:{trigger:'item', formatter: p => `Visits: ${p.value[0]}<br>Converted: ${p.value[1]?'Yes':'No'}`},
+  xAxis:{type:'value', name:'Website Visits', nameLocation:'middle', nameGap:26},
+  yAxis:{type:'value', name:'Converted', min:0, max:1, axisLabel:{formatter:v=>v==='1'?'Yes':'No'}},
+  series:[{type:'scatter', symbolSize:5, itemStyle:{opacity:.5}, data: rows.slice(0,3000).map(r => [r.visits, r.conv])}]
+ });
+ pie('cu_seg_donut', segSum.map(s=>({k: t(s.name), v:s.n})));
+ // Radar
+ if(segSum.length){
+  const maxPurch = Math.max(...segSum.map(s=>s.avgPurch)) || 1;
+  const maxLoyal = Math.max(...segSum.map(s=>s.avgLoyal)) || 1;
+  const maxEng = Math.max(...segSum.map(s=>Math.abs(s.avgEngage))) || 1;
+  chart('cu_radar', {
+   tooltip:{},
+   legend:{bottom:0, type:'scroll', itemWidth:10, itemHeight:10},
+   radar:{ indicator:[
+    {name:'Purchases', max:maxPurch*1.1},
+    {name:'Loyalty', max:maxLoyal*1.1},
+    {name:'Engagement', max:maxEng*1.1},
+    {name:'Conversions', max:1.1}
+   ], radius:'62%', center:['50%','44%'], axisName:{color:cs('--muted'), fontSize:10} },
+   series:[{type:'radar', data: segSum.map(s => ({name: t(s.name), value: [s.avgPurch, s.avgLoyal, s.avgEngage, s.convRate], itemStyle:{color: segColors[s.name]}, areaStyle:{opacity:.15}}))}]
+  });
+ } else { V(''); }
+ // Scatter with segment colors
+ chart('cu_scatter', {
+  tooltip:{trigger:'item', formatter: p => `${esc(p.value[2]||'')}<br>Engagement: ${p.value[0].toFixed(2)}<br>Purchases: ${p.value[1]}`},
+  xAxis:{type:'value', name:'Engagement Score', nameLocation:'middle', nameGap:26},
+  yAxis:{type:'value', name:'Previous Purchases', nameLocation:'middle', nameGap:38},
+  series:[{type:'scatter', symbolSize:6, itemStyle:{opacity:.65}, data: rows.slice(0,3000).map(r => ({value: [r.engage, r.purchases, t(r._seg)], itemStyle:{color: segColors[r._seg]}}))}]
+ });
+ countUp();
+};
+
+/* --- Campaign Performance --- */
+pages.campaigns = rows => {
+ const K = kpi(rows);
+ const ctype = S.cache.ctypeStats || [];
+ const chan = S.cache.channelStats || [];
+ // Matrix: classify campaigns
+ const ctypeMatrix = ctype.map(c => {
+  const avgSpend = K.avgSpend;
+  const avgConv = K.convRate;
+  let perf = 'crit_Under';
+  if(c.convRate > avgConv * 1.1 && c.avgSpend < avgSpend * 1.1) perf = 'crit_Star';
+  else if(c.convRate > avgConv && c.avgSpend < avgSpend * 1.3) perf = 'crit_Eff';
+  else if(c.avgSpend > avgSpend * 1.2 && c.convRate < avgConv) perf = 'crit_Exp';
+  return { ...c, perf };
+ });
+
+ V(`
+  <h2 class="sec">${esc(t('campaigns'))}</h2>
+  <div class="kpis">
+   ${kcard(t('k_spend'), K.spend, 'money')}
+   ${kcard(t('k_conv'), K.conv, 'int')}
+   ${kcard(t('k_convrate'), K.convRate*100, 'dec')}
+   ${kcard(t('k_ctr'), K.avgCtr*100, 'dec')}
+   ${kcard(t('k_cpa'), K.cpa, 'money2')}
+   ${kcard(t('k_ctor'), K.ctor*100, 'dec')}
+  </div>
+
+  <h2 class="sec">${esc(t('byctype'))}</h2>
+  <div class="grid">
+   ${pn(t('byctype'), '', 'cmp_ctype', 's12', 'lg')}
+   ${pn(t('bychannel'), '', 'cmp_chan', 's12', 'lg')}
+  </div>
+
+  <h2 class="sec">${esc(t('segTable'))}</h2>
+  <div class="pan s12" style="margin-top:8px">
+   <div style="overflow:auto">
+    <table class="tbl">
+     <thead><tr>
+      <th>${esc(t('ctype'))}</th>
+      <th>${esc(t('customers'))}</th>
+      <th>${esc(t('spendc'))}</th>
+      <th>${esc(t('ctrc'))}</th>
+      <th>${esc(t('cprate'))}</th>
+      <th>${esc(t('k_cpa'))}</th>
+      <th>${esc(t('priority'))}</th>
+     </tr></thead>
+     <tbody>
+      ${ctypeMatrix.map(c => `<tr>
+       <td><b>${esc(c.k)}</b></td>
+       <td>${intf(c.n)}</td>
+       <td>${money(c.spend)}</td>
+       <td>${pct(c.avgCtr)}</td>
+       <td>${pct(c.convRate)}</td>
+       <td>${isFinite(c.cpa)?money2(c.cpa):'—'}</td>
+       <td><span class="bdg ${c.perf==='crit_Star'?'up':c.perf==='crit_Exp'||c.perf==='crit_Under'?'dn':''}">${esc(t(c.perf))}</span></td>
+      </tr>`).join('')}
+     </tbody>
+    </table>
+   </div>
+  </div>
+ `);
+
+ chart('cmp_ctype', {
+  tooltip:{trigger:'axis', axisPointer:{type:'shadow'}},
+  legend:{top:0, type:'scroll', itemWidth:10, itemHeight:10},
+  grid:{left:8,right:16,top:34,bottom:40,containLabel:true},
+  xAxis:{type:'category', data: ctype.map(c=>c.k), axisLabel:{rotate:20, interval:0}},
+  yAxis:[{type:'value', name:'Spend', axisLabel:{formatter:v=>money(v)}},
+         {type:'value', name:'Conv %', axisLabel:{formatter:v=>v+'%'}}],
+  series:[
+   {name:'Spend', type:'bar', barMaxWidth:36, itemStyle:{borderRadius:[4,4,0,0]}, label:{show:true, position:'top', distance:4, fontSize:9, fontWeight:600, color:cs('--text'), formatter:p=>money(p.value)},
+    data: ctype.map(c=>+c.spend.toFixed(0))},
+   {name:'Conv rate', type:'line', yAxisIndex:1, smooth:true, symbolSize:8, data: ctype.map(c=>+(c.convRate*100).toFixed(2))}
+  ]
+ });
+ chart('cmp_chan', {
+  tooltip:{trigger:'axis', axisPointer:{type:'shadow'}},
+  grid:{left:8,right:16,top:24,bottom:40,containLabel:true},
+  xAxis:{type:'category', data: chan.map(c=>c.k), axisLabel:{rotate:20, interval:0}},
+  yAxis:[{type:'value', name:'Conv %', axisLabel:{formatter:v=>v+'%'}},
+         {type:'value', name:'Spend', position: rtl()?'left':'right', axisLabel:{formatter:v=>money(v)}}],
+  series:[
+   {name:'Conv rate', type:'bar', barMaxWidth:36, itemStyle:{borderRadius:[4,4,0,0]}, label:{show:true, position:'top', distance:4, fontSize:10, fontWeight:600, color:cs('--text'), formatter:p=>p.value.toFixed(1)+'%'},
+    data: chan.map(c=>+(c.convRate*100).toFixed(2))},
+   {name:'Spend', type:'line', yAxisIndex:1, smooth:true, symbolSize:8, data: chan.map(c=>+c.spend.toFixed(0))}
+  ]
+ });
+ countUp();
+};
+
+/* --- Channel & Platform --- */
+pages.channels = rows => {
+ const chan = (S.cache.channelStats || []).slice();
+ const plat = (S.cache.platformStats || []).slice();
+ const tool = (S.cache.toolStats || []).slice();
+ const K = kpi(rows);
+ // Internal score
+ function score(c){
+  const convN = c.convRate / (K.convRate || 1);
+  const ctrN = c.avgCtr / (K.avgCtr || 1);
+  const engN = (c.avgEngage + 2) / (K.avgEngage + 2 || 1);
+  const cpaN = isFinite(c.cpa) && isFinite(K.cpa) && c.cpa > 0 ? K.cpa / c.cpa : 1;
+  return +(convN*0.35 + ctrN*0.20 + engN*0.15 + cpaN*0.30).toFixed(3);
+ }
+ chan.forEach(c => c.score = score(c));
+ plat.forEach(c => c.score = score(c));
+ tool.forEach(c => c.score = score(c));
+ chan.sort((a,b)=>b.score-a.score);
+ plat.sort((a,b)=>b.score-a.score);
+ const rank = chan.map((c,i) => ({...c, rank: i+1}));
+
+ V(`
+  <h2 class="sec">${esc(t('channels'))}</h2>
+  <div class="grid">
+   ${pn(t('channelRank'), t('channelScore'), 'ch_rank', 's12', 'lg')}
+   ${pn(t('byplatform'), '', 'ch_plat', 's6', 'lg')}
+   ${pn(t('correlation'), t('correlationhint'), 'ch_corr', 's6', 'lg')}
+  </div>
+ `);
+
+ chart('ch_rank', {
+  tooltip:{trigger:'item', formatter: p => { const c = rank[p.dataIndex]; return `<b>#${c.rank} ${esc(c.k)}</b><br>Score: <b>${c.score}</b><br>Conv: ${pct(c.convRate)}<br>CTR: ${pct(c.avgCtr)}<br>Spend: ${money(c.spend)}`; }},
+  grid:{left:8,right:24,top:24,bottom:8,containLabel:true},
+  xAxis:{type:'value', axisLabel:{formatter:v=>v.toFixed(1)}},
+  yAxis:{type:'category', inverse:true, data: rank.map(c=>`#${c.rank} ${c.k}`), axisLabel:{width:160, overflow:'truncate'}},
+  series:[{type:'bar', barMaxWidth:26, itemStyle:{borderRadius:[0,4,4,0], color: p => { const v = p.value; return v > 1.1 ? cs('--up') : v > 0.9 ? cs('--a') : v > 0.7 ? cs('--c4') : cs('--dn'); }}, label:{show:true, position:'top', distance:4, formatter:p=>p.value.toFixed(2), fontSize:10, fontWeight:600, color:cs('--text')},
+   data: rank.map(c=>c.score)}]
+ });
+ chart('ch_plat', {
+  tooltip:{trigger:'item', formatter: p => { const c = plat[p.dataIndex]; return `<b>${esc(c.k)}</b><br>Score: <b>${c.score}</b><br>Conv: ${pct(c.convRate)}<br>Spend: ${money(c.spend)}`; }},
+  xAxis:{type:'value'},
+  yAxis:{type:'category', inverse:true, data: plat.map(c=>c.k), axisLabel:{width:120, overflow:'truncate'}},
+  series:[{type:'bar', barMaxWidth:26, itemStyle:{borderRadius:[0,4,4,0]}, label:{show:true, position:'top', distance:4, formatter:p=>p.value.toFixed(2), fontSize:10, fontWeight:600, color:cs('--text')}, data: plat.map(c=>c.score)}]
+ });
+ // Correlation heatmap
+ const corr = S.cache.correlations;
+ if(corr){
+  const data = [];
+  let mx = 0;
+  corr.matrix.forEach((row,i)=>row.forEach((v,j)=>{ if(isFinite(v)){ mx = Math.max(mx, Math.abs(v)); data.push([i,j,+v.toFixed(2)]); } }));
+  chart('ch_corr', {
+   tooltip:{position:'top', formatter: p => `${corr.labels[p.value[0]]} × ${corr.labels[p.value[1]]}<br>r = <b>${p.value[2]}</b>`},
+   grid:{left:8,right:8,top:20,bottom:80,containLabel:true},
+   xAxis:{type:'category', data: corr.labels, axisLabel:{rotate:30, fontSize:9, interval:0}},
+   yAxis:{type:'category', data: corr.labels, axisLabel:{fontSize:9}},
+   visualMap:{min:-mx, max:mx, calculable:true, orient:'horizontal', left:'center', bottom:0, itemWidth:12, itemHeight:80, textStyle:{fontSize:9, color:cs('--muted')}, inRange:{color:['#dc2626','#f59e0b','#f1f5f9','#10b981','#7c3aed']}},
+   series:[{type:'heatmap', data, label:{show:false}, emphasis:{itemStyle:{shadowBlur:8}}}]
+  });
+ }
+};
+
+/* --- Marketing Strategy --- */
+pages.strategy = rows => {
+ const segSum = S.cache.segSummary || [];
+ const segColors = {seg_HV:'#7c3aed', seg_HE:'#ec4899', seg_POT:'#0ea5e9', seg_LE:'#f59e0b', seg_LV:'#64748b'};
+ const actions = {seg_HV:'act_Retain', seg_HE:'act_Upsell', seg_POT:'act_Reengage', seg_LE:'act_Retarget', seg_LV:'act_Review'};
+ const priority = {seg_HV:'up', seg_HE:'', seg_POT:'', seg_LE:'dn', seg_LV:'dn'};
+
+ V(`
+  <h2 class="sec">${esc(t('strategy'))}</h2>
+  <p class="hint" style="margin-bottom:10px">${esc(t('mgmt_hint'))}</p>
+
+  <div class="grid">
+   ${segSum.map(s => `<div class="seg-card s4">
+     <div class="seg-name"><span class="dot" style="background:${segColors[s.name]}"></span> ${esc(t(s.name))}</div>
+     <div class="seg-count">${intf(s.n)}</div>
+     <div class="seg-desc">${esc(t(s.name+'_desc'))}</div>
+     <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:11px;margin-top:6px">
+      <div><span class="muted">${esc(t('avgIncome'))}</span><br><b>${money(s.avgIncome)}</b></div>
+      <div><span class="muted">${esc(t('avgPurch'))}</span><br><b>${dec(s.avgPurch)}</b></div>
+      <div><span class="muted">${esc(t('engagement'))}</span><br><b>${dec(s.avgEngage,2)}</b></div>
+      <div><span class="muted">${esc(t('convRate'))}</span><br><b>${pct(s.convRate)}</b></div>
+     </div>
+     <div style="margin-top:6px;padding:6px 8px;background:color-mix(in srgb,var(--a) 8%,transparent);border-radius:8px;font-size:11px">
+      <b>${esc(t('recommendation'))}:</b> ${esc(t(actions[s.name]))}
+     </div>
+    </div>`).join('')}
+  </div>
+
+  <h2 class="sec">${esc(t('segTable'))}</h2>
+  <div class="pan s12" style="margin-top:8px">
+   <div style="overflow:auto">
+    <table class="tbl">
+     <thead><tr>
+      <th>${esc(t('seg'))}</th>
+      <th>${esc(t('customers'))}</th>
+      <th>${esc(t('avgIncome'))}</th>
+      <th>${esc(t('avgPurch'))}</th>
+      <th>${esc(t('engagement'))}</th>
+      <th>${esc(t('convRate'))}</th>
+      <th>${esc(t('prefChannel'))}</th>
+      <th>${esc(t('rec'))}</th>
+      <th>${esc(t('priority'))}</th>
+     </tr></thead>
+     <tbody>
+      ${segSum.map(s => `<tr>
+       <td><b style="color:${segColors[s.name]}">● </b>${esc(t(s.name))}</td>
+       <td>${intf(s.n)}</td>
+       <td>${money(s.avgIncome)}</td>
+       <td>${dec(s.avgPurch)}</td>
+       <td>${dec(s.avgEngage,2)}</td>
+       <td>${pct(s.convRate)}</td>
+       <td>${esc(s.preferredChannel)}</td>
+       <td><b>${esc(t(actions[s.name]))}</b></td>
+       <td><span class="bdg ${priority[s.name]}">${esc(t(s.name==='seg_HV'?'priority':s.name))}</span></td>
+      </tr>`).join('')}
+     </tbody>
+    </table>
+   </div>
+  </div>
+
+  <h2 class="sec">${esc(t('mgmt'))}</h2>
+  <div class="ins-grid">
+   ${computeInsights(rows).map(x => `<div class="ins-card ${x.pri}">
+     <div class="ins-head"><i class="bi ${x.icon}"></i> ${esc(x.cat)}</div>
+     <div class="ins-body">${x.text}</div>
+   </div>`).join('')}
+  </div>
+ `);
+};
+
+/* --- Data Explorer --- */
+pages.explorer = rows => {
+ const q = S.q.toLowerCase();
+ const sort = S.tc.sort || 'new';
+ const N = +S.tc.ps || 25;
+ let L = q ? rows.filter(r => (r.cid+r.gender+r.channel+r.ctype+r.platform+r.tool+r._seg).toLowerCase().includes(q)) : rows.slice();
+ L.sort(sort==='high' ? (a,b)=>b.income-a.income : sort==='low' ? (a,b)=>a.income-b.income : (a,b)=>0);
+ const pg = Math.min(S.pg, Math.max(0, Math.ceil(L.length/N)-1));
+ V(`
+  <div class="pan">
+   <div class="tabbar" style="align-items:flex-end">
+    <div style="flex:1;min-width:220px">
+     <input id="q" class="pill" style="width:100%" placeholder="${esc(t('search'))}" value="${esc(S.q)}">
+    </div>
+    <button id="exp" class="pill" style="width:auto"><i class="bi bi-download"></i> ${esc(t('export'))}</button>
+   </div>
+   ${tabbar([['sort','sort',[['new',t('s_new')],['high',t('s_high')],['low',t('s_low')]]],['ps','ps',[['25','25'],['50','50'],['100','100']]]])}
+   <div style="overflow:auto;max-height:65vh">
+    <table class="tbl">
+     <thead><tr>
+      <th>${esc(t('custid'))}</th><th>${esc(t('agec'))}</th><th>${esc(t('genderc'))}</th>
+      <th>${esc(t('incomec'))}</th><th>${esc(t('segc'))}</th><th>${esc(t('engagec'))}</th>
+      <th>${esc(t('purchc'))}</th><th>${esc(t('loyalc'))}</th><th>${esc(t('convc'))}</th>
+      <th>${esc(t('channelc'))}</th><th>${esc(t('ctypec'))}</th><th>${esc(t('spendc'))}</th>
+     </tr></thead>
+     <tbody>
+     ${L.slice(pg*N, pg*N+N).map((r,i)=>`<tr class="cl">
+      <td><b style="font-family:monospace;font-size:11px">${esc(r.cid)}</b></td>
+      <td>${intf(r.age)}</td>
+      <td>${esc(r.gender)}</td>
+      <td>${money(r.income)}</td>
+      <td>${esc(t(r._seg || 'seg_LV'))}</td>
+      <td>${dec(r.engage,2)}</td>
+      <td>${intf(r.purchases)}</td>
+      <td>${intf(r.loyalty)}</td>
+      <td>${r.conv?'<span class="bdg up">'+esc(t('yes'))+'</span>':'<span class="bdg">'+esc(t('no'))+'</span>'}</td>
+      <td>${esc(r.channel)}</td>
+      <td>${esc(r.ctype)}</td>
+      <td>${money(r.spend)}</td>
+     </tr>`).join('')}
+     </tbody>
+    </table>
+   </div>
+   <div style="display:flex;gap:8px;align-items:center;margin-top:12px">
+    <button class="ibtn" id="pv" ${pg?'':'disabled'}><i class="bi bi-chevron-left dir-icon"></i></button>
+    <span class="muted">${intf(pg+1)} / ${intf(Math.max(1,Math.ceil(L.length/N)))} · ${intf(L.length)} ${esc(t('rows'))}</span>
+    <button class="ibtn" id="nx" ${(pg+1)*N<L.length?'':'disabled'}><i class="bi bi-chevron-right dir-icon"></i></button>
+   </div>
+  </div>
+ `);
+ let tm;
+ $('#q').oninput = e => { clearTimeout(tm); tm = setTimeout(()=>{ S.q = e.target.value; S.pg = 0; render(); const i = $('#q'); i.focus(); i.setSelectionRange(99,99); }, 250); };
+ $('#pv').onclick = () => { S.pg = pg-1; softTap(); render(); };
+ $('#nx').onclick = () => { S.pg = pg+1; softTap(); render(); };
+ $('#exp').onclick = () => exportCsv(L);
+ $('#view').querySelectorAll('tr.cl').forEach(tr => tr.onclick = () => {
+  const r = L[L.indexOf(L.find(x => x.cid === tr.cells[0].textContent.trim()))] || null;
+ });
+ bindTabs();
+};
+
+/* --- Data Quality --- */
+pages.quality = () => {
+ const m = S.meta || {total:0, bad:[], extra:[]};
+ const rs = {};
+ (m.bad||[]).forEach(b => rs[b.why] = (rs[b.why]||0)+1);
+ const sc = m.total ? S.data.length/m.total : 0;
+ V(`
+  <h2 class="sec">${esc(t('quality'))}</h2>
+  <div class="kpis">
+   ${kcard(t('total'), m.total, 'int')}
+   ${kcard(t('valid'), S.data.length, 'int')}
+   ${kcard(t('invalid'), (m.bad||[]).length, 'int')}
+   ${kcard(t('dups'), rs.dup||0, 'int')}
+   ${kcard(t('score'), sc*100, 'dec')}
+  </div>
+  <div class="pan" style="margin-top:8px">
+   <h3>${esc(t('reasons'))}</h3>
+   <table class="tbl">
+    <thead><tr><th>${esc(t('total'))}</th><th>${esc(t('total'))}</th></tr></thead>
+    <tbody>
+     ${Object.keys(rs).length ? Object.keys(rs).map(k=>`<tr><td>${esc(t('r_'+k))}</td><td>${intf(rs[k])}</td></tr>`).join('') : '<tr><td>—</td></tr>'}
+    </tbody>
+   </table>
+   ${m.extra && m.extra.length ? `<p class="muted" style="margin-top:8px">Extra columns: ${esc(m.extra.join(', '))}</p>` : ''}
+   <p class="muted" style="font-size:.78rem;margin-top:12px">${esc(t('method'))}</p>
+  </div>
+ `);
+};
+
+/* ============ Insights ============ */
+function computeInsights(rows){
+ const out = [];
+ const K = kpi(rows);
+ if(!K.n) return [{cat:'Info',pri:'Info',icon:'bi-info-circle',text:esc(t('empty'))}];
+ out.push({cat:'Overview',pri:'Info',icon:'bi-info-circle', text: esc(t('i_conv',{p:pct(K.convRate)}))});
+ const chan = (S.cache.channelStats||[]).slice().sort((a,b)=>b.convRate-a.convRate);
+ if(chan.length >= 2){
+  out.push({cat:'Channel',pri:'Positive',icon:'bi-trophy', text: esc(t('i_bestchannel',{c:chan[0].k, p:pct(chan[0].convRate)}))});
+  const worst = chan[chan.length-1];
+  if(worst.convRate < K.convRate * 0.7)
+   out.push({cat:'Channel',pri:'Warning',icon:'bi-exclamation-triangle', text: esc(t('i_worstchannel',{c:worst.k, p:pct(worst.convRate)}))});
+  const highSpend = chan.slice().sort((a,b)=>b.spend-a.spend)[0];
+  if(highSpend && highSpend.convRate < K.convRate)
+   out.push({cat:'Channel',pri:'Critical',icon:'bi-exclamation-octagon', text: esc(t('i_highspend',{c:highSpend.k, p:pct(highSpend.spend/K.spend), q:pct(highSpend.convRate)}))});
+ }
+ const ctype = (S.cache.ctypeStats||[]).slice().sort((a,b)=>b.convRate-a.convRate);
+ if(ctype.length) out.push({cat:'Campaign',pri:'Positive',icon:'bi-megaphone', text: esc(t('i_bestctype',{c:ctype[0].k, p:pct(ctype[0].convRate)}))});
+ const segSum = S.cache.segSummary || [];
+ const hv = segSum.find(s => s.name === 'seg_HV');
+ if(hv && hv.n >= 5){
+  out.push({cat:'Segments',pri:'Positive',icon:'bi-star', text: esc(t('i_hvseg',{n:intf(hv.n), p:dec(hv.avgPurch)}))});
+  if(hv.avgEngage < 0)
+   out.push({cat:'Segments',pri:'Warning',icon:'bi-shield-exclamation', text: esc(t('i_hvlowengage',{n:intf(hv.n)}))});
+ }
+ const engagedNonConv = rows.filter(r => r.engage > 1 && r.conv === 0).length;
+ if(engagedNonConv > 10)
+  out.push({cat:'Opportunity',pri:'Opportunity',icon:'bi-lightbulb', text: esc(t('i_engagednonconv',{n:intf(engagedNonConv)}))});
+ if(isFinite(K.ctor)){
+  if(K.ctor < 0.2) out.push({cat:'Email',pri:'Warning',icon:'bi-envelope-exclamation', text: esc(t('i_emailweak',{p:pct(K.ctor)}))});
+  else out.push({cat:'Email',pri:'Positive',icon:'bi-envelope-check', text: esc(t('i_emailstrong',{p:pct(K.ctor)}))});
+ }
+ out.push({cat:'Performance',pri:'Info',icon:'bi-speedometer2', text: esc(t('i_ctr',{p:pct(K.avgCtr)}))});
+ out.push({cat:'Spend',pri:'Info',icon:'bi-cash-coin', text: esc(t('i_spend',{v:money(K.spend)}))});
+ if(isFinite(K.cpa)) out.push({cat:'Spend',pri:'Info',icon:'bi-calculator', text: esc(t('i_cpa',{v:money2(K.cpa)}))});
+ if(S.meta){
+  const sc = S.meta.total ? S.data.length/S.meta.total : 1;
+  out.push({cat:'Data quality',pri: sc>=0.95?'Positive': sc>=0.85?'Warning':'Critical', icon:'bi-shield-check', text: esc(t('i_quality',{p:pct(sc)}))});
+ }
+ return out;
+}
+
+/* ============ Nav + Filters ============ */
+const PAGES = [
+ ['overview','bi-speedometer2'],
+ ['customers','bi-people'],
+ ['campaigns','bi-megaphone'],
+ ['channels','bi-diagram-3'],
+ ['strategy','bi-lightbulb'],
+ ['explorer','bi-table'],
+ ['quality','bi-clipboard-data']
+];
+function buildNav(){
+ $('#nav').innerHTML = PAGES.map(([k,i]) =>
+  `<a role="button" tabindex="0" data-p="${k}" class="${k===S.page?'on':''}"><i class="bi ${i}"></i> ${esc(t(k))}</a>`
+ ).join('');
+ $('#nav').querySelectorAll('a').forEach(a => {
+  const go = () => {
+   if(a.dataset.p === S.page) return;
+   navSound();
+   S.page = a.dataset.p; S.pg = 0;
+   buildNav();
+   render();
+  };
+   a.onclick = go;
+   a.onkeydown = e => { if(e.key==='Enter') go(); };
+ });
+ const on = document.querySelector('#nav a.on');
+ if(on) on.scrollIntoView({inline:'center',block:'nearest'});
+}
+
+function buildThemePicker(){
+ const trigger = $('#themeTrigger');
+ const menu = $('#themeMenu');
+ if(!trigger || !menu) return;
+ const cur = S.set.theme;
+ const meta = THEME_META[cur] || THEME_META.marketing;
+ const swatchEls = trigger.querySelectorAll('[data-swatch]');
+ swatchEls[0].style.background = meta.colors[0];
+ swatchEls[1].style.background = meta.colors[1];
+ trigger.querySelector('.theme-name').textContent = rtl() ? meta.ar : meta.name;
+ menu.innerHTML = `<div class="theme-menu-title">${esc(t('theme_menu'))}</div>` +
+  THEMES.map(k => {
+   const m = THEME_META[k];
+   const isOn = k === cur;
+   return `<button class="theme-opt ${isOn?'on':''}" type="button" data-v="${k}">
+     <span class="swatches"><i style="background:${m.colors[0]}"></i><i style="background:${m.colors[1]}"></i></span>
+     <span>${esc(rtl()?m.ar:m.name)}</span>
+     <i class="bi bi-check2 check"></i>
+   </button>`;
+  }).join('');
+ menu.querySelectorAll('.theme-opt').forEach(b => {
+  b.addEventListener('click', e => {
+   e.stopPropagation();
+   const th = b.dataset.v;
+   if(th === S.set.theme){ closeThemePicker(); return; }
+   S.set.theme = th; save();
+   buildThemePicker();
+   closeThemePicker();
+   softTap();
+   render();
+  });
+ });
+}
+function positionThemeMenu(){
+ const trigger = $('#themeTrigger');
+ const menu = $('#themeMenu');
+ if(!trigger || !menu) return;
+ const r = trigger.getBoundingClientRect();
+ const mw = Math.min(260, window.innerWidth - 24);
+ menu.style.minWidth = mw + 'px';
+ menu.style.top = (r.bottom + 8) + 'px';
+ if(rtl()){
+  const rightPos = Math.max(12, window.innerWidth - r.right);
+  menu.style.right = rightPos + 'px';
+  menu.style.left = 'auto';
+ } else {
+  let leftPos = r.left;
+  if(leftPos + mw > window.innerWidth - 12) leftPos = window.innerWidth - mw - 12;
+  if(leftPos < 12) leftPos = 12;
+  menu.style.left = leftPos + 'px';
+  menu.style.right = 'auto';
+ }
+}
+function openThemePicker(){
+ const menu = $('#themeMenu');
+ const trigger = $('#themeTrigger');
+ if(!menu || !trigger) return;
+ positionThemeMenu();
+ menu.classList.add('open');
+ $('#themePicker').classList.add('open');
+}
+function closeThemePicker(){
+ const menu = $('#themeMenu');
+ const trigger = $('#themeTrigger');
+ if(menu) menu.classList.remove('open');
+ const pk = $('#themePicker'); if(pk) pk.classList.remove('open');
+}
+document.addEventListener('DOMContentLoaded', () => {
+ const trigger = $('#themeTrigger');
+ if(trigger){
+  trigger.addEventListener('click', e => {
+   e.stopPropagation();
+   e.preventDefault();
+   const menu = $('#themeMenu');
+   if(!menu) return;
+   if(menu.classList.contains('open')) closeThemePicker();
+   else { openThemePicker(); softTap(); }
+  });
+ }
+});
+document.addEventListener('click', e => {
+ const menu = $('#themeMenu');
+ const trigger = $('#themeTrigger');
+ if(!menu || !menu.classList.contains('open')) return;
+ if(trigger && trigger.contains(e.target)) return;
+ if(menu.contains(e.target)) return;
+ closeThemePicker();
+});
+document.addEventListener('keydown', e => { if(e.key === 'Escape'){ closeThemePicker(); if(innerWidth<900) fpane(false); } });
+window.addEventListener('resize', () => { const m = $('#themeMenu'); if(m && m.classList.contains('open')) positionThemeMenu(); });
+
+function buildFbar(){
+ const P = $('#fbar');
+ if(!S.data.length){ P.innerHTML = ''; return; }
+ const u = k => [...new Set(S.data.map(r=>r[k]).filter(Boolean))].sort();
+ const on = (k,v) => String(S.f[k] ?? '') === String(v);
+ const card = (ti, body) => `<details class="fc" ${open?'':''}><summary>${esc(ti)}<i class="bi bi-chevron-down"></i></summary><div class="fb">${body}</div></details>`;
+ const list = (k, vals, lab) => card(t(k), `<div class="sl">${vals.map(v => `
+  <button class="opt" data-k="${k}" data-v="${esc(v)}" aria-pressed="${on(k,v)}">
+   <i class="bi ${on(k,v)?'bi-check-square-fill':'bi-square'}"></i> ${esc(lab?lab(v):v)}
+  </button>`).join('')}</div>`);
+ const inp = (k,ty,pl) => `<input class="pill" type="${ty}" data-f="${k}" value="${esc(S.f[k]??'')}" placeholder="${esc(pl)}">`;
+ const two = (ti,a,b,ty,pa,pb) => card(ti, `<div class="two">${inp(a,ty,pa)}${inp(b,ty,pb)}</div>`);
+ P.innerHTML =
+  `<div class="ph"><b>${esc(t('filters'))}</b><span id="fcount"></span>
+   <button id="clr" class="ibtn"><i class="bi bi-eraser"></i></button>
+   <button id="fclose" class="ibtn" type="button"><i class="bi bi-x-lg"></i></button></div>`
+  + list('gender', u('gender'))
+  + list('ag', AGES.map(a=>a[0]))
+  + list('channel', u('channel'))
+  + list('ctype', u('ctype'))
+  + list('platform', u('platform'))
+  + list('tool', u('tool'))
+  + list('conv', ['0','1'], v => v==='1'?t('yes'):t('no'))
+  + two(t('income'), 'minincome','maxincome','number', t('minincome'), t('maxincome'))
+  + two(t('age'), 'minage','maxage','number', t('minage'), t('maxage'))
+  + two(t('spendc'), 'minspend','maxspend','number', t('minspend'), t('maxspend'))
+  + two(t('k_visits'), 'minvisits','maxvisits','number', t('minvisits'), t('maxvisits'))
+  + two(t('purchc'), 'minpurch','maxpurch','number', t('minpurch'), t('maxpurch'))
+  + two(t('loyalc'), 'minloyal','maxloyal','number', t('minloyal'), t('maxloyal'));
+ P.querySelectorAll('[data-f]').forEach(e => e.onchange = () => { S.f[e.dataset.f] = e.value; S.pg = 0; softTap(); render(); });
+ P.querySelectorAll('.opt').forEach(b => b.onclick = () => { const k = b.dataset.k; S.f[k] = on(k,b.dataset.v) ? '' : b.dataset.v; S.pg = 0; buildFbar(); softTap(); render(); });
+ $('#clr').onclick = resetF;
+ $('#fclose').onclick = () => fpane(false);
+ chips();
+}
+function chips(){
+ if(!$('#fcount')) return;
+ const n = Object.keys(S.f).filter(k => S.f[k] !== '' && S.f[k] != null).length;
+ const e = $('#fcount'); if(e) e.textContent = n ? intf(n) : '';
+}
+function resetF(){
+ Object.keys(S.f).forEach(k => S.f[k] = '');
+ buildFbar(); render();
+ toast('info', t('clear'));
+ beep(520);
+}
+function fIsOpen(){
+ const p = $('#fbar');
+ return innerWidth < 900 ? p.classList.contains('show') : !p.classList.contains('off');
+}
+function fpane(open){
+ const p = $('#fbar');
+ if(open && !S.data.length) return;
+ if(innerWidth < 900){ p.classList.toggle('show', open); document.body.classList.toggle('fopen', open); }
+ else { p.classList.toggle('off', !open); }
+ setTimeout(() => CH.forEach(c => c.resize()), 80);
+}
+function i18nStatic(){
+ document.documentElement.lang = S.set.lang;
+ document.documentElement.dir = rtl() ? 'rtl' : 'ltr';
+ document.documentElement.dataset.theme = S.set.theme;
+ document.documentElement.dataset.mode = S.set.mode;
+ $('#lang').innerHTML = `<i class="bi bi-translate"></i><span>${rtl()?'English':'عربي'}</span>`;
+ $('#snd').innerHTML = `<i class="bi ${S.set.sound?'bi-volume-up':'bi-volume-mute'}"></i><span>${esc(t('sound_ttl'))}</span>`;
+ $('#mode').innerHTML = `<i class="bi ${S.set.mode==='dark'?'bi-sun':'bi-moon-stars'}"></i><span>${esc(t('mode_ttl'))}</span>`;
+ $('#pageTitle').textContent = t(S.page);
+ $('#openf').innerHTML = `<i class="bi bi-folder2-open"></i><span>${esc(t('loaddata'))}</span>`;
+ $('#ftog').innerHTML = `<i class="bi bi-funnel"></i><span>${esc(t('filters'))}</span>`;
+ $('#rst').innerHTML = `<i class="bi bi-arrow-counterclockwise"></i><span>${esc(t('clear'))}</span>`;
+ $('#prt').innerHTML = `<i class="bi bi-printer"></i><span>Print</span>`;
+ buildThemePicker();
+ const st = $('#dsStatus');
+ if(S.data.length){
+  st.textContent = `${S.name} · ${intf(S.data.length)} · ${t('score')} ${pct(S.meta.total ? S.data.length/S.meta.total : 1)}`;
+ } else st.textContent = '';
+}
+function uploadUI(){
+ V(`<div class="hero">
+  <span class="orb o1"></span><span class="orb o2"></span>
+  <svg class="hlogo" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="#7c3aed"/><path d="M18 40l8-12 8 8 12-16v22H18z" fill="#fff"/><circle cx="46" cy="18" r="4" fill="#f472b6"/></svg>
+  <h2>${esc(t('wel_t'))}</h2>
+  <p>${esc(t('wel_s'))}</p>
+  <button id="ld" class="cta"><i class="bi bi-cloud-arrow-down"></i><span>${esc(t('loaddata'))}</span></button>
+  <div id="steps"></div>
+  <div class="or">${esc(t('or'))}</div>
+  <div class="drop" id="dz">
+   <p class="muted" style="margin:0 0 .6rem">${esc(t('dropsub'))}</p>
+   <label class="pill" style="display:inline-flex;align-items:center;cursor:pointer;width:auto">${esc(t('browse'))}<input type="file" id="fi" accept=".csv" hidden></label>
+  </div>
+ </div>`);
+ $('#ld').onclick = loadRemote;
+ bindDrop('#dz');
+}
+const stepsUI = k => { const s = $('#steps'); if(!s) return Promise.resolve(); s.innerHTML = `<div class="stp"><i class="bi bi-arrow-repeat spin"></i> ${esc(t(k))}</div>`; return new Promise(r=>setTimeout(r,420)); };
+async function loadRemote(){
+ const ld = $('#ld'); if(!ld) return;
+ beep(660,.1); ld.disabled = true;
+ try{
+  await stepsUI('dl');
+  let txt = null;
+  try{ const r = await fetch(CONFIG.csvFile + '?v=' + Date.now()); if(r.ok) txt = await r.text(); }catch(e){}
+  if(!txt){ try{ txt = await xhr(CONFIG.csvFile); }catch(e){} }
+  if(!txt) throw 0;
+  await stepsUI('parse'); await stepsUI('an');
+  const ok = await ingest(txt, CONFIG.csvFile);
+  if(!ok){ ld.disabled = false; const s = $('#steps'); if(s) s.innerHTML = ''; }
+ }catch(e){
+  ld.disabled = false;
+  const s = $('#steps'); if(s) s.innerHTML = '';
+  showError(t('nofile'));
+  beep(220,.3);
+ }
+}
+function xhr(u){
+ return new Promise((res,rej)=>{
+  try{ const x = new XMLHttpRequest(); x.open('GET',u);
+   x.onload = () => (x.status===200 || (x.status===0 && x.responseText)) ? res(x.responseText) : rej();
+   x.onerror = rej; x.send();
+  }catch(e){ rej(e); }
+ });
+}
+function bindDrop(sel){
+ const dz = $(sel); if(!dz) return;
+ const inp = dz.querySelector('#fi') || $('#fi');
+ if(inp) inp.onchange = e => handleFile(e.target.files[0]);
+ dz.ondragover = e => { e.preventDefault(); dz.classList.add('over'); };
+ dz.ondragleave = () => dz.classList.remove('over');
+ dz.ondrop = e => { e.preventDefault(); dz.classList.remove('over'); handleFile(e.dataTransfer.files[0]); };
+}
+function exportCsv(rows){
+ const cell = v => { v = String(v ?? ''); if(/^[=+\-@]/.test(v)) v = "'"+v; return /[",\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; };
+ const head = REQ.join(',');
+ const out = [head].concat(rows.map(r => [
+  r.cid, r.age, r.gender, r.income, r.channel, r.ctype, r.spend, r.ctr, r.cr, r.visits,
+  r.pagesPerVisit, r.timeOnSite, r.social, r.emailOpens, r.emailClicks, r.purchases, r.loyalty,
+  r.platform, r.tool, r.conv
+ ].map(cell).join(',')));
+ const a = document.createElement('a');
+ a.href = URL.createObjectURL(new Blob([out.join('\n')],{type:'text/csv'}));
+ a.download = 'marketing-filtered.csv'; a.click();
+ beep(880,.15); toast('success', t('exported'));
+}
+function render(){
+ CH.splice(0).forEach(c => { try{ c.dispose(); }catch(e){} });
+ i18nStatic();
+ if(!S.data.length){ $('#fbar').innerHTML = ''; return uploadUI(); }
+ const rows = filt();
+ if(!rows.length && !['quality'].includes(S.page)) return V(emptyPage());
+ // Recompute cache for filtered data
+ try{ recomputeCache(rows); }catch(e){ console.error('cache', e); }
+ try{ pages[S.page](rows); chips(); }
+ catch(e){ console.error(e); showError(t('badfile')); }
+}
+
+$('#openf').onclick = () => $('#fileIn').click();
+$('#fileIn').onchange = e => { handleFile(e.target.files[0]); e.target.value = ''; };
+$('#rst').onclick = resetF;
+$('#ftog').onclick = () => fpane(!fIsOpen());
+$('#fback').onclick = () => fpane(false);
+$('#lang').onclick = () => { S.set.lang = rtl() ? 'en' : 'ar'; save(); buildNav(); buildFbar(); render(); toast('info', rtl()?'English':'عربي'); };
+$('#mode').onclick = () => { S.set.mode = S.set.mode === 'dark' ? 'light' : 'dark'; save(); softTap(); render(); };
+$('#snd').onclick = () => { S.set.sound = !S.set.sound; save(); i18nStatic(); beep(); };
+$('#prt').onclick = () => window.print();
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && fIsOpen() && innerWidth < 900) fpane(false); });
+addEventListener('resize', () => { if(innerWidth >= 900){ $('#fbar').classList.remove('show'); document.body.classList.remove('fopen'); } });
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => { if(S.data.length && e.dataTransfer.files[0]){ e.preventDefault(); handleFile(e.dataTransfer.files[0]); } });
+document.addEventListener('click', () => { if(ac && ac.state === 'suspended') ac.resume(); }, {once:true});
+
+(async function init(){
+ try{
+  buildNav(); i18nStatic(); buildFbar();
+  render();
+ }catch(e){ console.error('INIT ERROR:', e); try{ render(); }catch(_){} }
+ finally{ setTimeout(hideBoot, 300); }
+})();
+</script>
+</body>
+</html>
