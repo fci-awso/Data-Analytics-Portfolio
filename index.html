@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0a0e1a">
-<title>Data Analytics Portfolio — 3 Intelligence Dashboards</title>
+<title>Data Analytics Portfolio — 5 Intelligence Dashboards</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%233b82f6'/%3E%3Cpath d='M14 44l12-16 10 10 14-20v26H14z' fill='%23fff'/%3E%3C/svg%3E">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Arabic:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -44,6 +44,10 @@
  --health-2:#0e8a7d;
  --telecom:#e11d2e;
  --telecom-2:#a50f1e;
+ --supply:#f28c28;
+ --supply-2:#1d6fb8;
+ --marketing:#d946ef;
+ --marketing-2:#7c3aed;
 }
 
 html[data-theme=light]{
@@ -449,6 +453,14 @@ html[data-theme=light] .grid-bg{
 .proj.sales{--acc-1:var(--sales);--acc-2:var(--sales-2)}
 .proj.health{--acc-1:var(--health);--acc-2:var(--health-2)}
 .proj.telecom{--acc-1:var(--telecom);--acc-2:var(--telecom-2)}
+.proj.supply{--acc-1:var(--supply);--acc-2:var(--supply-2)}
+.proj.marketing{--acc-1:var(--marketing);--acc-2:var(--marketing-2)}
+@media(min-width:1101px){
+ .proj-grid{grid-template-columns:repeat(6,1fr)}
+ .proj{grid-column:span 2}
+ .proj:nth-child(4){grid-column:2 / span 2}
+ .proj:nth-child(5){grid-column:4 / span 2}
+}
 
 /* ============================================================
    FEATURES STRIP
@@ -581,8 +593,8 @@ html[data-theme=light] .grid-bg{
  <section class="projects">
   <div class="section-head">
    <span class="kicker" id="projKicker">Featured Work</span>
-   <h2 id="projHeadTitle">Three intelligence dashboards</h2>
-   <p id="projHeadSub">Each project solves a different business question — sales performance, healthcare operations, and telecom churn — using the same rigorous, client-side analytics stack.</p>
+   <h2 id="projHeadTitle">Five intelligence dashboards</h2>
+   <p id="projHeadSub">Each project solves a different business question — sales performance, healthcare operations, telecom churn, supply chain logistics, and marketing performance — using the same rigorous, client-side analytics stack.</p>
   </div>
 
   <div class="proj-grid">
@@ -692,6 +704,76 @@ html[data-theme=light] .grid-bg{
     </div>
    </a>
 
+   <!-- SUPPLY -->
+   <a class="proj supply" href="https://fci-awso.github.io/Data-Analytics-Portfolio/SupplyChain-Intelligence/" target="_blank" rel="noopener">
+    <div class="proj-glow"></div>
+    <div class="proj-head">
+     <div class="proj-ic"><i class="bi bi-truck"></i></div>
+     <div class="proj-head-txt">
+      <div class="proj-cat" data-i18n="cat_supply">Supply Chain · Logistics Analytics</div>
+      <div class="proj-title" data-i18n="title_supply">Supply Chain Intelligence</div>
+     </div>
+    </div>
+    <div class="proj-body">
+     <p class="proj-desc" data-i18n="desc_supply">
+      Logistics control tower and supply chain analytics: late-delivery rate, shipping-mode comparison, region × mode risk heatmap, bottleneck detection, profitability, and customer concentration.
+     </p>
+     <div class="proj-features">
+     <span class="feat"><i class="bi bi-truck"></i> <span data-i18n="fSup1">Logistics Control</span></span>
+     <span class="feat"><i class="bi bi-exclamation-triangle"></i> <span data-i18n="fSup2">Delivery Risk</span></span>
+     <span class="feat"><i class="bi bi-cash-stack"></i> <span data-i18n="fSup3">Profitability</span></span>
+     </div>
+     <div class="proj-metrics">
+      <div class="pm"><div class="pm-v">20+</div><div class="pm-l" data-i18n="pmCharts">Charts</div></div>
+      <div class="pm"><div class="pm-v">9</div><div class="pm-l" data-i18n="pmPages">Pages</div></div>
+      <div class="pm"><div class="pm-v">4</div><div class="pm-l" data-i18n="pmThemes">Themes</div></div>
+     </div>
+    </div>
+    <div class="proj-foot">
+     <div class="proj-stack">
+      <span class="stack-dot" title="JavaScript"><i class="bi bi-braces"></i></span>
+      <span class="stack-dot" title="ECharts"><i class="bi bi-graph-up"></i></span>
+      <span class="stack-dot" title="Papa Parse"><i class="bi bi-filetype-csv"></i></span>
+     </div>
+     <div class="proj-cta"><span data-i18n="viewProject">View Project</span><i class="bi bi-arrow-right"></i></div>
+    </div>
+   </a>
+
+   <!-- MARKETING -->
+   <a class="proj marketing" href="https://fci-awso.github.io/Data-Analytics-Portfolio/Marketing-Intelligence/" target="_blank" rel="noopener">
+    <div class="proj-glow"></div>
+    <div class="proj-head">
+     <div class="proj-ic"><i class="bi bi-megaphone-fill"></i></div>
+     <div class="proj-head-txt">
+      <div class="proj-cat" data-i18n="cat_marketing">Marketing · Campaign Analytics</div>
+      <div class="proj-title" data-i18n="title_marketing">Marketing Intelligence</div>
+     </div>
+    </div>
+    <div class="proj-body">
+     <p class="proj-desc" data-i18n="desc_marketing">
+      Marketing performance analytics: campaign and channel comparison, spend efficiency, conversion funnel, audience segments, and data-driven recommendations for budget allocation.
+     </p>
+     <div class="proj-features">
+     <span class="feat"><i class="bi bi-bullseye"></i> <span data-i18n="fMkt1">Campaign Performance</span></span>
+     <span class="feat"><i class="bi bi-funnel"></i> <span data-i18n="fMkt2">Funnel Analysis</span></span>
+     <span class="feat"><i class="bi bi-diagram-3"></i> <span data-i18n="fMkt3">Channel Mix</span></span>
+     </div>
+     <div class="proj-metrics">
+      <div class="pm"><div class="pm-v">∞</div><div class="pm-l" data-i18n="pmRows">Rows</div></div>
+      <div class="pm"><div class="pm-v">2</div><div class="pm-l" data-i18n="pmLangs">Languages</div></div>
+      <div class="pm"><div class="pm-v">4</div><div class="pm-l" data-i18n="pmThemes">Themes</div></div>
+     </div>
+    </div>
+    <div class="proj-foot">
+     <div class="proj-stack">
+      <span class="stack-dot" title="JavaScript"><i class="bi bi-braces"></i></span>
+      <span class="stack-dot" title="ECharts"><i class="bi bi-graph-up"></i></span>
+      <span class="stack-dot" title="Papa Parse"><i class="bi bi-filetype-csv"></i></span>
+     </div>
+     <div class="proj-cta"><span data-i18n="viewProject">View Project</span><i class="bi bi-arrow-right"></i></div>
+    </div>
+   </a>
+
   </div>
  </section>
 
@@ -753,8 +835,8 @@ const I18N = {
   heroTitle:'Turning data into<br><span class="grad">decisions that matter</span>',
   heroLead:'A collection of full-stack, client-side BI dashboards built with vanilla JavaScript, Apache ECharts, and Papa Parse. Every metric is computed dynamically from raw CSV — no backend, no build step.',
   projKicker:'Featured Work',
-  projHeadTitle:'Three intelligence dashboards',
-  projHeadSub:'Each project solves a different business question — sales performance, healthcare operations, and telecom churn — using the same rigorous, client-side analytics stack.',
+  projHeadTitle:'Five intelligence dashboards',
+  projHeadSub:'Each project solves a different business question — sales performance, healthcare operations, telecom churn, supply chain logistics, and marketing performance — using the same rigorous, client-side analytics stack.',
   catSales:'Sales · Business Intelligence',
   titleSales:'Sales Intelligence',
   descSales:'Executive revenue analytics: category performance, top customers, Pareto concentration, time trends, and statistical anomaly detection with rolling 7-day baselines.',
@@ -768,6 +850,15 @@ const I18N = {
   descTelecom:'Churn intelligence and retention strategy: rule-based Value & Risk scores, 5-segment customer matrix, revenue-at-risk, and a Value vs Risk scatter of every customer.',
   fTele1:'Churn Analysis', fTele2:'Segmentation', fTele3:'Risk Scoring',
   pmCharts:'Charts', pmKpis:'KPIs', pmRows:'Rows', pmPages:'Pages', pmSegments:'Segments',
+  cat_supply:'Supply Chain · Logistics Analytics',
+  title_supply:'Supply Chain Intelligence',
+  desc_supply:'Logistics control tower and supply chain analytics: late-delivery rate, shipping-mode comparison, region × mode risk heatmap, bottleneck detection, profitability, and customer concentration.',
+  fSup1:'Logistics Control', fSup2:'Delivery Risk', fSup3:'Profitability',
+  cat_marketing:'Marketing · Campaign Analytics',
+  title_marketing:'Marketing Intelligence',
+  desc_marketing:'Marketing performance analytics: campaign and channel comparison, spend efficiency, conversion funnel, audience segments, and data-driven recommendations for budget allocation.',
+  fMkt1:'Campaign Performance', fMkt2:'Funnel Analysis', fMkt3:'Channel Mix',
+  pmThemes:'Themes', pmLangs:'Languages',
   viewProject:'View Project',
   featKicker:'What every project shares',
   featHeadTitle:'Production-grade analytics — no backend',
@@ -786,8 +877,8 @@ const I18N = {
   heroTitle:'نحوّل البيانات إلى<br><span class="grad">قرارات تصنع الفرق</span>',
   heroLead:'مجموعة من لوحات ذكاء الأعمال المتكاملة التي تعمل بالكامل من داخل المتصفح باستخدام JavaScript وECharts وPapa Parse. كل المؤشرات تُحسب ديناميكيًا من ملف CSV — بدون خادم ولا خطوات بناء.',
   projKicker:'أعمال مختارة',
-  projHeadTitle:'ثلاث لوحات ذكاء أعمال',
-  projHeadSub:'كل مشروع يحل سؤالًا تجاريًا مختلفًا — أداء المبيعات، عمليات الرعاية الصحية، وتسرب عملاء الاتصالات — بنفس المنهجية الصارمة والتحليل من داخل المتصفح.',
+  projHeadTitle:'خمس لوحات ذكاء أعمال',
+  projHeadSub:'كل مشروع يحل سؤالًا تجاريًا مختلفًا — أداء المبيعات، عمليات الرعاية الصحية، تسرب عملاء الاتصالات، لوجستيات سلسلة الإمداد، وأداء التسويق — بنفس المنهجية الصارمة والتحليل من داخل المتصفح.',
   catSales:'المبيعات · ذكاء الأعمال',
   titleSales:'ذكاء المبيعات',
   descSales:'تحليلات الإيرادات التنفيذية: أداء الفئات، أكبر العملاء، تركيز باريتو، اتجاهات الزمن، وكشف الشذوذ الإحصائي بناءً على خط أساس متحرك لـ 7 أيام.',
@@ -801,6 +892,15 @@ const I18N = {
   descTelecom:'ذكاء التسرب واستراتيجية الاحتفاظ: درجات القيمة والخطورة المبنية على قواعد، مصفوفة 5 شرائح عملاء، الإيراد المعرض للخطر، ومخطط تناثر لكل عميل.',
   fTele1:'تحليل التسرب', fTele2:'تقسيم العملاء', fTele3:'قياس الخطورة',
   pmCharts:'مخططات', pmKpis:'مؤشرات', pmRows:'صفوف', pmPages:'صفحات', pmSegments:'شرائح',
+  cat_supply:'سلسلة الإمداد · تحليلات اللوجستيات',
+  title_supply:'ذكاء سلسلة الإمداد',
+  desc_supply:'برج مراقبة اللوجستيات وتحليلات سلسلة الإمداد: معدل التأخير في التسليم، مقارنة وسائل الشحن، خريطة حرارية للمخاطر حسب المنطقة والوسيلة، كشف الاختناقات، الربحية، وتركّز العملاء.',
+  fSup1:'التحكم اللوجستي', fSup2:'مخاطر التسليم', fSup3:'الربحية',
+  cat_marketing:'التسويق · تحليلات الحملات',
+  title_marketing:'ذكاء التسويق',
+  desc_marketing:'تحليلات أداء التسويق: مقارنة الحملات والقنوات، كفاءة الإنفاق، قمع التحويل، شرائح الجمهور، وتوصيات مبنية على البيانات لتوزيع الميزانية.',
+  fMkt1:'أداء الحملات', fMkt2:'تحليل القمع', fMkt3:'مزيج القنوات',
+  pmThemes:'مظاهر', pmLangs:'لغات',
   viewProject:'استعرض المشروع',
   featKicker:'ما تشترك فيه كل المشاريع',
   featHeadTitle:'تحليلات احترافية — بدون خادم',
