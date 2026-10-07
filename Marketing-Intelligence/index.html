@@ -1842,6 +1842,17 @@ document.addEventListener('click', () => { if(ac && ac.state === 'suspended') ac
  try{
   buildNav(); i18nStatic(); buildFbar();
   render();
+  /* Auto-load dataset on page load (falls back to manual upload screen if not found) */
+  try{
+   setBoot(rtl() ? 'جارٍ تحميل البيانات…' : 'Loading dataset…');
+   let txt = null;
+   try{ const r = await fetch(CONFIG.csvFile + '?v=' + Date.now()); if(r.ok) txt = await r.text(); }catch(e){}
+   if(!txt){ try{ txt = await xhr(CONFIG.csvFile); }catch(e){} }
+   if(txt){
+    setBoot(rtl() ? 'جارٍ قراءة السجلات…' : 'Parsing records…');
+    await ingest(txt, CONFIG.csvFile);
+   }
+  }catch(e){ console.error('AUTO-LOAD ERROR:', e); }
  }catch(e){ console.error('INIT ERROR:', e); try{ render(); }catch(_){} }
  finally{ setTimeout(hideBoot, 300); }
 })();
